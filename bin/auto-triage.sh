@@ -16,7 +16,8 @@ log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 changed_meta=0
 FIXED=""
 
-json_edit() {  # json_edit NAME FIELD MODE VALUE  ; mode: set|bradd|listadd
+json_edit() {  # json_edit NAME FIELD [MODE] [VALUE]; без MODE -> set VALUE
+    if [ $# -eq 3 ]; then set -- "$1" "$2" set "$3"; fi
     python3 - "$1" "$2" "$3" "$4" <<'PY'
 import json,sys
 n,f,mode,v=sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]

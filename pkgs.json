@@ -1251,7 +1251,8 @@
    "install_cmd": "%make_install PREFIX=%{_prefix}",
    "verify": true,
    "prio": 4,
-   "use": "tulizu --help — арт для /etc/issue"
+   "use": "tulizu --help — арт для /etc/issue",
+   "noman": true
   },
   {
    "name": "cadubi",
