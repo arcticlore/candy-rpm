@@ -14,6 +14,6 @@ for i in 1 2 3; do
     if git push origin master >>"$LOG" 2>&1; then
         echo "[$(date '+%F %T')] PUSH OK" | tee -a "$LOG"; exit 0
     fi
-    sleep $((i*10))
+    sleep $((i*15))
 done
 echo "[$(date '+%F %T')] PUSH FAILED после 3 попыток" | tee -a "$LOG"; exit 1
