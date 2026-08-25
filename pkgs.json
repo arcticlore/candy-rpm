@@ -9,9 +9,13 @@
    "fedora-43-x86_64",
    "fedora-43-aarch64",
    "fedora-43-ppc64le",
-   "fedora-43-s390x"
+   "fedora-43-s390x",
+   "fedora-44-i386",
+   "fedora-43-i386",
+   "fedora-43-riscv64"
   ],
-  "description": "Terminal eye candy (fetch tools, ASCII animations, modern CLI replacements) for Fedora 44. Auto-updated from upstream releases. Maintainer: arcticlore"
+  "description": "Terminal eye candy (fetch tools, ASCII animations, modern CLI replacements) for Fedora 44. Auto-updated from upstream releases. Maintainer: arcticlore",
+  "workers": 8
  },
  "packages": [
   {
