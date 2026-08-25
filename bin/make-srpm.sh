@@ -48,12 +48,19 @@ if [ ! -f "$SRC" ]; then
     for T in $CANDS; do
         TAG="$T"
         U="$(src_url)"
+        # резервный источник для github: codeload-эндпоинт
+        ALT=""
+        [ "$HOST" = "github" ] && ALT="https://codeload.github.com/$SLUG/tar.gz/refs/tags/$T"
+        MIR="$(echo "$M" | jq -r '.mirror // ""' | sed "s/{version}/$VER/g; s/{tag}/$T/g")"
         echo ">> качаю $U" >&2
         if command -v aria2c >/dev/null; then
-            # 8 параллельных соединений — спасение на узких каналах
-            aria2c -x8 -s8 -k1M --max-tries=5 --retry-wait=3 \
+            { aria2c -x8 -s8 -k1M --max-tries=5 --retry-wait=3 \
                    --connect-timeout=20 --timeout=60 \
                    -d "$(dirname "$SRC")" -o "$(basename "$SRC").tmp" "$U" \
+                || { [ -n "$ALT" ] && aria2c -x8 -s8 -d "$(dirname "$SRC")" \
+                     -o "$(basename "$SRC").tmp" "$ALT"; } \
+                || { [ -n "${MIR%%""}" ] && [ "$MIR" != "" ] && aria2c -x8 -s8 \
+                     -d "$(dirname "$SRC")" -o "$(basename "$SRC").tmp" "$MIR"; }; } \
                 && mv "$SRC.tmp" "$SRC" && OK=1 && break
             rm -f "$SRC.tmp" "$SRC.tmp.aria2"
         else
@@ -62,6 +69,9 @@ if [ ! -f "$SRC" ]; then
                     -o "$SRC.tmp" "$U"; then
                 mv "$SRC.tmp" "$SRC"; OK=1; break
             fi
+            rm -f "$SRC.tmp"
+            [ -n "$ALT" ] && curl -fL --retry 3 -o "$SRC.tmp" "$ALT" \
+                && mv "$SRC.tmp" "$SRC" && OK=1 && break
             rm -f "$SRC.tmp"
         fi
     done

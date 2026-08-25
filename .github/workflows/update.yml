@@ -1,0 +1,38 @@
+name: nightly update
+on:
+  schedule:
+    - cron: "0 3 * * *"   # 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          dnf install -y copr-cli golang npm jq git cargo rust \
+                         rpm-build rpmdevtools python3-pip >/dev/null
+
+      - name: Configure COPR
+        run: |
+          mkdir -p ~/.config
+          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          chmod 600 ~/.config/copr
+
+      - name: Run update wave
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PROJ: arcticlore/candy
+        run: |
+          chmod +x bin/*.sh bin/gen_specs.py
+          bin/update-check.sh --force || true
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-logs
+          path: logs/

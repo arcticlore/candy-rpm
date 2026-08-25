@@ -1,0 +1,86 @@
+# Sources — откуда берутся исходники
+
+Генерируется из pkgs.json (bin/gen-sources-md.py). Порядок загрузки пакетов:
+по полю prio: 1 = CLI-инструменты, 2-3 = fetch/анимации, 5+ = темы/тяжёлые.
+Для github-пакетов есть автоматический резерв codeload.github.com;
+поле mirror задаёт третий адрес (шаблоны {version}/{tag}).
+
+- **bottom** (`cargo`) — https://github.com/ClementTsang/bottom/archive/v{version}.tar.gz
+- **curlie** (`go`) — https://github.com/rs/curlie/archive/v{version}.tar.gz
+- **doggo** (`go`) — https://github.com/mr-karan/doggo/archive/v{version}.tar.gz
+- **fx** (`go`) — https://github.com/antonmedv/fx/archive/{version}.tar.gz
+- **gping** (`cargo`) — https://github.com/orf/gping/archive/gping-v{version}.tar.gz
+- **lazydocker** (`go`) — https://github.com/jesseduffield/lazydocker/archive/v{version}.tar.gz
+- **lazygit** (`go`) — https://github.com/jesseduffield/lazygit/archive/v{version}.tar.gz
+- **lf** (`go`) — https://github.com/gokcehan/lf/archive/{version}.tar.gz
+- **sd** (`cargo`) — https://github.com/chmln/sd/archive/v{version}.tar.gz
+- **starship** (`cargo`) — https://github.com/starship/starship/archive/v{version}.tar.gz
+- **viddy** (`go`) — https://github.com/sachaos/viddy/archive/v{version}.tar.gz
+- **xh** (`cargo`) — https://github.com/ducaale/xh/archive/v{version}.tar.gz
+- **yazi** (`cargo`) — https://github.com/sxyazi/yazi/archive/v{version}.tar.gz
+- **CrabFetch** (`cargo`) — https://github.com/LivacoNew/CrabFetch/archive/v{version}.tar.gz
+- **albafetch** (`meson`) — https://github.com/alba4k/albafetch/archive/v{version}.tar.gz
+- **animfetch** (`cargo`) — https://github.com/Andrew-Velox/animfetch/archive/v{version}.tar.gz
+- **archey4** (`python-pkg`) — https://github.com/HorlogeSkynet/archey4/archive/v{version}.tar.gz
+- **bunnyfetch** (`go`) — https://github.com/Rosettea/bunnyfetch/archive/v{version}.tar.gz
+- **disfetch** (`script`) — https://github.com/q60/disfetch/archive/v{version}.tar.gz
+- **ghfetch** (`cargo`) — https://github.com/SafarSoFar/ghfetch/archive/v{version}.tar.gz
+- **gitfetch** (`cargo`) — https://github.com/FabricSoul/gitfetch/archive/v{version}.tar.gz
+- **macchina** (`cargo`) — https://github.com/Macchina-CLI/macchina/archive/v{version}.tar.gz
+- **neofetch** (`script`) — https://github.com/dylanaraps/neofetch/archive/v{version}.tar.gz
+- **nerdfetch** (`script`) — https://codeberg.org/thatonecalculator/NerdFetch/archive/v{version}.tar.gz
+- **pokemon-icat** (`python-script`) — https://github.com/aflaag/pokemon-icat/archive/v{version}.tar.gz
+- **pridefetch** (`python-script`) — https://github.com/cartoon-raccoon/pridefetch/archive/v{version}.tar.gz
+- **rxfetch** (`script`) — https://github.com/Mangeshrex/rxfetch/archive/v{version}.tar.gz
+- **ufetch** (`script`) — https://gitlab.com/jschx/ufetch/-/archive/vufetch-{version}.tar.gz
+- **PyBonsai** (`python-pkg`) — https://pypi.org/pypi/pybonsai/ (sdist)
+- **arttime** (`python-pkg`) — https://github.com/poetaman/arttime/archive/v{version}.tar.gz
+- **ascii-rain** (`c-make`) — https://github.com/nkleemann/ascii-rain/archive/v{version}.tar.gz
+- **ascsaver** (`script`) — https://gitlab.com/mezantrop/ascsaver/-/archive/vascsaver-{version}.tar.gz
+- **cbeams** (`python-script`) — https://github.com/tartley/cbeams/archive/{version}.tar.gz
+- **cli-fx** (`script`) — https://github.com/lukeslp/cli-fx/archive/{version}.tar.gz
+- **ctree** (`go`) — https://github.com/gleich/ctree/archive/v{version}.tar.gz
+- **duckpond** (`script`) — https://github.com/gsobell/duckpond.sh/archive/v{version}.tar.gz
+- **gh-screensaver** (`go`) — https://github.com/vilmibm/gh-screensaver/archive/v{version}.tar.gz
+- **lavat** (`c-make`) — https://github.com/AngelJumbo/lavat/archive/v{version}.tar.gz
+- **lifecycler** (`python-script`) — https://github.com/tobi-wan-kenobi/lifecycler/archive/v{version}.tar.gz
+- **maze** (`python-script`) — https://github.com/pipeseroni/maze.py/archive/v{version}.tar.gz
+- **pipes.sh** (`script`) — https://github.com/pipeseroni/pipes.sh/archive/v{version}.tar.gz
+- **pipesX** (`script`) — https://github.com/pipeseroni/pipesX.sh/archive/v{version}.tar.gz
+- **snakes** (`script`) — https://github.com/pipeseroni/snakes.pl/archive/v{version}.tar.gz
+- **snowmachine** (`python-pkg`) — https://pypi.org/pypi/snowmachine/ (sdist)
+- **termdvd** (`npm`) — https://registry.npmjs.org/termdvd/-/termdvd-{version}.tgz
+- **terminal-parrot** (`go`) — https://github.com/jmhobbs/terminal-parrot/archive/{version}.tar.gz
+- **tfire** (`script`) — https://github.com/tech-chad/tfire/archive/v{version}.tar.gz
+- **tspace** (`script`) — https://github.com/mtklr/tspace/archive/v{version}.tar.gz
+- **tty-clock** (`c-make`) — https://github.com/xorg62/tty-clock/archive/v{version}.tar.gz
+- **weave** (`script`) — https://github.com/pipeseroni/weave.sh/archive/v{version}.tar.gz
+- **zenta** (`script`) — https://github.com/e6a5/zenta/archive/v{version}.tar.gz
+- **artem** (`cargo`) — https://github.com/FineFindus/artem/archive/v{version}.tar.gz
+- **cadubi** (`script`) — https://github.com/statico/cadubi/archive/v{version}.tar.gz
+- **durdraw** (`python-pkg`) — https://github.com/cmang/durdraw/archive/v{version}.tar.gz
+- **jp2a** (`c-autotools`) — https://github.com/Talinx/jp2a/archive/v{version}.tar.gz
+- **parrotsay** (`npm`) — https://registry.npmjs.org/parrotsay/-/parrotsay-{version}.tgz
+- **ponysay** (`script`) — https://github.com/erkin/ponysay/archive/v{version}.tar.gz
+- **pscircle** (`c-autotools`) — https://gitlab.com/mildlyparallel/pscircle/-/archive/vpscircle-{version}.tar.gz
+- **ricksay** (`script`) — https://github.com/kochie/ricksay/archive/v{version}.tar.gz
+- **tulizu** (`c-make`) — https://github.com/loh-tar/tulizu/archive/{version}.tar.gz
+- **viu** (`cargo`) — https://github.com/atanunq/viu/archive/v{version}.tar.gz
+- **yosay** (`npm`) — https://github.com/yeoman/yosay/archive/v{version}.tar.gz
+- **flavours** (`cargo`) — https://github.com/Misterio77/flavours/archive/v{version}.tar.gz
+- **linuxwave** (`cargo`) — https://github.com/orhun/linuxwave/archive/v{version}.tar.gz
+- **oh-my-zsh** (`script`) — https://github.com/ohmyzsh/ohmyzsh/archive/{version}.tar.gz
+- **powerlevel10k** (`script`) — https://github.com/romkatv/powerlevel10k/archive/v{version}.tar.gz
+- **pure** (`npm`) — https://github.com/sindresorhus/pure/archive/v{version}.tar.gz
+- **pywal** (`python-pkg`) — https://pypi.org/pypi/pywal/ (sdist)
+- **tint** (`script`) — https://github.com/corygabrielsen/tint/archive/v{version}.tar.gz
+- **wallust** (`cargo`) — https://codeberg.org/explosion-mental/wallust/archive/v{version}.tar.gz
+- **rickrollrc** (`script`) — https://github.com/keroserene/rickrollrc/archive/{version}.tar.gz
+- **cli-visualizer** (`c-cmake`) — https://github.com/dpayne/cli-visualizer/archive/{version}.tar.gz
+- **colorls** (`gem`) — https://github.com/athityakumar/colorls/archive/v{version}.tar.gz
+- **diagon** (`c-cmake`) — https://github.com/ArthurSonzogni/Diagon/archive/v{version}.tar.gz
+- **musikcube** (`c-cmake`) — https://github.com/clangen/musikcube/archive/{version}.tar.gz
+- **zellij** (`cargo`) — https://github.com/zellij-org/zellij/archive/v{version}.tar.gz
+- **Rio** (`cargo`) — https://github.com/raphamorim/rio/archive/v{version}.tar.gz
+- **hollywood** (`script`) — https://github.com/dustinkirkland/hollywood/archive/{version}.tar.gz
+- **winfetch** (`script`) — https://github.com/lptstr/winfetch/archive/v{version}.tar.gz
