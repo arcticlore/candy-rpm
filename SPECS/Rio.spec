@@ -14,7 +14,6 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  cargo-rpm-macros
 BuildRequires:  fontconfig-devel
 BuildRequires:  glslang
 BuildRequires:  pkgconf-pkg-config

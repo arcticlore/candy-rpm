@@ -90,7 +90,6 @@
    "prio": 1,
    "use": "yazi — файловый менеджер; выход Q",
    "br": [
-    "cargo-rpm-macros",
     "git-core"
    ],
    "build_env": [
@@ -192,9 +191,7 @@
    "prio": 1,
    "use": "gping 1.1.1.1 — ping с графиком",
    "cdir": "gping",
-   "br": [
-    "cargo-rpm-macros"
-   ],
+   "br": [],
    "alt": "cargo install gping"
   },
   {
@@ -481,9 +478,7 @@
    "verify": true,
    "prio": 2,
    "use": "animfetch — анимированный fetch",
-   "br": [
-    "cargo-rpm-macros"
-   ]
+   "br": []
   },
   {
    "name": "archey4",
@@ -1539,7 +1534,6 @@
    "exp": true,
    "prio": 9,
    "br": [
-    "cargo-rpm-macros",
     "fontconfig-devel",
     "glslang",
     "pkgconf-pkg-config"

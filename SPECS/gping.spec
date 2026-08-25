@@ -13,7 +13,6 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  cargo-rpm-macros
 
 %description
 Ping, but with a graph
