@@ -87,6 +87,11 @@ extract() {  # extract SRC -> tmpdir (срезаем верхний катало
     echo "$d"
 }
 
+VT=""; [ "$ECO" = "cargo" ] && VT="SOURCES/$NAME-vendor-$VER.tar.gz"
+[ "$ECO" = "go" ] || [ "$ECO" = "npm" ] && VT="SOURCES/$NAME-node-vendor-$VER.tar.gz"
+if [ -n "$VT" ] && [ -f "$VT" ]; then
+    echo ">> $VT уже существует — вендоринг пропущен" >&2
+else
 case "$ECO" in
 cargo)
     D=$(extract "$SRC")
@@ -109,6 +114,7 @@ npm)
     tar -C "$D" -czf "SOURCES/$NAME-node-vendor-$VER.tar.gz" node_modules
     rm -rf "$D" ;;
 esac
+fi
 
 # автодетект верхнего каталога тарбола
 if TD=$(tar tzf "$SRC" 2>/dev/null | head -1 | cut -d/ -f1); [ -n "${TD:-}" ] && [ "${TD:-x}" != "$SRC" ]; then

@@ -43,7 +43,9 @@ detect_cdir() {  # имя пакета -> подкаталог крейта ил
     return 0
 }
 
+TRI=state/triaged.ids; touch "$TRI"
 while read -r id name; do
+    grep -qx "$id" "$TRI" && continue
     L=$(curl -sL --max-time 60 \
       "https://download.copr.fedorainfracloud.org/results/arcticlore/candy/fedora-44-x86_64/${id}-${name}/builder-live.log.gz" \
       | zcat 2>/dev/null) || L=""
@@ -72,6 +74,10 @@ while read -r id name; do
     fi
     log "[HUMAN] $name: незнакомая ошибка, разбор утром (build $id)"
 done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '$NF=="failed"{print $1,$2}')
+# помечаем все просмотренные как отработанные (включая [HUMAN])
+awk '$NF=="failed"{print $1}' /tmp/opencode/all*.txt 2>/dev/null >>"$TRI"
+copr-cli list-builds arcticlore/candy 2>/dev/null | awk '$NF=="failed"{print $1}' >>"$TRI"
+sort -u "$TRI" -o "$TRI"
 
 if [ "$changed_meta" = 1 ]; then
     ./bin/gen_specs.py --all >/dev/null 2>&1
