@@ -71,6 +71,12 @@ Local systemd units (see `systemd/`) run babysitter + daily checks.
 For fully cloud-based updates see `.github/workflows/update.yml` — add repo
 secret `COPR_CONFIG` (contents of `~/.config/copr`) and trigger the workflow.
 
+## Contact
+
+- 🐛 Bugs / package requests — [Issues](../../issues)
+- 📮 Or message our Telegram bot — it relays to the maintainer
+- 📄 Package catalog: [PACKAGES.md](PACKAGES.md)
+
 ## Adding a package
 
 Add an entry to `pkgs.json`, then:

@@ -1635,7 +1635,9 @@
    "bins": [
     "tte"
    ],
-   "prio": 3
+   "prio": 3,
+   "alt": "pip install terminaltexteffects",
+   "use": "tte \"твой текст\" — эффекты печати; tte --list-effects"
   },
   {
    "name": "ascii-image-converter",
@@ -1649,7 +1651,9 @@
     "ascii-image-converter"
    ],
    "gpkg": ".",
-   "prio": 3
+   "prio": 3,
+   "alt": "бинарники: github.com/TheZoraiz/ascii-image-converter/releases",
+   "use": "ascii-image-converter photo.jpg --color"
   },
   {
    "name": "gum",
@@ -1664,7 +1668,8 @@
    ],
    "gpkg": ".",
    "prio": 1,
-   "alt": "офиц. RPM-репо Charm: yum-репо charm.sh"
+   "alt": "офиц. репо Charm: sudo dnf copr enable charmbracelet/charm? нет — см. github.com/charmbracelet/gum#installation",
+   "use": "gum choose 'вариант 1' 'вариант 2'; gum spin -- sleep 2"
   },
   {
    "name": "glow",
@@ -1679,7 +1684,8 @@
    ],
    "gpkg": ".",
    "prio": 1,
-   "alt": "бинарники со страницы Releases charmbracelet/glow"
+   "alt": "github.com/charmbracelet/glow#installation (бинарники/репо Charm)",
+   "use": "glow README.md — читай markdown в терминале"
   },
   {
    "name": "unimatrix",
@@ -1696,7 +1702,9 @@
    ],
    "fallback": "commit",
    "verify": true,
-   "prio": 3
+   "prio": 3,
+   "alt": "git clone https://github.com/will8211/unimatrix && sudo ./install.py",
+   "use": "unimatrix -s 96 — unicode-матрица"
   },
   {
    "name": "ttyper",
@@ -1709,7 +1717,9 @@
    "bins": [
     "ttyper"
    ],
-   "prio": 3
+   "prio": 3,
+   "alt": "cargo install ttyper --locked",
+   "use": "ttyper — тест слепой печати (ru: --language ru1000)"
   }
  ]
 }
