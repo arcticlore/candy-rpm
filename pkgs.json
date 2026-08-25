@@ -562,7 +562,9 @@
    "interp": "pwsh",
    "verify": true,
    "prio": 9,
-   "use": "winfetch (требуется PowerShell/pwsh)"
+   "use": "winfetch (требуется PowerShell/pwsh)",
+   "enabled": false,
+   "note": "Апстрим Windows-only ('Only supported on Windows'). На Linux используйте fastfetch/macchina"
   },
   {
    "name": "pipes.sh",
