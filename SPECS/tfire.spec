@@ -1,5 +1,5 @@
 Name:           tfire
-Version:        0
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        Fire animation in your terminal
 
@@ -25,7 +25,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n tfire-0.3.0
 
 %build
 # интерпретируемый модуль, сборки нет
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/tfire
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0.3.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
