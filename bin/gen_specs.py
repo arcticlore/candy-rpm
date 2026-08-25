@@ -270,6 +270,11 @@ BODIES = {
 }
 
 
+def esc_pct(s):
+    # %% в spec = литеральный %
+    return s.replace("%", "%%")
+
+
 def render(name, ver):
     m = META[name]
     head_lines = header(m, ver)
@@ -297,11 +302,11 @@ def render(name, ver):
         tags, secs = body, ""
     parts = ["\n".join(head_lines), "", tags.strip()]
     if note:
-        parts += ["", "# NOTE: " + note]
-    desc_block = [desc, ""]
+        parts += ["", "# NOTE: " + esc_pct(note)]
+    desc_block = [esc_pct(desc), ""]
     if m.get("alt"):
         desc_block += ["Официальный способ установки от апстрима / Upstream official install method:",
-                       f"  {m['alt']}", ""]
+                       f"  {esc_pct(m['alt'])}", ""]
     desc_block += ["ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.",
                    "Репозиторий в активной разработке — возможны поломки и резкие изменения.",
                    "Помидорами не кидайтесь, лучше заводите issue.",

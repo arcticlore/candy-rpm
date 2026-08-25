@@ -36,7 +36,8 @@ detect_cdir() {  # имя пакета -> подкаталог крейта ил
     # ищем member с Cargo.toml, содержащим [[bin]] name = "<пакет>"
     while read -r cand; do
         if tar xzf "$f" -O "$cand/Cargo.toml" 2>/dev/null | grep -q "\[\[bin\]\]"; then
-            echo "${cand#*/}"; return 0
+            safe=$(echo "${cand#*/}" | tr -cd 'A-Za-z0-9._/-')
+            [ "$safe" = "${cand#*/}" ] && { echo "$safe"; return 0; } || return 0
         fi
     done < <(tar tzf "$f" 2>/dev/null | grep "/Cargo.toml$" | grep -v "target/" | cut -d/ -f1 | sort -u)
     return 0
