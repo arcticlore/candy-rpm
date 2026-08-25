@@ -75,6 +75,36 @@ if [ ! -f "$SRC" ]; then
             rm -f "$SRC.tmp"
         fi
     done
+    # --- авто-поиск переехавшего репозитория ---
+    if [ -z "$OK" ] && [ "$HOST" = "github" ]; then
+        AUTH=""; [ -n "${GITHUB_TOKEN:-}" ] && AUTH="-H \"Authorization: Bearer $GITHUB_TOKEN\""
+        LOC=$(curl -sI --max-time 15 $AUTH "https://github.com/$SLUG" \
+              | awk 'tolower($1)=="location:"{gsub("\\r","");print $2}' | head -1)
+        if [ -n "$LOC" ]; then
+            NEWSLUG=${LOC#*github.com/}; NEWSLUG=${NEWSLUG%%/*}/${LOC##*/}
+            NEWSLUG=$(echo "$NEWSLUG" | sed 's|\.git$||; s|/$||' | tr -cd 'A-Za-z0-9./_-')
+            if [ -n "$NEWSLUG" ] && [ "$NEWSLUG" != "$SLUG" ]; then
+                echo "[MOVE] $NAME: $SLUG -> $NEWSLUG (редирект GitHub — применяю автоматически)" \
+                    | tee -a logs/move-suggestions.log
+                python3 - "$NAME" "$NEWSLUG" <<'PY'
+import json,sys
+p=json.load(open("pkgs.json")); n,ns=sys.argv[1],sys.argv[2]
+for x in p["packages"]:
+    if x["name"]==n: x["slug"]=ns
+json.dump(p,open("pkgs.json","w"),ensure_ascii=False,indent=1)
+PY
+                st=$(jq -r --arg n "$NAME" '.[$n].ver // ""' state/state.json 2>/dev/null)
+                exec "$0" "$NAME" "$VER"      # повтор с новым slug
+            fi
+        else
+            {
+            echo "[HUMAN] $NAME: $SLUG недоступен, редиректа нет. Кандидаты по поиску:"
+            curl -s --max-time 20 ${AUTH:+-H "Authorization: Bearer $GITHUB_TOKEN"} \
+              "https://api.github.com/search/repositories?q=$(printf '%s' "${SLUG##*/}" | jq -sRr @uri)+in:name&sort=stars&per_page=3" \
+              | jq -r '.items[]? | "   \(.full_name) ★\(.stargazers_count)"'
+            } >> logs/move-suggestions.log 2>&1
+        fi
+    fi
     [ -n "$OK" ] || { echo "[SKIP] $NAME: сорцы недоступны (404/сеть)" | tee -a logs/make-srpm.log; exit 2; }
 fi
 
