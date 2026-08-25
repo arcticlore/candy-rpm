@@ -24,7 +24,7 @@ for r in $(seq 1 "$ROUNDS"); do
     missing=$(comm -23 <(enabled_list) <(jq -r 'keys[]' state/state.json 2>/dev/null | sort))
     nmiss=$(echo "$missing" | grep -c . || true)
 
-    echo "[converge] отправлено=$upd ошибок=$err пропущено=$skip ещё_без_успеха=$nmiss"
+    echo "[converge] отправлено=$upd ошибок=$err пропущено=$skp ещё_без_успеха=$nmiss"
 
     if [ "$upd" = 0 ] && [ "$err" = 0 ] && [ "$skp" = 0 ]; then
         if [ "$nmiss" = 0 ]; then
