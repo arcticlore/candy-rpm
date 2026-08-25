@@ -8,3 +8,6 @@ logs/*.log
 *.tmp
 *.aria2
 __pycache__/
+__pycache__/
+logs/runs/
+logs/builder/
