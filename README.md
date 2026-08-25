@@ -1,84 +1,85 @@
-# candy-rpm — terminal eye-candy pipeline
+**Русский** | [English](README.en.md)
 
-Nightly-updated COPR repository of terminal eye-candy for **Fedora 43 & 44**
-(x86_64 / aarch64 / ppc64le / s390x): fetch tools, ASCII animations, modern
-CLI replacements, prompts and themes.
+# candy-rpm — конвейер terminal eye-candy
 
-**Enable:**
+Ежедневно обновляемый COPR-репозиторий с terminal eye-candy для **Fedora 43 и 44**
+(x86_64 / aarch64 / ppc64le / s390x): fetch-утилиты, ASCII-анимации, современные
+замены CLI-команд, промпты и темы.
+
+**Подключение:**
 ```bash
 sudo dnf install dnf-plugins-core
 sudo dnf copr enable arcticlore/candy
 ```
 
-> ⚠️ Unofficial third-party repository, work-in-progress. Expect breakage.
-> Every package description (`dnf info <pkg>`), lists the upstream official
-> install method as an alternative.
+> ⚠️ Неофициальный сторонний репозиторий, находится в разработке. Возможны поломки.
+> В описании каждого пакета (`dnf info <pkg>`) указан официальный способ установки
+> от апстрима как альтернатива.
 
-## How it works
+## Как это работает
 
 ```
-pkgs.json            single source of truth: what we package, where from
-bin/api_ver.sh       asks GitHub/Codeberg/GitLab/npm/PyPI for latest version
-bin/gen_specs.py     renders .spec files (12 ecosystems)
-bin/make-srpm.sh     sources + vendor tarballs (cargo/go/node) + rpmbuild -bs
-bin/update-check.sh  diffs against state/state.json, rebuilds changed, pushes to COPR
-bin/babysit.sh       runs waves sequentially until everything converges
-bin/auto-triage.sh   auto-fixes known build failures from builder logs
-bin/status.sh        one-shot status snapshot
-systemd units        babysit + 10-min watcher + daily upstream check
+pkgs.json            единый источник правды: что пакуем и откуда
+bin/api_ver.sh       спрашивает GitHub/Codeberg/GitLab/npm/PyPI о последней версии
+bin/gen_specs.py     генерирует .spec-файлы (12 экосистем)
+bin/make-srpm.sh     исходники + vendor-тарболы (cargo/go/node) + rpmbuild -bs
+bin/update-check.sh  сверяет со state/state.json, пересобирает изменившееся, шлёт в COPR
+bin/babysit.sh       гоняет волны до полной сходимости
+bin/auto-triage.sh   автоматически лечит известные ошибки сборки по логам билдеров
+bin/status.sh        разовый снимок статуса
+systemd-юниты        нянька + вотчер каждые 10 минут + ежедневная сверка апстримов
 ```
 
-Vendoring happens locally, so COPR builders compile fully offline.
+Вендоринг выполняется локально, поэтому сборщики COPR работают полностью офлайн.
 
-## Sources & fallbacks
+## Источники и резервные пути
 
-Per-package source URLs are listed in **[SOURCES.md](SOURCES.md)**
-(generated from `pkgs.json`).
+URL исходников для каждого пакета — в **[SOURCES.md](SOURCES.md)**
+(генерируется из `pkgs.json`).
 
-Download order per package:
-1. primary URL (github/codeberg/gitlab/npm/pypi/web)
-2. `codeload.github.com` mirror for github-hosted tarballs
-3. optional per-package `mirror` field (supports `{version}` / `{tag}`)
+Порядок загрузки на пакет:
+1. основной URL (github/codeberg/gitlab/npm/pypi/web)
+2. зеркало `codeload.github.com` для тарболом github
+3. опциональное поле `mirror` у пакета (шаблоны `{version}` / `{tag}`)
 
-Tag candidates are tried in order: `vX.Y`, `X.Y`, tilde-restored variants,
-and short commit SHA for tagless repos.
+Кандидаты тегов пробуются по очереди: `vX.Y`, `X.Y`, варианты с восстановлением
+тильды, короткий SHA коммита для репо без тегов.
 
-## Build order
+## Порядок сборки
 
-Packages are processed by priority field: CLI tools first, then fetch/animation
-scripts, then themes, heavy experimental cargo builds last.
+Пакеты обрабатываются по полю приоритета: сначала CLI-утилиты, затем
+fetch/анимации, потом темы, тяжёлые экспериментальные cargo-сборки в конце.
 
-## Build method
+## Метод сборки
 
-Specs drive each project's **own build system** through standard Fedora macros:
-`%meson`, `%configure`, `%cargo_build`, `%pyproject_wheel`, `go build -mod=vendor`,
-`gem build`. Nothing is hand-compiled; vendored dependency tarballs are produced
-locally so COPR builders never touch the network.
+Спеки используют **родную систему сборки каждого проекта** через стандартные
+макросы Fedora: `%meson`, `%configure`, `%cargo_build`, `%pyproject_wheel`,
+`go build -mod=vendor`, `gem build`. Ничего не компилируется вручную;
+vendor-тарболы зависимостей готовятся локально, чтобы сборщики COPR не ходили в сеть.
 
-## Auto-triage
+## Авто-триаж
 
-After every wave `auto-triage.sh` reads failed build logs and applies known
-fixes automatically (missing man pages → `noman`, missing cargo macros,
-workspace manifests → `cdir`). Unknown failures are tagged `[HUMAN]` in
-`logs/auto-triage.log`.
+После каждой волны `auto-triage.sh` читает логи упавших билдов и сам применяет
+известные фиксы (нет man-страницы → `noman`, нет cargo-макросов, воркспейс → `cdir`).
+Незнакомые ошибки помечаются `[HUMAN]` в `logs/auto-triage.log`.
 
-## Run it yourself / nightly without your PC
+## Запуск вручную и ночные сборки без своего ПК
 
-Local systemd units (see `systemd/`) run babysitter + daily checks.
-For fully cloud-based updates see `.github/workflows/update.yml` — add repo
-secret `COPR_CONFIG` (contents of `~/.config/copr`) and trigger the workflow.
+Локальные systemd-юниты (`systemd/`) держат няньку и ежедневные проверки.
+Для полностью облачных обновлений см. `.github/workflows/update.yml` — добавьте
+секрет `COPR_CONFIG` (содержимое `~/.config/copr`) и запустите workflow.
 
-## Adding a package
+## Добавить пакет
 
-Add an entry to `pkgs.json`, then:
+Добавьте запись в `pkgs.json`, затем:
 ```bash
-./bin/update-check.sh --force NAME
+./bin/update-check.sh --force ИМЯ
 ```
 
-Ecosystems: `script`, `python-pkg`, `python-script`, `cargo`, `go`, `npm`,
+Экосистемы: `script`, `python-pkg`, `python-script`, `cargo`, `go`, `npm`,
 `gem`, `c-autotools`, `c-cmake`, `c-make`, `nim`, `meson`.
-Hosts: `github`, `codeberg`, `gitlab`, `npm`, `pypi`, `web`.
+Хосты: `github`, `codeberg`, `gitlab`, `npm`, `pypi`, `web`.
 
-## License
+## Лицензия
 
-MIT — see [LICENSE](LICENSE).
+MIT — [LICENSE](LICENSE).
