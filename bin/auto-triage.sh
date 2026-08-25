@@ -11,6 +11,7 @@ TOKEN=""
 log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 
 changed_meta=0
+FIXED=""   # пакеты, которым реально применили фикс
 set_flag() {  # set_flag NAME FIELD VALUE(скаляр/true)
     python3 - "$1" "$2" "$3" <<'PY'
 import json,sys
@@ -49,17 +50,17 @@ while read -r id name; do
 
     if echo "$L" | grep -q "File not found:.*share/man"; then
         set_flag "$name" noman true; changed_meta=1
-        log "[AUTO] $name: man отсутствует -> noman=true"; continue
+        log "[AUTO] $name: man отсутствует -> noman=true"; FIXED="$FIXED $name"; continue
     fi
     if echo "$L" | grep -q "%cargo_prep -v vendor$"; then
         set_flag "$name" br cargo-rpm-macros; changed_meta=1
-        log "[AUTO] $name: нет cargo-макросов -> BR cargo-rpm-macros"; continue
+        log "[AUTO] $name: нет cargo-макросов -> BR cargo-rpm-macros"; FIXED="$FIXED $name"; continue
     fi
     if echo "$L" | grep -q "found a virtual manifest"; then
         d=$(detect_cdir "$name")
         if [ -n "$d" ]; then
             set_flag "$name" cdir "$d"; changed_meta=1
-            log "[AUTO] $name: воркспейс -> cdir=$d"
+            log "[AUTO] $name: воркспейс -> cdir=$d"; FIXED="$FIXED $name"
         else
             log "[HUMAN] $name: виртуальный манифест, каталог не определён"
         fi
@@ -73,18 +74,13 @@ done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '$NF=="failed"{
 
 if [ "$changed_meta" = 1 ]; then
     ./bin/gen_specs.py --all >/dev/null 2>&1
-    python3 - <<'PY'
-import json
+    python3 - $FIXED <<'PY'
+import json,sys
 st=json.load(open("state/state.json"))
-failed=set()
-import subprocess
-out=subprocess.run(["copr-cli","list-builds","arcticlore/candy"],capture_output=True,text=True).stdout
-for line in out.splitlines():
-    parts=line.split()
-    if len(parts)>=3 and parts[-1]=="failed": failed.add(parts[1])
-for n in failed: st.pop(n,None)
+fixed=sys.argv[1].split()
+for n in filter(None,fixed): st.pop(n,None)
 json.dump(st,open("state/state.json","w"),indent=1)
-print("requeued:",len(failed))
+print("requeued (только исправленные):",len(fixed))
 PY
     log "[AUTO] спеки перегенерированы, упавшие перевыставлены"
 fi
