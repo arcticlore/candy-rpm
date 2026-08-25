@@ -1,0 +1,25 @@
+name: weekly digest
+on:
+  schedule:
+    - cron: "0 12 * * 0"   # воскресенье 12:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    steps:
+      - uses: actions/checkout@v4
+      - run: dnf install -y copr-cli jq git >/dev/null
+      - name: Configure COPR
+        run: |
+          mkdir -p ~/.config
+          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          chmod 600 ~/.config/copr
+      - name: Create weekly digest issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/weekly-digest.sh
