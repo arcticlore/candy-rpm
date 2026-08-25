@@ -1,4 +1,5 @@
 **Русский** | [English](README.en.md)
+![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg) ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue) ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044-294172?logo=fedora) [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 # candy-rpm — конвейер terminal eye-candy
 
