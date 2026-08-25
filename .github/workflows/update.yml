@@ -1,7 +1,7 @@
 name: nightly update
 on:
   schedule:
-    - cron: "0 3 * * *"   # ежедневно 03:00 UTC
+    - cron: "0 */2 * * *"   # каждые 2 часа
   workflow_dispatch:
 
 permissions:
