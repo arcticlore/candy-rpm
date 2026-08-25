@@ -1,5 +1,5 @@
 Name:           pure
-Version:        1.28.3
+Version:        0
 Release:        1%{?dist}
 Summary:        Pretty, minimal and fast ZSH prompt
 
@@ -28,7 +28,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -a1 -n pure-1.28.3
+%autosetup -p1 -a1 -n %{name}-%{version}
 
 %build
 # bundled node_modules, сборка не требуется
@@ -48,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pure
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 1.28.3-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

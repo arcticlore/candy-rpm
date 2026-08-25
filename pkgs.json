@@ -1418,7 +1418,9 @@
    ],
    "prio": 5,
    "use": "linuxwave -o out.wav — музыка из энтропии",
-   "alt": "cargo install linuxwave"
+   "alt": "cargo install linuxwave",
+   "enabled": false,
+   "note": "Апстрим полностью на Zig (сборка build.zig) — компилятора нет в Fedora. Вернуть, когда появится zig или офиц. RPM"
   },
   {
    "name": "musikcube",

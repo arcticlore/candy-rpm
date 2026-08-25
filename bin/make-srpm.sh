@@ -40,10 +40,12 @@ if [ ! -f "$SRC" ]; then
     [ "$RAWVER" != "$VER" ] && CANDS="$CANDS $TAGP$RAWVER"
     [ "$TAGP$VER" != "$VER" ] && CANDS="$CANDS $VER"
     [ -n "$TAGP" ] && CANDS="$CANDS $RAWVER"
+    CANDS="$CANDS v$VER v$RAWVER"   # часть репо тегирует с v при любом tagp
     # для commit-fallback репозиториев качаем по короткому SHA
     if [ "$(echo "$M" | jq -r '.fallback // ""')" = "commit" ]; then
         CANDS="$CANDS ${VER##*.} $TAGP${VER##*.}"
     fi
+    VALID() { tar tzf "$1" >/dev/null 2>&1; }
     OK=""
     for T in $CANDS; do
         TAG="$T"
@@ -61,17 +63,17 @@ if [ ! -f "$SRC" ]; then
                      -o "$(basename "$SRC").tmp" "$ALT"; } \
                 || { [ -n "${MIR%%""}" ] && [ "$MIR" != "" ] && aria2c -x8 -s8 \
                      -d "$(dirname "$SRC")" -o "$(basename "$SRC").tmp" "$MIR"; }; } \
-                && mv "$SRC.tmp" "$SRC" && OK=1 && break
+                && VALID "$SRC.tmp" && mv "$SRC.tmp" "$SRC" && OK=1 && break
             rm -f "$SRC.tmp" "$SRC.tmp.aria2"
         else
             if curl -fL --http1.1 --retry 5 --retry-all-errors \
                     --connect-timeout 20 --max-time 900 -C - \
                     -o "$SRC.tmp" "$U"; then
-                mv "$SRC.tmp" "$SRC"; OK=1; break
+                VALID "$SRC.tmp" && { mv "$SRC.tmp" "$SRC"; OK=1; break; }
             fi
             rm -f "$SRC.tmp"
             [ -n "$ALT" ] && curl -fL --retry 3 -o "$SRC.tmp" "$ALT" \
-                && mv "$SRC.tmp" "$SRC" && OK=1 && break
+                && VALID "$SRC.tmp" && { mv "$SRC.tmp" "$SRC"; OK=1; break; }
             rm -f "$SRC.tmp"
         fi
     done
