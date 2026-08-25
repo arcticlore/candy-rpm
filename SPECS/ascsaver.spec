@@ -1,5 +1,5 @@
 Name:           ascsaver
-Version:        0
+Version:        20260825.cba337b5
 Release:        1%{?dist}
 Summary:        Collection of ASCII screensavers (dogs/globe/nasa/star_wars)
 
@@ -25,7 +25,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-v%{version}
+%autosetup -p1 -n ascsaver-cba337b5
 
 %build
 # чистый скрипт, сборка не требуется
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/libexec/ascsaver
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 20260825.cba337b5-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

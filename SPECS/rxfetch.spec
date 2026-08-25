@@ -1,10 +1,10 @@
 Name:           rxfetch
-Version:        0
+Version:        20260825.5eb3582
 Release:        1%{?dist}
 Summary:        Custom system fetching tool written in bash
 
 License:        MIT
-URL:            https://github.com/Mangeshrex/rxfetch
+URL:            https://github.com/mngshm/rxfetch
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 
@@ -26,7 +26,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n rxfetch-5eb3582d90a688c8330d1a72c6ac4c1b1ccd3872
 
 %build
 # чистый скрипт, сборка не требуется
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/rxfetch
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 20260825.5eb3582-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,9 +1,7 @@
 # Sources — откуда берутся исходники
 
-Генерируется из pkgs.json (bin/gen-sources-md.py). Порядок загрузки пакетов:
-по полю prio: 1 = CLI-инструменты, 2-3 = fetch/анимации, 5+ = темы/тяжёлые.
-Для github-пакетов есть автоматический резерв codeload.github.com;
-поле mirror задаёт третий адрес (шаблоны {version}/{tag}).
+Генерируется из pkgs.json. Порядок загрузки: по полю prio (лёгкие -> тяжёлые).
+Резервные пути: codeload.github.com для github + поле mirror пакета.
 
 - **bottom** (`cargo`) — https://github.com/ClementTsang/bottom/archive/v{version}.tar.gz
 - **curlie** (`go`) — https://github.com/rs/curlie/archive/v{version}.tar.gz
@@ -24,35 +22,33 @@
 - **archey4** (`python-pkg`) — https://github.com/HorlogeSkynet/archey4/archive/v{version}.tar.gz
 - **bunnyfetch** (`go`) — https://github.com/Rosettea/bunnyfetch/archive/v{version}.tar.gz
 - **disfetch** (`script`) — https://github.com/q60/disfetch/archive/v{version}.tar.gz
-- **ghfetch** (`cargo`) — https://github.com/SafarSoFar/ghfetch/archive/v{version}.tar.gz
+- **ghfetch** (`cargo`) — https://github.com/SafarSoFar/ghfetch/archive/v{version}.tar.gz  (fallback: commit-SHA)
 - **gitfetch** (`cargo`) — https://github.com/FabricSoul/gitfetch/archive/v{version}.tar.gz
 - **macchina** (`cargo`) — https://github.com/Macchina-CLI/macchina/archive/v{version}.tar.gz
 - **neofetch** (`script`) — https://github.com/dylanaraps/neofetch/archive/v{version}.tar.gz
 - **nerdfetch** (`script`) — https://codeberg.org/thatonecalculator/NerdFetch/archive/v{version}.tar.gz
-- **pokemon-icat** (`python-script`) — https://github.com/aflaag/pokemon-icat/archive/v{version}.tar.gz
-- **pridefetch** (`python-script`) — https://github.com/cartoon-raccoon/pridefetch/archive/v{version}.tar.gz
-- **rxfetch** (`script`) — https://github.com/Mangeshrex/rxfetch/archive/v{version}.tar.gz
-- **ufetch** (`script`) — https://gitlab.com/jschx/ufetch/-/archive/vufetch-{version}.tar.gz
+- **pokemon-icat** (`python-script`) — https://github.com/aflaag/pokemon-icat/archive/v{version}.tar.gz  (fallback: commit-SHA)
+- **pridefetch** (`python-script`) — https://github.com/cartoon-raccoon/pridefetch/archive/v{version}.tar.gz  (fallback: commit-SHA)
+- **rxfetch** (`script`) — https://github.com/mngshm/rxfetch/archive/v{version}.tar.gz  (fallback: commit-SHA)
+- **ufetch** (`script`) — https://gitlab.com/jschx/ufetch/-/archive/vufetch-{version}.tar.gz  (fallback: commit-SHA)
 - **PyBonsai** (`python-pkg`) — https://pypi.org/pypi/pybonsai/ (sdist)
 - **arttime** (`python-pkg`) — https://github.com/poetaman/arttime/archive/v{version}.tar.gz
 - **ascii-rain** (`c-make`) — https://github.com/nkleemann/ascii-rain/archive/v{version}.tar.gz
-- **ascsaver** (`script`) — https://gitlab.com/mezantrop/ascsaver/-/archive/vascsaver-{version}.tar.gz
+- **ascsaver** (`script`) — https://gitlab.com/mezantrop/ascsaver/-/archive/vascsaver-{version}.tar.gz  (fallback: commit-SHA)
 - **cbeams** (`python-script`) — https://github.com/tartley/cbeams/archive/{version}.tar.gz
 - **cli-fx** (`script`) — https://github.com/lukeslp/cli-fx/archive/{version}.tar.gz
 - **ctree** (`go`) — https://github.com/gleich/ctree/archive/v{version}.tar.gz
-- **duckpond** (`script`) — https://github.com/gsobell/duckpond.sh/archive/v{version}.tar.gz
+- **duckpond** (`script`) — https://github.com/gsobell/duckpond.sh/archive/v{version}.tar.gz  (fallback: commit-SHA)
 - **gh-screensaver** (`go`) — https://github.com/vilmibm/gh-screensaver/archive/v{version}.tar.gz
 - **lavat** (`c-make`) — https://github.com/AngelJumbo/lavat/archive/v{version}.tar.gz
-- **lifecycler** (`python-script`) — https://github.com/tobi-wan-kenobi/lifecycler/archive/v{version}.tar.gz
-- **maze** (`python-script`) — https://github.com/pipeseroni/maze.py/archive/v{version}.tar.gz
+- **maze** (`python-script`) — https://github.com/pipeseroni/maze.py/archive/v{version}.tar.gz  (fallback: commit-SHA)
 - **pipes.sh** (`script`) — https://github.com/pipeseroni/pipes.sh/archive/v{version}.tar.gz
 - **pipesX** (`script`) — https://github.com/pipeseroni/pipesX.sh/archive/v{version}.tar.gz
-- **snakes** (`script`) — https://github.com/pipeseroni/snakes.pl/archive/v{version}.tar.gz
+- **snakes** (`script`) — https://github.com/pipeseroni/snakes.pl/archive/v{version}.tar.gz  (fallback: commit-SHA)
 - **snowmachine** (`python-pkg`) — https://pypi.org/pypi/snowmachine/ (sdist)
-- **termdvd** (`npm`) — https://registry.npmjs.org/termdvd/-/termdvd-{version}.tgz
-- **terminal-parrot** (`go`) — https://github.com/jmhobbs/terminal-parrot/archive/{version}.tar.gz
-- **tfire** (`script`) — https://github.com/tech-chad/tfire/archive/v{version}.tar.gz
-- **tspace** (`script`) — https://github.com/mtklr/tspace/archive/v{version}.tar.gz
+- **terminal-parrot** (`go`) — https://github.com/jmhobbs/terminal-parrot/archive/{version}.tar.gz  (fallback: commit-SHA)
+- **tfire** (`script`) — https://github.com/tech-chad/tfire/archive/v{version}.tar.gz  (fallback: commit-SHA)
+- **tspace** (`script`) — https://github.com/mtklr/tspace/archive/v{version}.tar.gz  (fallback: commit-SHA)
 - **tty-clock** (`c-make`) — https://github.com/xorg62/tty-clock/archive/v{version}.tar.gz
 - **weave** (`script`) — https://github.com/pipeseroni/weave.sh/archive/v{version}.tar.gz
 - **zenta** (`script`) — https://github.com/e6a5/zenta/archive/v{version}.tar.gz
@@ -63,20 +59,18 @@
 - **parrotsay** (`npm`) — https://registry.npmjs.org/parrotsay/-/parrotsay-{version}.tgz
 - **ponysay** (`script`) — https://github.com/erkin/ponysay/archive/v{version}.tar.gz
 - **pscircle** (`c-autotools`) — https://gitlab.com/mildlyparallel/pscircle/-/archive/vpscircle-{version}.tar.gz
-- **ricksay** (`script`) — https://github.com/kochie/ricksay/archive/v{version}.tar.gz
+- **ricksay** (`script`) — https://github.com/kochie/ricksay/archive/v{version}.tar.gz  (fallback: commit-SHA)
 - **tulizu** (`c-make`) — https://github.com/loh-tar/tulizu/archive/{version}.tar.gz
 - **viu** (`cargo`) — https://github.com/atanunq/viu/archive/v{version}.tar.gz
 - **yosay** (`npm`) — https://github.com/yeoman/yosay/archive/v{version}.tar.gz
 - **flavours** (`cargo`) — https://github.com/Misterio77/flavours/archive/v{version}.tar.gz
-- **linuxwave** (`cargo`) — https://github.com/orhun/linuxwave/archive/v{version}.tar.gz
-- **oh-my-zsh** (`script`) — https://github.com/ohmyzsh/ohmyzsh/archive/{version}.tar.gz
+- **oh-my-zsh** (`script`) — https://github.com/ohmyzsh/ohmyzsh/archive/{version}.tar.gz  (fallback: commit-SHA)
 - **powerlevel10k** (`script`) — https://github.com/romkatv/powerlevel10k/archive/v{version}.tar.gz
 - **pure** (`npm`) — https://github.com/sindresorhus/pure/archive/v{version}.tar.gz
 - **pywal** (`python-pkg`) — https://pypi.org/pypi/pywal/ (sdist)
 - **tint** (`script`) — https://github.com/corygabrielsen/tint/archive/v{version}.tar.gz
 - **wallust** (`cargo`) — https://codeberg.org/explosion-mental/wallust/archive/v{version}.tar.gz
-- **rickrollrc** (`script`) — https://github.com/keroserene/rickrollrc/archive/{version}.tar.gz
-- **cli-visualizer** (`c-cmake`) — https://github.com/dpayne/cli-visualizer/archive/{version}.tar.gz
+- **rickrollrc** (`script`) — https://github.com/keroserene/rickrollrc/archive/{version}.tar.gz  (fallback: commit-SHA)
 - **colorls** (`gem`) — https://github.com/athityakumar/colorls/archive/v{version}.tar.gz
 - **diagon** (`c-cmake`) — https://github.com/ArthurSonzogni/Diagon/archive/v{version}.tar.gz
 - **musikcube** (`c-cmake`) — https://github.com/clangen/musikcube/archive/{version}.tar.gz

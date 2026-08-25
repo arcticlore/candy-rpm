@@ -1,5 +1,5 @@
 Name:           starship
-Version:        0
+Version:        1.26.0
 Release:        1%{?dist}
 Summary:        Minimal, blazing-fast, infinitely customizable cross-shell prompt
 
@@ -29,7 +29,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n starship-1.26.0
 %cargo_prep -v vendor
 
 %build
@@ -48,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/starship
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 1.26.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
