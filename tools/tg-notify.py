@@ -49,7 +49,11 @@ COMMANDS = {
         "cat logs/morning-report.md 2>/dev/null || ./bin/report.sh >/dev/null; "
         "cat logs/morning-report.md"),
     "/progress": lambda: run("./bin/dashboard.sh"),
-    "/help":     lambda: ("Команды: /status /failures /report /progress /help"),
+    "/digest":   lambda: run(
+        "./bin/weekly-digest.sh >/dev/null 2>&1; "
+        r"grep -hE '#[0-9]+ .*(Weekly|digest)' logs/auto-issue.log | tail -1; "
+        "echo 'issue создан в репо'"),
+    "/help":     lambda: ("Команды: /status /failures /report /progress /digest /help"),
 }
 
 

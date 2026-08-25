@@ -24,6 +24,14 @@ echo
 echo "## Хроника ночи (night-watch)"
 tail -12 logs/night-watch.log 2>/dev/null || echo "- пусто"
 echo
+echo "## GitHub Actions"
+TOKEN=$(grep -o 'ghp_[A-Za-z0-9]*' ~/.config/candy/push-token 2>/dev/null | head -1)
+if [ -n "$TOKEN" ]; then
+  curl -s --max-time 20 -H "Authorization: Bearer $TOKEN" \
+    "https://api.github.com/repos/arcticlore/candy-rpm/actions/runs?per_page=5" \
+    | jq -r '.workflow_runs[]? | "- \(.created_at[5:16])UTC \(.status) \(.conclusion // "⏳")"' || echo "- api недоступен"
+fi
+echo
 echo "## Локальная очередь"
 jq -r '.packages[]|select(.enabled!=false)|.name' pkgs.json | sort > /tmp/r_en
 jq -r 'keys[]' state/state.json | sort > /tmp/r_done
