@@ -1,0 +1,52 @@
+Name:           artem
+Version:        3.0.0
+Release:        1%{?dist}
+Summary:        Convert images from multiple formats to ASCII art
+
+License:        MPL-2.0
+URL:            https://github.com/FineFindus/artem
+Source0:        %{name}-%{version}.tar.gz
+Source1:        %{name}-vendor-%{version}.tar.gz
+%global debug_package %{nil}
+
+BuildRequires:  cargo
+BuildRequires:  rust
+BuildRequires:  gcc
+BuildRequires:  cargo-rpm-macros
+
+%description
+Convert images from multiple formats to ASCII art
+
+Официальный способ установки от апстрима / Upstream official install method:
+  cargo install artem
+
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+Репозиторий в активной разработке — возможны поломки и резкие изменения.
+Помидорами не кидайтесь, лучше заводите issue.
+
+WARNING: this package comes from an UNOFFICIAL third-party repository
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+Don't throw tomatoes - file issues instead.
+
+%prep
+%autosetup -N -a1 -n artem-3.0.0
+%cargo_prep -v vendor
+
+%build
+%cargo_build
+
+%install
+%cargo_install
+# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
+rm -rf %{buildroot}%{_datadir}/cargo
+
+mkdir -p %{buildroot}%{_licensedir}/%{name}
+for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
+%files
+%{_licensedir}/%{name}
+
+%{_bindir}/artem
+
+%changelog
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 3.0.0-1
+- Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

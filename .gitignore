@@ -1,0 +1,9 @@
+# тяжёлое и локальное не коммитим
+SOURCES/
+SRPMS/
+state/.lock
+state/.global.lock
+state/.shard-*.lock
+logs/*.log
+*.tmp
+*.aria2

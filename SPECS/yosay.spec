@@ -1,0 +1,51 @@
+Name:           yosay
+Version:        0
+Release:        1%{?dist}
+Summary:        Tell Yeoman what to say, ANSI-art speech bubbles
+
+License:        BSD-2-Clause
+URL:            https://github.com/yeoman/yosay
+Source0:        %{name}-%{version}.tar.gz
+Source1:        %{name}-node-vendor-%{version}.tar.gz
+%global debug_package %{nil}
+
+BuildArch:      noarch
+BuildRequires:  nodejs
+
+%description
+Tell Yeoman what to say, ANSI-art speech bubbles
+
+Официальный способ установки от апстрима / Upstream official install method:
+  npm install -g yosay
+
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+Репозиторий в активной разработке — возможны поломки и резкие изменения.
+Помидорами не кидайтесь, лучше заводите issue.
+
+WARNING: this package comes from an UNOFFICIAL third-party repository
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+Don't throw tomatoes - file issues instead.
+
+%prep
+%autosetup -p1 -a1 -n %{name}-%{version}
+
+%build
+# bundled node_modules, сборка не требуется
+
+%install
+mkdir -p %{buildroot}%{_prefix}/lib/yosay
+cp -a . %{buildroot}%{_prefix}/lib/yosay/
+mkdir -p %{buildroot}%{_bindir}
+ln -sf ../lib/yosay/cli.js %{buildroot}%{_bindir}/yosay
+
+mkdir -p %{buildroot}%{_licensedir}/%{name}
+for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
+%files
+%{_licensedir}/%{name}
+
+%{_prefix}/lib/yosay
+%{_bindir}/yosay
+
+%changelog
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
+- Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

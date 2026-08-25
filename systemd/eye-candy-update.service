@@ -1,0 +1,10 @@
+[Unit]
+Description=Terminal eye candy: проверка апстримов и пересборка в COPR
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/terminal-eye-candy-rpm
+# опционально токен для GitHub API (иначе лимит 60 запросов/час):
+#Environment=GITHUB_TOKEN=ghp_xxx
+ExecStart=%h/terminal-eye-candy-rpm/bin/update-check.sh
+TimeoutStartSec=2h
