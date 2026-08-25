@@ -1,12 +1,13 @@
 name: nightly update
 on:
   schedule:
-    - cron: "0 3 * * *"   # 03:00 UTC
+    - cron: "0 3 * * *"
   workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
     container: fedora:44
     steps:
       - uses: actions/checkout@v4
@@ -14,7 +15,7 @@ jobs:
       - name: Install toolchain
         run: |
           dnf install -y copr-cli golang npm jq git cargo rust \
-                         rpm-build rpmdevtools python3-pip >/dev/null
+                         rpm-build rpmdevtools >/dev/null
 
       - name: Configure COPR
         run: |
@@ -22,13 +23,11 @@ jobs:
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
-      - name: Run update wave
+      - name: Converge (retry until fully submitted)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDY_PROJ: arcticlore/candy
-        run: |
-          chmod +x bin/*.sh bin/gen_specs.py
-          bin/update-check.sh --force || true
+        run: bin/converge.sh 8   # упадёт красным, если что-то не передалось
 
       - name: Upload logs
         if: always()
