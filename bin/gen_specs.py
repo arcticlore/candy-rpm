@@ -278,6 +278,20 @@ def body_meson(m, br, req):
     return "\n".join(out) + "\n"
 
 
+def body_zig(m, br, req):
+    out = []
+    add_br_req(out, ["zig"] + br, req)
+    out += ["", prep(m), "", "%build",
+            "zig build -Doptimize=ReleaseSafe",
+            "", "%install",
+            'mkdir -p %{buildroot}%{_bindir}',
+            'cp -r zig-out/bin/. %{buildroot}%{_bindir}/', "",
+            "%files", "%license LICENSE*", "%doc README*"]
+    for b in (m.get("bins") or ["%{name}"]):
+        out.append(f"%{{_bindir}}/{b}")
+    return "\n".join(out) + "\n"
+
+
 def body_custom(m, br, req):
     out = []
     add_br_req(out, br, req)
@@ -301,6 +315,7 @@ BODIES = {
     "go": body_go, "npm": body_npm, "gem": body_gem,
     "c-autotools": body_c, "c-cmake": body_c, "c-make": body_c,
     "nim": body_nim, "meson": body_meson, "custom": body_custom,
+    "zig": body_zig,
 }
 
 

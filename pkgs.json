@@ -1465,7 +1465,7 @@
   },
   {
    "name": "linuxwave",
-   "eco": "cargo",
+   "eco": "zig",
    "host": "github",
    "slug": "orhun/linuxwave",
    "tagp": "v",
@@ -1477,8 +1477,9 @@
    "prio": 5,
    "use": "linuxwave -o out.wav — музыка из энтропии",
    "alt": "cargo install linuxwave",
-   "enabled": false,
-   "note": "Апстрим полностью на Zig (сборка build.zig) — компилятора нет в Fedora. Вернуть, когда появится zig или офиц. RPM"
+   "enabled": true,
+   "note": "",
+   "exp": false
   },
   {
    "name": "musikcube",
@@ -2092,6 +2093,133 @@
    "gpkg": ".",
    "use": "dua i — интерактивный режим",
    "prio": 2
+  },
+  {
+   "name": "pet",
+   "eco": "go",
+   "host": "github",
+   "slug": "knqyf263/pet",
+   "tagp": "v",
+   "summary": "Менеджер сниппетов: сохрани и вставь команду",
+   "license": "MIT",
+   "bins": [
+    "pet"
+   ],
+   "gpkg": ".",
+   "use": "pet new / pet exec <имя>",
+   "prio": 2
+  },
+  {
+   "name": "nb",
+   "eco": "script",
+   "host": "github",
+   "slug": "xwmx/nb",
+   "tagp": "",
+   "summary": "Заметки/закладки/блокноты — всё в CLI (один bash-файл)",
+   "license": "AGPL-3.0-or-later",
+   "files": [
+    "nb"
+   ],
+   "req": [
+    "bash",
+    "git"
+   ],
+   "interp": "bash",
+   "fallback": "commit",
+   "verify": true,
+   "use": "nb add текст заметки; nb ls",
+   "prio": 2
+  },
+  {
+   "name": "zk",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "zk-org/zk",
+   "tagp": "v",
+   "summary": "Zettelkasten-заметки в терминале",
+   "license": "GPL-3.0-or-later",
+   "bins": [
+    "zk"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "use": "zk new; zk list",
+   "prio": 2
+  },
+  {
+   "name": "cyme",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "tuna-f1sh/cyme",
+   "tagp": "v",
+   "summary": "lsusb с красивым выводом и фильтрами",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "cyme"
+   ],
+   "br": [
+    "libusb1-devel"
+   ],
+   "use": "cyme",
+   "prio": 3
+  },
+  {
+   "name": "systeroid",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "orhun/systeroid",
+   "tagp": "v",
+   "summary": "sysctl(8) с TUI-графикой",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "systeroid",
+    "systctl"
+   ],
+   "exp": true,
+   "use": "systeroid --tui",
+   "prio": 7
+  },
+  {
+   "name": "fend",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "printf/fend",
+   "tagp": "v",
+   "summary": "Калькулятор произвольной точности",
+   "license": "MIT",
+   "bins": [
+    "fend"
+   ],
+   "use": "echo '1+2' | fend",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "ascii-patrol",
+   "eco": "c-cmake",
+   "host": "github",
+   "slug": "msokalski/ascii-patrol",
+   "tagp": "",
+   "summary": "ASCII Patrol — аркада в стиле Moon Patrol",
+   "license": "MIT",
+   "bins": [
+    "aptr"
+   ],
+   "exp": true,
+   "use": "aptr",
+   "prio": 7
+  },
+  {
+   "name": "taskwarrior-tui",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "kdheepak/taskwarrior-tui",
+   "tagp": "v",
+   "enabled": false,
+   "prio": 9,
+   "summary": "TUI для taskwarrior",
+   "license": "MIT",
+   "note": "Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого"
   }
  ]
 }
