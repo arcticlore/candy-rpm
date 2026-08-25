@@ -58,3 +58,6 @@ while true; do
         clear; bash -c "$hit"; echo; read -rp "↩ Enter — в меню..."
     fi
 done
+done
+# если запущен с CANDY_MENU_EXIT=1 (строка в ~/.bashrc) — закрываем терминал целиком
+[ "${CANDY_MENU_EXIT:-0}" = 1 ] && kill -TERM "$PPID" 2>/dev/null
