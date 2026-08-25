@@ -30,14 +30,14 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-install -Dpm0755 ufetch %{buildroot}%{_bindir}/ufetch
+install -Dpm0755 ufetch-alpine %{buildroot}%{_bindir}/ufetch-alpine
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/ufetch
+%{_bindir}/ufetch-alpine
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

@@ -155,7 +155,19 @@ def handle_text(cid, txt):
         return
     fn = next((f for k,f in ACT.items() if k.lower().startswith(cmd.lstrip("/"))), None) \
          if cmd.startswith("/") else None
-    if fn: send(cid, fn(cid))
+    if fn:
+        send(cid, fn(cid)); return
+    # подписи кнопок reply-клавиатуры: «📊 Статус / Status» и т.п.
+    hit = next((f for k,f in ACT.items()
+                if txt == k or txt == k.split(" /")[0] or k.lower().startswith(txt.lower()+":")
+                or txt.split(" /")[0].lower() in k.lower()), None)
+    if txt.startswith("🌐") or "язык" in txt.lower() or "lang" in txt.lower():
+        kb = {"inline_keyboard": [[
+            {"text":"🇷🇺 Русский","callback_data":"lang:ru","style":"primary"},
+            {"text":"🇬🇧 English","callback_data":"lang:en","style":"success"}]]}
+        api("sendMessage", chat_id=cid, text=tr(cid,"choose_lang"),
+            reply_markup=json.dumps(kb)); return
+    if hit: send(cid, hit(cid))
     else: send(cid, tr(cid,"unknown"))
 
 if LISTEN:

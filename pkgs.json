@@ -429,7 +429,7 @@
    "summary": "Tiny system info for Unix-like operating systems",
    "license": "GPL-3.0-or-later",
    "files": [
-    "ufetch"
+    "ufetch-alpine"
    ],
    "req": [
     "sh"
