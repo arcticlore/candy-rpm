@@ -1,5 +1,5 @@
 Name:           ricksay
-Version:        20260825.e75f53d
+Version:        0
 Release:        1%{?dist}
 Summary:        Rick and Morty quotes of the day (cowsay clone)
 
@@ -24,7 +24,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n ricksay-e75f53dcdc91baa8f2651328734e2ee7e6654663
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # чистый скрипт, сборка не требуется
@@ -40,5 +40,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ricksay
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 20260825.e75f53d-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

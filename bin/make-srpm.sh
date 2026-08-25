@@ -81,7 +81,7 @@ fi
 ECO=$(echo "$M" | jq -r .eco)
 
 extract() {  # extract SRC -> tmpdir (срезаем верхний каталог)
-    local d; d=$(mktemp -d /tmp/opencode/vend-XXXXXX)
+    local d; d=$(mktemp -d "${TMPDIR:-/tmp}/vend-XXXXXX")
     local top; top=$(tar tzf "$1" | head -1 | cut -d/ -f1)
     tar xzf "$1" -C "$d" && mv "$d/$top" "${d}_x" && rm -rf "$d" && mv "${d}_x" "$d"
     echo "$d"
@@ -90,7 +90,7 @@ extract() {  # extract SRC -> tmpdir (срезаем верхний катало
 case "$ECO" in
 cargo)
     D=$(extract "$SRC")
-    (cd "$D" && cargo vendor vendor > /tmp/opencode/cargo-vendor.out 2>/dev/null || cargo vendor vendor)
+    (cd "$D" && cargo vendor vendor >/dev/null)
     tar -C "$D" -czf "SOURCES/$NAME-vendor-$VER.tar.gz" vendor
     rm -rf "$D" ;;
 go)

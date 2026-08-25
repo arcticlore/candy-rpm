@@ -19,7 +19,7 @@ state_line() {
 
 pkg_matrix() {  # последний билд каждого пакета + состояние
     copr-cli list-builds arcticlore/candy 2>/dev/null \
-      | awk '!seen[$2]++{print $2, $NF}' | sort | head -40 \
+      | awk '!seen[$2]++{print $2, $NF}' | sort | head -100 \
       | awk -v G="$C_G" -v R="$C_R" -v Y="$C_Y" -v O="$C_0" '{
           s=$2; col=O;
           if(s=="succeeded")col=G; else if(s=="failed")col=R; else col=Y;
