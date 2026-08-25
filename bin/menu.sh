@@ -27,10 +27,28 @@ while true; do
     while IFS='|' read -r lbl cmd; do
         ((local_i++)); echo "  $local_i) $lbl"
     done < <(entries)
+    echo "  a) ➕ добавить программу"
+    echo "  d) ➖ удалить программу"
     echo "  q) выход"
     echo "╚══════════════════════════════════════╝"
     read -rp "выбери номер: " choice
-    case "$choice" in q|Q|"") clear; break;; esac
+    case "$choice" in
+    q|Q|"") clear; break ;;
+    a|A)
+        read -rp "Название программы: " lbl
+        [ -z "$lbl" ] && continue
+        read -rp "Команда запуска: " cmd
+        [ -z "$cmd" ] && continue
+        echo "$lbl|$cmd" >> "$CONF"
+        echo "✅ добавлено"; sleep 1 ;;
+    d|D)
+        n=0
+        while IFS='|' read -r lbl cmd; do ((n++)); echo "  $n) $lbl"; done < <(entries)
+        read -rp "номер для удаления: " dn
+        [[ "$dn" =~ ^[0-9]+$ ]] || continue
+        awk -v n="$dn" 'NR!=n' "$CONF" > "$CONF.tmp" && mv "$CONF.tmp" "$CONF"
+        echo "🗑 удалено"; sleep 1 ;;
+    esac
     n=0; hit=""
     while IFS='|' read -r lbl cmd; do
         ((n++))
