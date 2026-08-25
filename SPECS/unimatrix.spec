@@ -1,5 +1,5 @@
 Name:           unimatrix
-Version:        20260825.dff519f
+Version:        0
 Release:        1%{?dist}
 Summary:        Матрица из unicode-символов (гибкий аналог cmatrix)
 
@@ -15,6 +15,9 @@ Requires:       python3
 %description
 Матрица из unicode-символов (гибкий аналог cmatrix)
 
+Официальный способ установки от апстрима / Upstream official install method:
+  git clone https://github.com/will8211/unimatrix && sudo ./install.py
+
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
@@ -24,7 +27,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n unimatrix-dff519f972103f91384f360f270614184de8aa92
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # интерпретируемый модуль, сборки нет
@@ -40,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/unimatrix
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 20260825.dff519f-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

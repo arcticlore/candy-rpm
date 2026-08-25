@@ -1,21 +1,22 @@
-Name:           glow
-Version:        0
+Name:           choose
+Version:        1.3.7
 Release:        1%{?dist}
-Summary:        Рендер markdown прямо в терминале с подсветкой (charm)
+Summary:        Умный cut на Rust
+# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
 License:        MIT
-URL:            https://github.com/charmbracelet/glow
+URL:            https://github.com/theryangeary/choose
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-node-vendor-%{version}.tar.gz
+Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  golang
+BuildRequires:  cargo
+BuildRequires:  rust
+BuildRequires:  gcc
+BuildRequires:  cargo-rpm-macros
 
 %description
-Рендер markdown прямо в терминале с подсветкой (charm)
-
-Официальный способ установки от апстрима / Upstream official install method:
-  github.com/charmbracelet/glow#installation (бинарники/репо Charm)
+Умный cut на Rust
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -26,25 +27,24 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n choose-1.3.7
+%cargo_prep -v vendor
 
 %build
-export GOFLAGS='-mod=vendor'
-export CGO_ENABLED=0
-export GOPATH=$(mktemp -d)
-export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o glow .
+%cargo_build
 
 %install
-install -Dpm0755 glow %{buildroot}%{_bindir}/glow
+%cargo_install
+# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
+rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/glow
+%{_bindir}/choose
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 1.3.7-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

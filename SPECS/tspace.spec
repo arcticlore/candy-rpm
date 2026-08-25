@@ -29,14 +29,14 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-install -Dpm0755 tspace.sh %{buildroot}%{_bindir}/tspace.sh
+install -Dpm0755 tspace.c %{buildroot}%{_bindir}/tspace.c
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/tspace.sh
+%{_bindir}/tspace.c
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

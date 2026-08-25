@@ -7,6 +7,7 @@
 | Пакет | Описание | Запуск | Источник |
 |---|---|---|---|
 | **bottom** | Cross-platform graphical process/system monitor | `btm — монитор процессов с графиками` | github.com/ClementTsang/bottom |
+| **csview** | Быстрый csv-просмотрщик с поддержкой CJK/эмодзи | `—` | github.com/wfxr/csview |
 | **curlie** | The power of curl, the ease of use of httpie | `curlie https://api.github.com` | github.com/rs/curlie |
 | **doggo** | Fast command-line DNS client for humans | `doggo example.com MX` | github.com/mr-karan/doggo |
 | **fx** | Terminal JSON viewer and processor | `cat data.json | fx — интерактивный JSON` | github.com/antonmedv/fx |
@@ -45,8 +46,11 @@
 | **ctree** | A Christmas tree right from your terminal | `ctree — новогодняя ёлка` | github.com/gleich/ctree |
 | **duckpond** | Ducks swimming in a pond, in your terminal | `duckpond.sh — утки на пруду` | github.com/gsobell/duckpond.sh |
 | **gh-screensaver** | Screensaver extension for gh (fireworks/starfield/pipes) | `gh screensaver -e fireworks (нужен GitHub CLI)` | github.com/vilmibm/gh-screensaver |
+| **joshuto** | ranger-подобный файловый менеджер (Rust) | `—` | github.com/kamiyaa/joshuto |
 | **lavat** | Lava lamp in the terminal | `lavat — лава-лампа; клавиши +/- меняют скорость` | github.com/AngelJumbo/lavat |
+| **lolcrab** | lolcat с шумом и радугой (Rust) | `—` | github.com/mazznoer/lolcrab |
 | **maze** | Animated maze generator screensaver | `maze.py — генерация лабиринта` | github.com/pipeseroni/maze.py |
+| **pipes.rs** | Over-engineered pipes.sh на Rust | `—` | github.com/lhvy/pipes-rs |
 | **pipes.sh** | Animated pipes terminal screensaver | `pipes.sh — трубы-скринсейвер, Esc для выхода` | github.com/pipeseroni/pipes.sh |
 | **pipesX** | Animated pipes screensaver, extended edition | `pipesX.sh` | github.com/pipeseroni/pipesX.sh |
 | **PyBonsai** | Procedural ASCII bonsai tree generator | `pybonsai — растит бонсай` | pypi.org/project/pybonsai |
@@ -58,6 +62,7 @@
 | **tspace** | Fly a little spaceship around your terminal | `tspace.sh — кораблик` | github.com/mtklr/tspace |
 | **tty-clock** | Digital clock in ncurses | `tty-clock -c -C 4 — часы по центру, цвет 4` | github.com/xorg62/tty-clock |
 | **ttyper** | Тренажёр слепой печати в терминале | `ttyper — тест слепой печати (ru: --language ru1000)` | github.com/max-niederman/ttyper |
+| **ttysvr** | Набор скринсейверов для терминала | `—` | github.com/cxreiff/ttysvr |
 | **unimatrix** | Матрица из unicode-символов (гибкий аналог cmatrix) | `unimatrix -s 96 — unicode-матрица` | github.com/will8211/unimatrix |
 | **weave** | Weaving pattern screensaver | `weave.sh — плетение узоров` | github.com/pipeseroni/weave.sh |
 | **zenta** | Meditative zen terminal screensaver | `zenta.sh — дзен-скринсейвер` | github.com/e6a5/zenta |
@@ -72,6 +77,7 @@
 | **tulizu** | Tool to customize ASCII art in /etc/issue | `tulizu --help — арт для /etc/issue` | github.com/loh-tar/tulizu |
 | **viu** | View images right from the terminal | `viu photo.jpg — картинка прямо в терминале` | github.com/atanunq/viu |
 | **yosay** | Tell Yeoman what to say, ANSI-art speech bubbles | `yosay 'Привет!'` | github.com/yeoman/yosay |
+| **choose** | Умный cut на Rust | `—` | github.com/theryangeary/choose |
 | **flavours** | Manager and builder for Base16 base00-FF schemes | `flavours apply gruvbox-dark` | github.com/Misterio77/flavours |
 | **oh-my-zsh** | Framework for managing zsh configuration with 300+ plugins | `экспортируй ZSH=/usr/share/oh-my-zsh и source oh-my-zsh.sh в ~/.zshrc` | github.com/ohmyzsh/ohmyzsh |
 | **powerlevel10k** | Zsh theme focused on speed, flexibility and out-of-box UX | `echo 'source /usr/share/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc` | github.com/romkatv/powerlevel10k |
@@ -80,6 +86,7 @@
 | **tint** | Terminal theme switcher with live preview | `tint dracula — сменить тему терминала; tint -l список` | github.com/corygabrielsen/tint |
 | **wallust** | Generate colorschemes from images (pywal successor) | `wallust run обои.jpg` | codeberg.org/explosion-mental/wallust |
 | **rickrollrc** | Rick Astley rickrolls your terminal | `—` | github.com/keroserene/rickrollrc |
+| **termusic** | TUI музыкальный плеер (mpv/ytdlp) | `—` | github.com/tramhao/termusic |
 | **colorls** | Prettifies ls output with colors and font-awesome icons | `colorls — красивый ls (нужен Nerd Font)` | github.com/athityakumar/colorls |
 | **musikcube** | Terminal-based music player, library and streaming server | `musikcube — консольный плеер` | github.com/clangen/musikcube |
 | **zellij** | Terminal workspace with panels, plugins and layouts | `zellij — мультиплексор, Ctrl+p для помощи` | github.com/zellij-org/zellij |

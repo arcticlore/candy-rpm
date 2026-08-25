@@ -947,7 +947,7 @@
    "summary": "Fly a little spaceship around your terminal",
    "license": "GPL-3.0-or-later",
    "files": [
-    "tspace.sh"
+    "tspace.c"
    ],
    "req": [
     "bash"
@@ -1720,6 +1720,109 @@
    "prio": 3,
    "alt": "cargo install ttyper --locked",
    "use": "ttyper — тест слепой печати (ru: --language ru1000)"
+  },
+  {
+   "name": "csview",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "wfxr/csview",
+   "tagp": "v",
+   "summary": "Быстрый csv-просмотрщик с поддержкой CJK/эмодзи",
+   "license": "MIT",
+   "bins": [
+    "csview"
+   ],
+   "prio": 1
+  },
+  {
+   "name": "lolcrab",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mazznoer/lolcrab",
+   "tagp": "v",
+   "summary": "lolcat с шумом и радугой (Rust)",
+   "license": "MIT",
+   "bins": [
+    "lolcrab"
+   ],
+   "prio": 3
+  },
+  {
+   "name": "joshuto",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "kamiyaa/joshuto",
+   "tagp": "v",
+   "summary": "ranger-подобный файловый менеджер (Rust)",
+   "license": "LGPL-3.0-or-later",
+   "bins": [
+    "joshuto"
+   ],
+   "br": [
+    "libxcb-devel"
+   ],
+   "prio": 3
+  },
+  {
+   "name": "ttysvr",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "cxreiff/ttysvr",
+   "tagp": "v",
+   "summary": "Набор скринсейверов для терминала",
+   "license": "MIT",
+   "bins": [
+    "ttysvr"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "termusic",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "tramhao/termusic",
+   "tagp": "v",
+   "summary": "TUI музыкальный плеер (mpv/ytdlp)",
+   "license": "MIT",
+   "bins": [
+    "termusic"
+   ],
+   "cdir": "termusic",
+   "exp": true,
+   "verify": true,
+   "prio": 7,
+   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer"
+  },
+  {
+   "name": "pipes.rs",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "lhvy/pipes-rs",
+   "tagp": "v",
+   "summary": "Over-engineered pipes.sh на Rust",
+   "license": "MIT",
+   "bins": [
+    "pipes"
+   ],
+   "gpkg": ".",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "choose",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "theryangeary/choose",
+   "tagp": "v",
+   "summary": "Умный cut на Rust",
+   "license": "MIT",
+   "bins": [
+    "choose"
+   ],
+   "exp": true,
+   "prio": 5
   }
  ]
 }

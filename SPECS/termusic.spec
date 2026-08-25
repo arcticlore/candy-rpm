@@ -1,21 +1,24 @@
-Name:           glow
-Version:        0
+Name:           termusic
+Version:        0.13.2
 Release:        1%{?dist}
-Summary:        Рендер markdown прямо в терминале с подсветкой (charm)
+Summary:        TUI музыкальный плеер (mpv/ytdlp)
+# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
 License:        MIT
-URL:            https://github.com/charmbracelet/glow
+URL:            https://github.com/tramhao/termusic
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-node-vendor-%{version}.tar.gz
+Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  golang
+BuildRequires:  cargo
+BuildRequires:  rust
+BuildRequires:  gcc
+BuildRequires:  cargo-rpm-macros
+
+# NOTE: воркспейс; тяжёлые зависимости mpv/gstreamer
 
 %description
-Рендер markdown прямо в терминале с подсветкой (charm)
-
-Официальный способ установки от апстрима / Upstream official install method:
-  github.com/charmbracelet/glow#installation (бинарники/репо Charm)
+TUI музыкальный плеер (mpv/ytdlp)
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -26,25 +29,26 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n termusic-0.13.2
+%cargo_prep -v vendor
 
 %build
-export GOFLAGS='-mod=vendor'
-export CGO_ENABLED=0
-export GOPATH=$(mktemp -d)
-export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o glow .
+cd termusic
+%cargo_build
 
 %install
-install -Dpm0755 glow %{buildroot}%{_bindir}/glow
+cd termusic
+%cargo_install
+# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
+rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/glow
+%{_bindir}/termusic
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0.13.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
