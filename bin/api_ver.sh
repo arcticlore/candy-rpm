@@ -28,10 +28,18 @@ github)
         T=$(gh_curl "https://api.github.com/repos/$SLUG/tags?per_page=1" | J '.[0].name // empty') || T=""
     fi ;;
 codeberg)
-    T=$(curl -sfL "https://codeberg.org/api/v1/repos/$SLUG/tags?limit=1" | J '.[0].name // empty') || T="" ;;
+    T=$(curl -sfL "https://codeberg.org/api/v1/repos/$SLUG/tags?limit=1" | J '.[0].name // empty') || T=""
+    if [ -z "${T:-}" ] && [ "$(echo "$M" | jq -r '.fallback // ""')" = "commit" ]; then
+        C=$(curl -sfL "https://codeberg.org/api/v1/repos/$SLUG/commits?limit=1") || C=""
+        [ -n "$C" ] && T="$(date -u +%Y%m%d).$(echo "$C" | J '.[0].sha[0:7]')"
+    fi ;;
 gitlab)
     ENC=$(printf '%s' "$SLUG" | jq -sRr @uri)
-    T=$(curl -sfL "https://gitlab.com/api/v4/projects/$ENC/releases" | J '.[0].tag_name // empty') || T="" ;;
+    T=$(curl -sfL "https://gitlab.com/api/v4/projects/$ENC/releases" | J '.[0].tag_name // empty') || T=""
+    if [ -z "${T:-}" ] && [ "$(echo "$M" | jq -r '.fallback // ""')" = "commit" ]; then
+        C=$(curl -sfL "https://gitlab.com/api/v4/projects/$ENC/repository/commits?per_page=1") || C=""
+        [ -n "$C" ] && T="$(date -u +%Y%m%d).$(echo "$C" | J '.[0].short_id')"
+    fi ;;
 npm)
     V=$(curl -sfL "https://registry.npmjs.org/$PKG/latest" | J '.version // empty') || V=""
     echo "$V"; exit 0 ;;

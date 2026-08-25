@@ -292,7 +292,8 @@
    ],
    "verify": true,
    "prio": 2,
-   "use": "ghfetch <логин-github>"
+   "use": "ghfetch <логин-github>",
+   "fallback": "commit"
   },
   {
    "name": "gitfetch",
@@ -357,7 +358,7 @@
    "name": "rxfetch",
    "eco": "script",
    "host": "github",
-   "slug": "Mangeshrex/rxfetch",
+   "slug": "mngshm/rxfetch",
    "tagp": "v",
    "summary": "Custom system fetching tool written in bash",
    "license": "MIT",
@@ -375,7 +376,8 @@
    "verify": true,
    "prio": 2,
    "use": "rxfetch",
-   "alt": "git clone https://github.com/Mangeshrex/rxfetch && sudo ./install.sh"
+   "alt": "git clone https://github.com/Mangeshrex/rxfetch && sudo ./install.sh",
+   "fallback": "commit"
   },
   {
    "name": "nerdfetch",
@@ -432,7 +434,8 @@
    "interp": "sh",
    "verify": true,
    "prio": 2,
-   "use": "ufetch"
+   "use": "ufetch",
+   "fallback": "commit"
   },
   {
    "name": "albafetch",
@@ -513,7 +516,8 @@
    ],
    "verify": true,
    "prio": 2,
-   "use": "pokemon-icat pikachu — спрайт покемона"
+   "use": "pokemon-icat pikachu — спрайт покемона",
+   "fallback": "commit"
   },
   {
    "name": "pridefetch",
@@ -528,7 +532,8 @@
    ],
    "verify": true,
    "prio": 2,
-   "use": "pridefetch"
+   "use": "pridefetch",
+   "fallback": "commit"
   },
   {
    "name": "winfetch",
@@ -740,8 +745,10 @@
     "lifecycler"
    ],
    "verify": true,
-   "prio": 3,
-   "use": "lifecycler — аквариум/клеточный автомат"
+   "prio": 9,
+   "use": "lifecycler — аквариум/клеточный автомат",
+   "enabled": false,
+   "note": "Апстрим недоступен (404) / пакет удалён из registry"
   },
   {
    "name": "maze",
@@ -756,7 +763,8 @@
    ],
    "verify": true,
    "prio": 3,
-   "use": "maze.py — генерация лабиринта"
+   "use": "maze.py — генерация лабиринта",
+   "fallback": "commit"
   },
   {
    "name": "snakes",
@@ -775,7 +783,8 @@
    "interp": "perl",
    "verify": true,
    "prio": 3,
-   "use": "snakes.pl — змейки"
+   "use": "snakes.pl — змейки",
+   "fallback": "commit"
   },
   {
    "name": "weave",
@@ -867,7 +876,8 @@
    ],
    "interp": "sh",
    "verify": true,
-   "prio": 3
+   "prio": 3,
+   "fallback": "commit"
   },
   {
    "name": "weatherspect",
@@ -956,7 +966,9 @@
    "license": "MIT",
    "npmbin": "termdvd",
    "verify": true,
-   "prio": 3
+   "prio": 9,
+   "enabled": false,
+   "note": "Апстрим недоступен (404) / пакет удалён из registry"
   },
   {
    "name": "fireworks",
@@ -1401,8 +1413,10 @@
    ],
    "verify": true,
    "exp": true,
-   "prio": 8,
-   "use": "vis — визуализатор звука (mpd/alsa/pulse)"
+   "prio": 9,
+   "use": "vis — визуализатор звука (mpd/alsa/pulse)",
+   "enabled": false,
+   "note": "Апстрим недоступен (404) / пакет удалён из registry"
   },
   {
    "name": "linuxwave",
