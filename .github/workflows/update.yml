@@ -52,6 +52,11 @@ jobs:
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
           fi
 
+      - name: Auto-issue failures report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-issue.sh || true
+
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
