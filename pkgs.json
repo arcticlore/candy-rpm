@@ -448,7 +448,8 @@
    "verify": true,
    "prio": 2,
    "br": [
-    "ncurses-devel"
+    "ncurses-devel",
+    "sqlite3-devel"
    ],
    "use": "albafetch"
   },
@@ -500,7 +501,11 @@
    "verify": true,
    "prio": 2,
    "use": "archey",
-   "alt": "pip install archey4"
+   "alt": "pip install archey4",
+   "extra_files": [
+    "%{_bindir}/archey",
+    "%{_docdir}/archey4"
+   ]
   },
   {
    "name": "pokemon-icat",
@@ -682,7 +687,10 @@
    "summary": "Snow in your terminal",
    "license": "MIT",
    "prio": 3,
-   "use": "snowmachine — снегопад"
+   "use": "snowmachine — снегопад",
+   "extra_files": [
+    "%{_bindir}/snowmachine"
+   ]
   },
   {
    "name": "PyBonsai",
@@ -693,7 +701,10 @@
    "license": "MIT",
    "verify": true,
    "prio": 3,
-   "use": "pybonsai — растит бонсай"
+   "use": "pybonsai — растит бонсай",
+   "pbr_exclude": [
+    "streamlink"
+   ]
   },
   {
    "name": "arttime",
@@ -706,7 +717,7 @@
    "br": [
     "python3-pytz",
     "python3-rich",
-    "python3-tomli-w?"
+    "python3-tomli-w"
    ],
    "verify": true,
    "prio": 3,
@@ -900,7 +911,7 @@
   },
   {
    "name": "zenta",
-   "eco": "script",
+   "eco": "go",
    "host": "github",
    "slug": "e6a5/zenta",
    "tagp": "v",
@@ -915,7 +926,11 @@
    "interp": "bash",
    "verify": true,
    "prio": 3,
-   "use": "zenta.sh — дзен-скринсейвер"
+   "use": "zenta.sh — дзен-скринсейвер",
+   "gpkg": ".",
+   "bins": [
+    "zenta"
+   ]
   },
   {
    "name": "tspace",
@@ -939,15 +954,13 @@
   },
   {
    "name": "tfire",
-   "eco": "script",
+   "eco": "python-script",
    "host": "github",
    "slug": "tech-chad/tfire",
    "tagp": "v",
    "summary": "Fire animation in your terminal",
    "license": "GPL-3.0-or-later",
-   "files": [
-    "tfire.sh"
-   ],
+   "files": [],
    "req": [
     "bash"
    ],
@@ -955,7 +968,13 @@
    "verify": true,
    "prio": 3,
    "fallback": "commit",
-   "use": "tfire.sh — огонь"
+   "use": "tfire.sh — огонь",
+   "bins": [
+    "tfire"
+   ],
+   "script_src": {
+    "tfire": "tfire.py"
+   }
   },
   {
    "name": "termdvd",
@@ -1101,7 +1120,7 @@
   },
   {
    "name": "ricksay",
-   "eco": "script",
+   "eco": "custom",
    "host": "github",
    "slug": "kochie/ricksay",
    "tagp": "v",
@@ -1118,7 +1137,15 @@
    "verify": true,
    "prio": 4,
    "fallback": "commit",
-   "use": "ricksay — цитата Рика и Морти"
+   "use": "ricksay — цитата Рика и Морти",
+   "build_cmd": "gcc -O2 src/main.c -o ricksay",
+   "bins": [
+    "ricksay"
+   ],
+   "share": {
+    "src": "src/quotes.json",
+    "dst": "/usr/share/ricksay"
+   }
   },
   {
    "name": "jp2a",
@@ -1182,7 +1209,12 @@
    "verify": true,
    "prio": 4,
    "use": "durdraw — редактор ANSI-арта",
-   "alt": "pipx install durdraw"
+   "alt": "pipx install durdraw",
+   "extra_files": [
+    "%{_bindir}/durdraw",
+    "%{_bindir}/durfetch",
+    "%{_bindir}/durview"
+   ]
   },
   {
    "name": "diagon",
@@ -1197,8 +1229,10 @@
     "gcc-c++"
    ],
    "exp": true,
-   "prio": 8,
-   "use": "diagon math — интерактивные ASCII-диаграммы"
+   "prio": 9,
+   "use": "diagon math — интерактивные ASCII-диаграммы",
+   "enabled": false,
+   "note": "cmake тянет git-сабмодули — COPR без сети; ждать vendored release"
   },
   {
    "name": "tulizu",
@@ -1342,7 +1376,11 @@
    "license": "MIT",
    "prio": 5,
    "use": "wal -i обои.jpg — палитра из картинки",
-   "alt": "pip install --user pywal"
+   "alt": "pip install --user pywal",
+   "extra_files": [
+    "%{_bindir}/wal",
+    "%{_prefix}/man/man1/wal.1*"
+   ]
   },
   {
    "name": "wallust",
@@ -1508,7 +1546,7 @@
    "summary": "Rick Astley rickrolls your terminal",
    "license": "MIT",
    "files": [
-    "rickroll"
+    "roll.sh"
    ],
    "req": [
     "bash"

@@ -9,7 +9,9 @@ Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 
 BuildArch:      noarch
+BuildRequires:  python3
 Requires:       bash
+Requires:       python3
 
 %description
 Fire animation in your terminal
@@ -26,17 +28,17 @@ Don't throw tomatoes - file issues instead.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-# чистый скрипт, сборка не требуется
+# интерпретируемый модуль, сборки нет
 
 %install
-install -Dpm0755 tfire.sh %{buildroot}%{_bindir}/tfire.sh
+install -Dpm0755 tfire.py %{buildroot}%{_bindir}/tfire
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/tfire.sh
+%{_bindir}/tfire
 
 %changelog
 * Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1

@@ -1,5 +1,5 @@
 Name:           wallust
-Version:        4.0.0~alpha
+Version:        0
 Release:        1%{?dist}
 Summary:        Generate colorschemes from images (pywal successor)
 
@@ -29,7 +29,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n wallust
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -49,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/salsort
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 4.0.0~alpha-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

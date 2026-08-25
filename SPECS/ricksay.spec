@@ -8,7 +8,6 @@ URL:            https://github.com/kochie/ricksay
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildArch:      noarch
 Requires:       bash
 Requires:       cowsay
 
@@ -27,10 +26,12 @@ Don't throw tomatoes - file issues instead.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-# чистый скрипт, сборка не требуется
+gcc -O2 src/main.c -o ricksay
 
 %install
 install -Dpm0755 ricksay %{buildroot}%{_bindir}/ricksay
+mkdir -p %{buildroot}/usr/share/ricksay
+cp -r src/quotes.json/. %{buildroot}/usr/share/ricksay/
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
@@ -38,6 +39,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_licensedir}/%{name}
 
 %{_bindir}/ricksay
+/usr/share/ricksay
 
 %changelog
 * Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1

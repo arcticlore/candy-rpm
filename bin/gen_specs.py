@@ -91,10 +91,11 @@ def body_python_pkg(m, br, req):
     br = ["python3-devel", "pyproject-rpm-macros"] + br
     out = []
     add_br_req(out, br, req)
-    out += ["", "%generate_buildrequires", "%pyproject_buildrequires",
+    out += ["", "%generate_buildrequires",
+            "%pyproject_buildrequires" + "".join(" -x "+e for e in m.get("pbr_exclude",[])),
             "", prep(m), "", "%build", "%pyproject_wheel", "",
             "%install", "%pyproject_install", "%pyproject_save_files -l '*'", "",
-            "%files -f %{pyproject_files}", "%license LICENSE*", "%doc README*"]
+            "%files -f %{pyproject_files}"] + m.get("extra_files", [])
     return "\n".join(out) + "\n"
 
 
@@ -109,7 +110,8 @@ def body_python_script(m, br, req):
         out += ["mkdir -p %{buildroot}%{python3_sitelib}",
                 f"cp -r {mod} %{{buildroot}}%{{python3_sitelib}}/"]
     for b in m.get("bins", []):
-        src = b if not mod else f"{mod.rstrip('/')}/{b}"
+        smap = m.get("script_src", {})
+        src = smap.get(b) or (b if not mod else f"{mod.rstrip('/')}/{b}")
         out.append(f"install -Dpm0755 {src} %{{buildroot}}%{{_bindir}}/{b}")
     if not m.get("bins"):
         # модуль без точки входа — ставим как библиотеку
@@ -261,12 +263,29 @@ def body_meson(m, br, req):
     return "\n".join(out) + "\n"
 
 
+def body_custom(m, br, req):
+    out = []
+    add_br_req(out, br, req)
+    out += ["", prep(m), "", "%build", m.get("build_cmd","true"), "", "%install"]
+    for b in (m.get("bins") or []):
+        out.append(f"install -Dpm0755 {b} %{{buildroot}}%{{_bindir}}/{b}")
+    sh = m.get("share")
+    if sh:
+        out += [f"mkdir -p %{{buildroot}}{sh['dst']}",
+                f"cp -r {sh['src']}/. %{{buildroot}}{sh['dst']}/"]
+    out += ["", "%files", "%license LICENSE* COPYRIGHT*", "%doc README*"]
+    for b in (m.get("bins") or []):
+        out.append(f"%{{_bindir}}/{b}")
+    if sh: out.append(sh["dst"])
+    return "\n".join(out) + "\n"
+
+
 BODIES = {
     "script": body_script, "python-pkg": body_python_pkg,
     "python-script": body_python_script, "cargo": body_cargo,
     "go": body_go, "npm": body_npm, "gem": body_gem,
     "c-autotools": body_c, "c-cmake": body_c, "c-make": body_c,
-    "nim": body_nim, "meson": body_meson,
+    "nim": body_nim, "meson": body_meson, "custom": body_custom,
 }
 
 

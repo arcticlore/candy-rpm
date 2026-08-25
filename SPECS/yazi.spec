@@ -1,5 +1,5 @@
 Name:           yazi
-Version:        26.8.15
+Version:        0
 Release:        1%{?dist}
 Summary:        Blazing fast terminal file manager written in Rust
 
@@ -30,7 +30,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n yazi-26.8.15
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -51,5 +51,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ya
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 26.8.15-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

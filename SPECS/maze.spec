@@ -1,5 +1,5 @@
 Name:           maze
-Version:        20260825.eb99e65
+Version:        0
 Release:        1%{?dist}
 Summary:        Animated maze generator screensaver
 
@@ -24,7 +24,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n maze.py-eb99e6521ab5135dfaf3b2d3905ecdd515edb599
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # интерпретируемый модуль, сборки нет
@@ -40,5 +40,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/maze.py
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 20260825.eb99e65-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

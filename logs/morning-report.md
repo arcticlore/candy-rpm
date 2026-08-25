@@ -1,59 +1,77 @@
-# 🌅 Утренний отчёт 2026-08-25 19:54:42
+# 🌅 Утренний отчёт 2026-08-25 21:54:11
 
 ## Компоненты
-- воркеров: 2 | нянька: active | вотчер: inactive | таймер: active
+- воркеров: 6 | нянька: active | вотчер: active | таймер: active
 
 ## COPR — состояния билдов
 - canceled: 130
-- failed: 77
-- pending: 59
-- succeeded: 33
-- running: 9
-- starting: 1
+- failed: 93
+- pending: 45
+- succeeded: 44
+- starting: 3
 
 ## Зелёные пакеты (последний билд)
 - artem
+- cadubi
 - cli-fx
 - ctree
 - disfetch
+- duckpond
 - macchina
 - neofetch
 - nerdfetch
+- oh-my-zsh
+- pipes.sh
+- pipesX
+- ponysay
+- powerlevel10k
 - terminal-parrot
+- tint
+- tty-clock
 - viu
+- weave
 - xh
+- zellij
 
 ## Красные пакеты (последний билд)
 - albafetch
 - archey4
 - arttime
+- diagon
+- durdraw
 - PyBonsai
+- pywal
+- rickrollrc
+- ricksay
+- snowmachine
+- tfire
+- zenta
 
 ## [HUMAN] из авто-триажа (нужно внимание человека)
-[2026-08-25 16:09:44] [HUMAN] yazi: незнакомая ошибка, разбор утром (build 10899471)
-[2026-08-25 16:09:45] [HUMAN] starship: незнакомая ошибка, разбор утром (build 10899468)
-[2026-08-25 16:09:46] [HUMAN] gping: виртуальный манифест, каталог не определён
-[2026-08-25 16:09:47] [HUMAN] tty-clock: незнакомая ошибка, разбор утром (build 10899423)
-[2026-08-25 16:09:48] [HUMAN] lavat: незнакомая ошибка, разбор утром (build 10899420)
-[2026-08-25 19:05:00] [HUMAN] ricksay: незнакомая ошибка, разбор утром (build 10901632)
-[2026-08-25 19:05:01] [HUMAN] rickrollrc: незнакомая ошибка, разбор утром (build 10901631)
-[2026-08-25 19:05:03] [HUMAN] lavat: незнакомая ошибка, разбор утром (build 10901630)
-[2026-08-25 19:11:08] [HUMAN] albafetch: незнакомая ошибка, разбор утром (build 10901646)
-[2026-08-25 19:13:01] [HUMAN] archey4: незнакомая ошибка, разбор утром (build 10901648)
+[2026-08-25 20:42:31] [HUMAN] lavat: незнакомая ошибка, разбор утром (build 10901859)
+[2026-08-25 20:49:31] [HUMAN] durdraw: незнакомая ошибка, разбор утром (build 10901860)
+[2026-08-25 20:54:24] [HUMAN] pscircle: незнакомая ошибка, разбор утром (build 10901863)
+[2026-08-25 20:54:25] [HUMAN] jp2a: незнакомая ошибка, разбор утром (build 10901861)
+[2026-08-25 20:58:45] [HUMAN] lavat: незнакомая ошибка, разбор утром (build 10901871)
+[2026-08-25 20:58:46] [HUMAN] ricksay: незнакомая ошибка, разбор утром (build 10901869)
+[2026-08-25 21:10:22] [HUMAN] pywal: незнакомая ошибка, разбор утром (build 10901876)
+[2026-08-25 21:23:55] [HUMAN] rickrollrc: незнакомая ошибка, разбор утром (build 10901882)
+[2026-08-25 21:34:31] [HUMAN] diagon: незнакомая ошибка, разбор утром (build 10901884)
+[2026-08-25 21:34:31] [HUMAN] colorls: незнакомая ошибка, разбор утром (build 10901883)
 
 ## Хроника ночи (night-watch)
-10:54 воркеры=0
-0 | pending=71 failed=62 succeeded=19 starting=2 | посл:загрузка SRPMS/winfetch-2.5.1-1.fc44.src.rpm в arcticlore/ca
-11:04 воркеры=6 | pending=74 failed=62 succeeded=19 running=5 starting=4 | посл:загрузка SRPMS/pscircle-1.4.0-1.fc44.src.rpm в arcticlore/ca
-11:14 воркеры=4 | pending=84 failed=62 succeeded=19 running=6 starting=2 | посл:загрузка SRPMS/artem-3.0.0-1.fc44.src.rpm в arcticlore/candy
-11:24 воркеры=0
-0 | pending=87 failed=64 succeeded=20 running=12 | посл:загрузка SRPMS/Rio-0.5.26-1.fc44.src.rpm в arcticlore/candy
-11:35 воркеры=0
-0 | pending=102 failed=65 succeeded=21 running=11 | посл:загрузка SRPMS/wallust-4.0.0~alpha-1.fc44.src.rpm в arcticlo
-11:45 воркеры=2 | pending=113 failed=65 succeeded=21 running=11 importing=2 starting=1 | посл:загрузка SRPMS/wallust-4.0.0~alpha-1.fc44.src.rpm в arcticlo
-11:55 воркеры=6 | pending=117 failed=66 succeeded=21 running=7 starting=4 importing=1 | посл:загрузка SRPMS/rickrollrc-20260825.85d6893-1.fc44.src.rpm в 
-12:05 воркеры=2 | pending=129 failed=67 succeeded=21 running=9 | посл:загрузка SRPMS/wallust-4.0.0~alpha-1.fc44.src.rpm в arcticlo
-12:16 воркеры=2 | pending=118 failed=68 succeeded=21 running=16 starting=3 | посл:загрузка SRPMS/wallust-4.0.0~alpha-1.fc44.src.rpm в arcticlo
+0 | canceled=130 failed=79 pending=61 succeeded=37 running=4 starting=2 | посл:viddy: не удалось собрать SRPM
+20:25 воркеры=0
+0 | canceled=130 failed=82 pending=58 succeeded=38 running=3 starting=2 | посл:viddy: не удалось собрать SRPM
+20:35 воркеры=4 | canceled=130 failed=83 pending=55 succeeded=40 starting=4 running=2 | посл:загрузка SRPMS/gping-1.2.1-1.fc44.src.rpm в arcticlore/candy
+20:45 воркеры=0
+0 | canceled=130 failed=84 pending=57 succeeded=40 running=3 starting=1 | посл:viddy: не удалось собрать SRPM
+20:56 воркеры=10 | canceled=130 failed=88 pending=52 succeeded=41 running=3 starting=1 | посл:viddy: не удалось собрать SRPM
+21:06 воркеры=8 | canceled=130 failed=90 pending=50 succeeded=43 starting=2 | посл:viddy: не удалось собрать SRPM
+21:16 воркеры=8 | canceled=130 failed=90 pending=50 succeeded=43 starting=2 | посл:viddy: не удалось собрать SRPM
+21:26 воркеры=4 | canceled=130 failed=91 pending=47 succeeded=44 starting=3 | посл:viddy: не удалось собрать SRPM
+21:36 воркеры=10 | canceled=130 failed=93 pending=45 succeeded=44 starting=3 | посл:viddy: не удалось собрать SRPM
+21:47 воркеры=2 | canceled=130 failed=93 pending=45 succeeded=44 starting=3 | посл:viddy: не удалось собрать SRPM
 
 ## Локальная очередь
-- ждут отправки: 4
+- ждут отправки: 2

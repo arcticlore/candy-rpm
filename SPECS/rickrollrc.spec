@@ -29,14 +29,14 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-install -Dpm0755 rickroll %{buildroot}%{_bindir}/rickroll
+install -Dpm0755 roll.sh %{buildroot}%{_bindir}/roll.sh
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/rickroll
+%{_bindir}/roll.sh
 
 %changelog
 * Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1

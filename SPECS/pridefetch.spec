@@ -1,5 +1,5 @@
 Name:           pridefetch
-Version:        20260825.dc24d03
+Version:        0
 Release:        1%{?dist}
 Summary:        Neofetch, but gay
 
@@ -24,7 +24,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n pridefetch-dc24d03d5ea320010be7f69e77162156521c4460
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # интерпретируемый модуль, сборки нет
@@ -40,5 +40,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pridefetch
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 20260825.dc24d03-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

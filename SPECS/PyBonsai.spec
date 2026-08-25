@@ -12,7 +12,7 @@ BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
 
 %generate_buildrequires
-%pyproject_buildrequires
+%pyproject_buildrequires -x streamlink
 
 %description
 Procedural ASCII bonsai tree generator
@@ -38,7 +38,6 @@ Don't throw tomatoes - file issues instead.
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files -f %{pyproject_files}
-%{_licensedir}/%{name}
 
 %changelog
 * Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
