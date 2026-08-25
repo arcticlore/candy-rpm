@@ -1,0 +1,36 @@
+tar: stdout: ошибка записи
+go: downloading charm.land/bubbles/v2 v2.1.1
+go: downloading charm.land/bubbletea/v2 v2.0.8
+go: downloading charm.land/lipgloss/v2 v2.0.5
+go: downloading github.com/charmbracelet/x/exp/ordered v0.1.0
+go: downloading github.com/alecthomas/kong v1.15.0
+go: downloading github.com/charmbracelet/x/ansi v0.11.7
+go: downloading charm.land/glamour/v2 v2.0.1
+go: downloading charm.land/log/v2 v2.0.0
+go: downloading github.com/charmbracelet/colorprofile v0.4.3
+go: downloading github.com/alecthomas/mango-kong v0.1.0
+go: downloading github.com/muesli/roff v0.1.0
+go: downloading github.com/Masterminds/semver/v3 v3.5.0
+go: downloading github.com/charmbracelet/x/editor v0.2.0
+go: downloading github.com/charmbracelet/x/term v0.2.2
+go: downloading github.com/charmbracelet/x/xpty v0.1.3
+go: downloading golang.org/x/text v0.39.0
+go: downloading github.com/charmbracelet/ultraviolet v0.0.0-20260703014108-f5a850f9c2b7
+go: downloading golang.org/x/sys v0.46.0
+go: downloading github.com/yuin/goldmark-emoji v1.0.6
+go: downloading github.com/go-logfmt/logfmt v0.6.1
+go: downloading golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8
+go: downloading github.com/charmbracelet/x/conpty v0.1.1
+go: downloading github.com/charmbracelet/x/termios v0.1.1
+go: downloading github.com/charmbracelet/x/windows v0.2.2
+go: downloading golang.org/x/sync v0.21.0
+go: downloading github.com/alecthomas/chroma/v2 v2.20.0
+go: downloading github.com/charmbracelet/x/exp/slice v0.0.0-20250327172914-2fdc97757edf
+go: downloading github.com/microcosm-cc/bluemonday v1.0.27
+go: downloading github.com/charmbracelet/x/errors v0.0.0-20240508181413-e8d8b6e2de86
+go: downloading golang.org/x/net v0.40.0
+go: downloading github.com/aymerick/douceur v0.2.0
+go: downloading github.com/gorilla/css v1.0.1
+setting SOURCE_DATE_EPOCH=1787702400
+Записан: /home/samsa/terminal-eye-candy-rpm/SRPMS/gum-2.0.0-1.fc44.src.rpm
+[OK] SRPMS/ содержит свежий gum-2.0.0 src.rpm

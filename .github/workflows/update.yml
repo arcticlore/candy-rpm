@@ -4,9 +4,6 @@ on:
     - cron: "0 */2 * * *"   # каждые 2 часа
   workflow_dispatch:
 
-permissions:
-  contents: write          # чтобы закоммитить state обратно в репо
-
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -26,49 +23,17 @@ jobs:
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
-      - name: Auto-triage (лечит известные ошибки по логам билдеров)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-triage.sh || true
-
       - name: Converge — волны до полной передачи в COPR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDY_PROJ: arcticlore/candy
         run: bin/converge.sh 8   # красным, если что-то так и не улетело
 
-      - name: Auto-triage после волн
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-triage.sh || true
-
-      - name: Persist state/pkgs/specs обратно в репозиторий
-        run: |
-          git config user.name  "candy-bot"
-          git config user.email "candy-bot@users.noreply.github.com"
-          git add state/state.json pkgs.json SOURCES.md SPECS/ || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "state sync after nightly run [skip ci]"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
-          fi
-
-      - name: Auto-issue failures report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-issue.sh || true
-
-      - name: Telegram summary
-        if: always()
-        env:
-          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: |
-          dnf install -y python3 >/dev/null
-          python3 tools/tg-notify.py "🌙 candy nightly: ${{ job.status }} — логи во вкладке Actions" || true
-
-      - name: Upload logs
+      - name: Upload logs + state
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: update-logs
-          path: logs/
+          path: |
+            logs/
+            state/state.json

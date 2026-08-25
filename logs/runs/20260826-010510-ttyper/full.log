@@ -1,0 +1,141 @@
+tar: stdout: ошибка записи
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded cpufeatures v0.2.13
+  Downloaded rust-embed-utils v8.5.0
+  Downloaded stability v0.1.1
+  Downloaded strum v0.25.0
+  Downloaded clap v4.5.15
+  Downloaded rust-embed-impl v8.5.0
+  Downloaded redox_users v0.4.5
+  Downloaded strum_macros v0.25.3
+  Downloaded serde v1.0.207
+  Downloaded serde_derive v1.0.207
+  Downloaded indexmap v2.3.0
+  Downloaded unicode-segmentation v1.11.0
+  Downloaded clap_builder v4.5.15
+  Downloaded syn v2.0.74
+  Downloaded ratatui v0.25.0
+  Downloaded rust-embed v8.5.0
+   Vendoring ahash v0.8.11 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.11) to vendor/ahash
+   Vendoring allocator-api2 v0.2.18 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/allocator-api2-0.2.18) to vendor/allocator-api2
+   Vendoring anstream v0.6.15 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anstream-0.6.15) to vendor/anstream
+   Vendoring anstyle v1.0.8 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anstyle-1.0.8) to vendor/anstyle
+   Vendoring anstyle-parse v0.2.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anstyle-parse-0.2.5) to vendor/anstyle-parse
+   Vendoring anstyle-query v1.1.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anstyle-query-1.1.1) to vendor/anstyle-query
+   Vendoring anstyle-wincon v3.0.4 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anstyle-wincon-3.0.4) to vendor/anstyle-wincon
+   Vendoring autocfg v1.3.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.3.0) to vendor/autocfg
+   Vendoring bitflags v2.6.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.6.0) to vendor/bitflags
+   Vendoring block-buffer v0.10.4 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/block-buffer-0.10.4) to vendor/block-buffer
+   Vendoring byteorder v1.5.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/byteorder-1.5.0) to vendor/byteorder
+   Vendoring cassowary v0.3.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cassowary-0.3.0) to vendor/cassowary
+   Vendoring cfg-if v1.0.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.0) to vendor/cfg-if
+   Vendoring clap v4.5.15 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clap-4.5.15) to vendor/clap
+   Vendoring clap_builder v4.5.15 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clap_builder-4.5.15) to vendor/clap_builder
+   Vendoring clap_derive v4.5.13 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clap_derive-4.5.13) to vendor/clap_derive
+   Vendoring clap_lex v0.7.2 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clap_lex-0.7.2) to vendor/clap_lex
+   Vendoring colorchoice v1.0.2 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/colorchoice-1.0.2) to vendor/colorchoice
+   Vendoring cpufeatures v0.2.13 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.13) to vendor/cpufeatures
+   Vendoring crossterm v0.27.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crossterm-0.27.0) to vendor/crossterm
+   Vendoring crossterm_winapi v0.9.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crossterm_winapi-0.9.1) to vendor/crossterm_winapi
+   Vendoring crypto-common v0.1.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crypto-common-0.1.6) to vendor/crypto-common
+   Vendoring digest v0.10.7 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/digest-0.10.7) to vendor/digest
+   Vendoring dirs v5.0.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dirs-5.0.1) to vendor/dirs
+   Vendoring dirs-sys v0.4.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/dirs-sys-0.4.1) to vendor/dirs-sys
+   Vendoring either v1.13.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/either-1.13.0) to vendor/either
+   Vendoring equivalent v1.0.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.1) to vendor/equivalent
+   Vendoring generic-array v0.14.7 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/generic-array-0.14.7) to vendor/generic-array
+   Vendoring getrandom v0.2.15 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.15) to vendor/getrandom
+   Vendoring hashbrown v0.14.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.14.5) to vendor/hashbrown
+   Vendoring heck v0.4.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/heck-0.4.1) to vendor/heck-0.4.1
+   Vendoring heck v0.5.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/heck-0.5.0) to vendor/heck
+   Vendoring indexmap v2.3.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-2.3.0) to vendor/indexmap
+   Vendoring indoc v2.0.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indoc-2.0.5) to vendor/indoc
+   Vendoring is_terminal_polyfill v1.70.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/is_terminal_polyfill-1.70.1) to vendor/is_terminal_polyfill
+   Vendoring itertools v0.12.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itertools-0.12.1) to vendor/itertools
+   Vendoring libc v0.2.155 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.155) to vendor/libc
+   Vendoring libredox v0.1.3 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libredox-0.1.3) to vendor/libredox
+   Vendoring lock_api v0.4.12 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/lock_api-0.4.12) to vendor/lock_api
+   Vendoring log v0.4.22 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/log-0.4.22) to vendor/log
+   Vendoring lru v0.12.4 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/lru-0.12.4) to vendor/lru
+   Vendoring memchr v2.7.4 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/memchr-2.7.4) to vendor/memchr
+   Vendoring mio v0.8.11 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mio-0.8.11) to vendor/mio
+   Vendoring once_cell v1.19.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/once_cell-1.19.0) to vendor/once_cell
+   Vendoring option-ext v0.2.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/option-ext-0.2.0) to vendor/option-ext
+   Vendoring parking_lot v0.12.3 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot-0.12.3) to vendor/parking_lot
+   Vendoring parking_lot_core v0.9.10 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot_core-0.9.10) to vendor/parking_lot_core
+   Vendoring paste v1.0.15 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/paste-1.0.15) to vendor/paste
+   Vendoring ppv-lite86 v0.2.20 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ppv-lite86-0.2.20) to vendor/ppv-lite86
+   Vendoring proc-macro2 v1.0.86 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/proc-macro2-1.0.86) to vendor/proc-macro2
+   Vendoring quote v1.0.36 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/quote-1.0.36) to vendor/quote
+   Vendoring rand v0.8.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rand-0.8.5) to vendor/rand
+   Vendoring rand_chacha v0.3.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rand_chacha-0.3.1) to vendor/rand_chacha
+   Vendoring rand_core v0.6.4 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rand_core-0.6.4) to vendor/rand_core
+   Vendoring ratatui v0.25.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ratatui-0.25.0) to vendor/ratatui
+   Vendoring redox_syscall v0.5.3 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/redox_syscall-0.5.3) to vendor/redox_syscall
+   Vendoring redox_users v0.4.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/redox_users-0.4.5) to vendor/redox_users
+   Vendoring rust-embed v8.5.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rust-embed-8.5.0) to vendor/rust-embed
+   Vendoring rust-embed-impl v8.5.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rust-embed-impl-8.5.0) to vendor/rust-embed-impl
+   Vendoring rust-embed-utils v8.5.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rust-embed-utils-8.5.0) to vendor/rust-embed-utils
+   Vendoring rustversion v1.0.17 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustversion-1.0.17) to vendor/rustversion
+   Vendoring same-file v1.0.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/same-file-1.0.6) to vendor/same-file
+   Vendoring scopeguard v1.2.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/scopeguard-1.2.0) to vendor/scopeguard
+   Vendoring serde v1.0.207 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.207) to vendor/serde
+   Vendoring serde_derive v1.0.207 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.207) to vendor/serde_derive
+   Vendoring serde_spanned v0.6.7 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_spanned-0.6.7) to vendor/serde_spanned
+   Vendoring sha2 v0.10.8 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.10.8) to vendor/sha2
+   Vendoring signal-hook v0.3.17 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/signal-hook-0.3.17) to vendor/signal-hook
+   Vendoring signal-hook-mio v0.2.4 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/signal-hook-mio-0.2.4) to vendor/signal-hook-mio
+   Vendoring signal-hook-registry v1.4.2 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/signal-hook-registry-1.4.2) to vendor/signal-hook-registry
+   Vendoring smallvec v1.13.2 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.13.2) to vendor/smallvec
+   Vendoring stability v0.1.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stability-0.1.1) to vendor/stability
+   Vendoring strsim v0.11.1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strsim-0.11.1) to vendor/strsim
+   Vendoring strum v0.25.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strum-0.25.0) to vendor/strum
+   Vendoring strum_macros v0.25.3 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strum_macros-0.25.3) to vendor/strum_macros
+   Vendoring syn v1.0.109 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-1.0.109) to vendor/syn-1.0.109
+   Vendoring syn v2.0.74 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.74) to vendor/syn
+   Vendoring thiserror v1.0.63 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-1.0.63) to vendor/thiserror
+   Vendoring thiserror-impl v1.0.63 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-1.0.63) to vendor/thiserror-impl
+   Vendoring toml v0.8.19 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml-0.8.19) to vendor/toml
+   Vendoring toml_datetime v0.6.8 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-0.6.8) to vendor/toml_datetime
+   Vendoring toml_edit v0.22.20 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_edit-0.22.20) to vendor/toml_edit
+   Vendoring typenum v1.17.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/typenum-1.17.0) to vendor/typenum
+   Vendoring unicode-ident v1.0.12 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.12) to vendor/unicode-ident
+   Vendoring unicode-segmentation v1.11.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-segmentation-1.11.0) to vendor/unicode-segmentation
+   Vendoring unicode-width v0.1.13 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-width-0.1.13) to vendor/unicode-width
+   Vendoring utf8parse v0.2.2 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/utf8parse-0.2.2) to vendor/utf8parse
+   Vendoring version_check v0.9.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/version_check-0.9.5) to vendor/version_check
+   Vendoring walkdir v2.5.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/walkdir-2.5.0) to vendor/walkdir
+   Vendoring wasi v0.11.0+wasi-snapshot-preview1 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasi-0.11.0+wasi-snapshot-preview1) to vendor/wasi
+   Vendoring winapi v0.3.9 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-0.3.9) to vendor/winapi
+   Vendoring winapi-i686-pc-windows-gnu v0.4.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-i686-pc-windows-gnu-0.4.0) to vendor/winapi-i686-pc-windows-gnu
+   Vendoring winapi-util v0.1.9 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-util-0.1.9) to vendor/winapi-util
+   Vendoring winapi-x86_64-pc-windows-gnu v0.4.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-x86_64-pc-windows-gnu-0.4.0) to vendor/winapi-x86_64-pc-windows-gnu
+   Vendoring windows-sys v0.48.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-sys-0.48.0) to vendor/windows-sys-0.48.0
+   Vendoring windows-sys v0.52.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-sys-0.52.0) to vendor/windows-sys-0.52.0
+   Vendoring windows-sys v0.59.0 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-sys-0.59.0) to vendor/windows-sys
+   Vendoring windows-targets v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-targets-0.48.5) to vendor/windows-targets-0.48.5
+   Vendoring windows-targets v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-targets-0.52.6) to vendor/windows-targets
+   Vendoring windows_aarch64_gnullvm v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_aarch64_gnullvm-0.48.5) to vendor/windows_aarch64_gnullvm-0.48.5
+   Vendoring windows_aarch64_gnullvm v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_aarch64_gnullvm-0.52.6) to vendor/windows_aarch64_gnullvm
+   Vendoring windows_aarch64_msvc v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_aarch64_msvc-0.48.5) to vendor/windows_aarch64_msvc-0.48.5
+   Vendoring windows_aarch64_msvc v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_aarch64_msvc-0.52.6) to vendor/windows_aarch64_msvc
+   Vendoring windows_i686_gnu v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_i686_gnu-0.48.5) to vendor/windows_i686_gnu-0.48.5
+   Vendoring windows_i686_gnu v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_i686_gnu-0.52.6) to vendor/windows_i686_gnu
+   Vendoring windows_i686_gnullvm v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_i686_gnullvm-0.52.6) to vendor/windows_i686_gnullvm
+   Vendoring windows_i686_msvc v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_i686_msvc-0.48.5) to vendor/windows_i686_msvc-0.48.5
+   Vendoring windows_i686_msvc v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_i686_msvc-0.52.6) to vendor/windows_i686_msvc
+   Vendoring windows_x86_64_gnu v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_gnu-0.48.5) to vendor/windows_x86_64_gnu-0.48.5
+   Vendoring windows_x86_64_gnu v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_gnu-0.52.6) to vendor/windows_x86_64_gnu
+   Vendoring windows_x86_64_gnullvm v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_gnullvm-0.48.5) to vendor/windows_x86_64_gnullvm-0.48.5
+   Vendoring windows_x86_64_gnullvm v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_gnullvm-0.52.6) to vendor/windows_x86_64_gnullvm
+   Vendoring windows_x86_64_msvc v0.48.5 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_msvc-0.48.5) to vendor/windows_x86_64_msvc-0.48.5
+   Vendoring windows_x86_64_msvc v0.52.6 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_msvc-0.52.6) to vendor/windows_x86_64_msvc
+   Vendoring winnow v0.6.18 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winnow-0.6.18) to vendor/winnow
+   Vendoring zerocopy v0.7.35 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerocopy-0.7.35) to vendor/zerocopy
+   Vendoring zerocopy-derive v0.7.35 (/home/samsa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerocopy-derive-0.7.35) to vendor/zerocopy-derive
+To use vendored sources, add this to your .cargo/config.toml for this project:
+
+setting SOURCE_DATE_EPOCH=1787702400
+Записан: /home/samsa/terminal-eye-candy-rpm/SRPMS/ttyper-1.6.0-1.fc44.src.rpm
+[OK] SRPMS/ содержит свежий ttyper-1.6.0 src.rpm

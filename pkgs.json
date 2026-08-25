@@ -1624,6 +1624,92 @@
    "enabled": false,
    "note": "Electron, огромная сборка; проще flathub",
    "prio": 9
+  },
+  {
+   "name": "terminaltexteffects",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "terminaltexteffects",
+   "summary": "Terminal text effects engine — анимации печати и эффектов в терминале",
+   "license": "MIT",
+   "bins": [
+    "tte"
+   ],
+   "prio": 3
+  },
+  {
+   "name": "ascii-image-converter",
+   "eco": "go",
+   "host": "github",
+   "slug": "TheZoraiz/ascii-image-converter",
+   "tagp": "v",
+   "summary": "Конвертация изображений в ASCII-art прямо в терминале",
+   "license": "Apache-2.0",
+   "bins": [
+    "ascii-image-converter"
+   ],
+   "gpkg": ".",
+   "prio": 3
+  },
+  {
+   "name": "gum",
+   "eco": "go",
+   "host": "github",
+   "slug": "charmbracelet/gum",
+   "tagp": "v",
+   "summary": "Glamorous tool для шелл-скриптов: спиннеры, выбор, ввод (charm-стиль)",
+   "license": "MIT",
+   "bins": [
+    "gum"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "alt": "офиц. RPM-репо Charm: yum-репо charm.sh"
+  },
+  {
+   "name": "glow",
+   "eco": "go",
+   "host": "github",
+   "slug": "charmbracelet/glow",
+   "tagp": "v",
+   "summary": "Рендер markdown прямо в терминале с подсветкой (charm)",
+   "license": "MIT",
+   "bins": [
+    "glow"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "alt": "бинарники со страницы Releases charmbracelet/glow"
+  },
+  {
+   "name": "unimatrix",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "will8211/unimatrix",
+   "summary": "Матрица из unicode-символов (гибкий аналог cmatrix)",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "unimatrix.py"
+   ],
+   "bins": [
+    "unimatrix"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "ttyper",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "max-niederman/ttyper",
+   "tagp": "v",
+   "summary": "Тренажёр слепой печати в терминале",
+   "license": "MIT",
+   "bins": [
+    "ttyper"
+   ],
+   "prio": 3
   }
  ]
 }

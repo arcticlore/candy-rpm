@@ -1,0 +1,14 @@
+go: downloading golang.org/x/sys v0.0.0-20210601080250-7ecdf8ef093b
+go: downloading github.com/magiconair/properties v1.8.5
+go: downloading github.com/pelletier/go-toml v1.9.1
+go: downloading github.com/mitchellh/mapstructure v1.4.1
+go: downloading github.com/spf13/afero v1.6.0
+go: downloading github.com/spf13/cast v1.3.1
+go: downloading github.com/spf13/jwalterweatherman v1.1.0
+go: downloading github.com/subosito/gotenv v1.2.0
+go: downloading gopkg.in/ini.v1 v1.62.0
+go: downloading gopkg.in/yaml.v2 v2.4.0
+go: downloading golang.org/x/text v0.3.6
+setting SOURCE_DATE_EPOCH=1787702400
+Записан: /home/samsa/terminal-eye-candy-rpm/SRPMS/ascii-image-converter-1.13.1-1.fc44.src.rpm
+[OK] SRPMS/ содержит свежий ascii-image-converter-1.13.1 src.rpm
