@@ -68,9 +68,12 @@ def tr_last(k):
 
 MENU_KB = {
     "keyboard": [
-        [{"text": "📊 Статус / Status"}, {"text": "📈 Прогресс / Progress"}],
-        [{"text": "❌ Ошибки / Failures"}, {"text": "🌅 Отчёт / Report"}],
-        [{"text": "📦 Дайджест / Digest"}, {"text": "🌐 Язык / Lang"}],
+        [{"text": "📊 Статус", "style": "primary"},
+         {"text": "📈 Прогресс", "style": "primary"}],
+        [{"text": "❌ Ошибки", "style": "danger"},
+         {"text": "🌅 Отчёт", "style": "success"}],
+        [{"text": "📦 Дайджест", "style": "primary"},
+         {"text": "🌐 Язык / Lang"}],
     ], "resize_keyboard": True}
 
 def send(chat, text, kb=None, cb=None):
@@ -116,8 +119,8 @@ ACT = {
 def handle_button(cid, label):
     if label.startswith(("🌐","Язык","Lang")) or "Lang" in label:
         kb = {"inline_keyboard": [[
-            {"text":"🇷🇺 Русский","callback_data":"lang:ru"},
-            {"text":"🇬🇧 English","callback_data":"lang:en"}]]}
+            {"text":"🇷🇺 Русский","callback_data":"lang:ru","style":"primary"},
+            {"text":"🇬🇧 English","callback_data":"lang:en","style":"success"}]]}
         api("sendMessage", chat_id=cid, text=tr(cid,"choose_lang"),
             reply_markup=json.dumps(kb))
         return
