@@ -1,5 +1,5 @@
 Name:           archey4
-Version:        4.15.0.0
+Version:        0
 Release:        1%{?dist}
 Summary:        Arch Linux system information tool (maintained fork)
 
@@ -33,7 +33,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n archey4-4.15.0.0
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %pyproject_wheel
@@ -49,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_docdir}/archey4
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 4.15.0.0-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -119,6 +119,10 @@ extract() {  # extract SRC -> tmpdir (срезаем верхний катало
     echo "$d"
 }
 
+RUNDIR="logs/runs/$(date +%Y%m%d-%H%M%S)-$NAME"
+mkdir -p "$RUNDIR"
+exec > >(tee -a "$RUNDIR/full.log") 2>&1
+
 VT=""; [ "$ECO" = "cargo" ] && VT="SOURCES/$NAME-vendor-$VER.tar.gz"
 [ "$ECO" = "go" ] || [ "$ECO" = "npm" ] && VT="SOURCES/$NAME-node-vendor-$VER.tar.gz"
 if [ -n "$VT" ] && [ -f "$VT" ]; then
@@ -147,6 +151,10 @@ npm)
     rm -rf "$D" ;;
 esac
 fi
+
+# список файлов тарбола — источник правды для files[] в спеке
+export CANDY_FILELIST
+CANDY_FILELIST=$(tar tzf "$SRC" 2>/dev/null | sed "s|^[^/]*/||" | grep -vE "^$" || true)
 
 # автодетект верхнего каталога тарбола
 if TD=$(tar tzf "$SRC" 2>/dev/null | head -1 | cut -d/ -f1); [ -n "${TD:-}" ] && [ "${TD:-x}" != "$SRC" ]; then

@@ -1,5 +1,5 @@
 Name:           arttime
-Version:        2.5.0
+Version:        0
 Release:        1%{?dist}
 Summary:        ASCII art, clock, timer and time manager for the terminal
 
@@ -32,7 +32,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n arttime-2.5.0
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %pyproject_wheel
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files -f %{pyproject_files}
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 2.5.0-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,97 +1,179 @@
 #!/usr/bin/env bash
-# auto-triage.sh — читает логи упавших билдов и применяет известные фиксы сам.
-# Незнакомые ошибки помечает [HUMAN] и оставляет до утра.
+# auto-triage.sh v2 — расширенная база сигнатур ошибок COPR-билдов.
+# Известные классы чинит сам, незнакомые помечает [HUMAN].
+# Все скачанные логи билдеров сохраняются в logs/builder/<id>.log.gz
 set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 LOG=logs/auto-triage.log
+mkdir -p logs/builder state
+
 TOKEN=""
-[ -f ~/.config/gh-token ] && TOKEN=$(cat ~/.config/gh-token)
+[ -f ~/.config/candy/push-token ] && TOKEN=$(grep -o 'ghp_[A-Za-z0-9]*' ~/.config/candy/push-token | head -1)
 
 log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 
 changed_meta=0
-FIXED=""   # пакеты, которым реально применили фикс
-set_flag() {  # set_flag NAME FIELD VALUE(скаляр/true)
-    python3 - "$1" "$2" "$3" <<'PY'
+FIXED=""
+
+json_edit() {  # json_edit NAME FIELD MODE VALUE  ; mode: set|bradd|listadd
+    python3 - "$1" "$2" "$3" "$4" <<'PY'
 import json,sys
-n,f,v=sys.argv[1],sys.argv[2],sys.argv[3]
+n,f,mode,v=sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]
 p=json.load(open("pkgs.json"))
 val={"true":True}.get(v,v)
 for x in p["packages"]:
-    if x["name"]==n:
-        cur=x.get(f)
-        if f=="br":
-            lst=cur if isinstance(cur,list) else ([cur] if cur else [])
-            if v not in lst: lst.append(v)
-            x["br"]=lst
-        elif isinstance(cur,list):
-            if v not in cur: cur.append(v)
-        else: x[f]=val
+    if x["name"]!=n: continue
+    cur=x.get(f)
+    if mode=="bradd":
+        lst=cur if isinstance(cur,list) else ([cur] if cur else [])
+        if v not in lst: x["br"]=lst+[v]
+    elif mode=="listadd":
+        lst=cur if isinstance(cur,list) else []
+        if v not in lst: x[f]=lst+[v]
+    else:
+        x[f]=val
 json.dump(p,open("pkgs.json","w"),ensure_ascii=False,indent=1)
 PY
 }
 
-detect_cdir() {  # имя пакета -> подкаталог крейта или пусто
-    local n="$1" ver f d member
-    ver=$(jq -r --arg n "$n" '.[$n].ver // ""' state/state.json)
+detect_cdir() {
+    local n="$1" f cand safe
     f=$(ls SOURCES/"$n"-*.tar.gz 2>/dev/null | head -1)
     [ -n "$f" ] || return 0
-    # ищем member с Cargo.toml, содержащим [[bin]] name = "<пакет>"
     while read -r cand; do
-        if tar xzf "$f" -O "$cand/Cargo.toml" 2>/dev/null | grep -q "\[\[bin\]\]"; then
-            safe=$(echo "${cand#*/}" | tr -cd 'A-Za-z0-9._/-')
-            [ "$safe" = "${cand#*/}" ] && { echo "$safe"; return 0; } || return 0
-        fi
-    done < <(tar tzf "$f" 2>/dev/null | grep "/Cargo.toml$" | grep -v "target/" | cut -d/ -f1 | sort -u)
-    return 0
+        [[ "$cand" == */Cargo.toml ]] || continue
+        tar xzf "$f" -O "$cand" 2>/dev/null | grep -q "\[\[bin\]\]" || continue
+        safe=${cand#*/}; safe=${safe%/Cargo.toml}
+        if [ "$safe" = "$(echo "$safe" | tr -cd 'A-Za-z0-9._/-')" ]; then echo "$safe"; fi
+        return 0
+    done < <(tar tzf "$f" 2>/dev/null | grep "Cargo.toml$" | cut -d/ -f1 | sort -u | sed 's|$|/Cargo.toml|')
+}
+
+# ---- база сигнатур: REGEX -> TAG ----
+sig() { # $1=log  возвращает тег известного класса или ""
+    local L="$1"
+    if echo "$L" | grep -q "File not found:.*share/man";            then echo man-missing; return; fi
+    if echo "$L" | grep -qE "%cargo_prep -v vendor\s*$";            then echo cargo-macros; return; fi
+    if echo "$L" | grep -q "found a virtual manifest";              then echo ws-manifest; return; fi
+    if echo "$L" | grep -qE 'Dependency "[a-z0-9_+-]+" not found';  then echo pkgconfig-dep; return; fi
+    if echo "$L" | grep -q "nothing provides requested python3dist";then echo pydist-exclude; return; fi
+    if echo "$L" | grep -qiE "invalid gemspec.*directory - git";     then echo gem-git; return; fi
+    if echo "$L" | grep -q "install: cannot stat";                  then echo stat-file; return; fi
+    if echo "$L" | grep -q "./configure: No such file";             then echo need-autoreconf; return; fi
+    if echo "$L" | grep -q "Empty %files file.*debugsource";        then echo debugsource-old; return; fi
+    if echo "$L" | grep -q "Invalid subpackage name.*rust-";        then echo rust-prefix-old; return; fi
+    if echo "$L" | grep -qiE "no GLSL.SPIR-V compiler|glslangValidator"; then echo need-glslang; return; fi
+    if echo "$L" | grep -q "webp/decode.h";                          then echo need-webp; return; fi
+    if echo "$L" | grep -q "could not find git for clone";           then echo git-submodule; return; fi
+    echo ""
+}
+
+apply_fix() { # apply_fix NAME TAG LOGTEXT
+    local n="$1" tag="$2" L="$3"
+    case "$tag" in
+    man-missing)
+        json_edit "$n" noman true; changed_meta=1
+        log "[AUTO] $n: нет man -> noman=true" ;;
+    cargo-macros)
+        json_edit "$n" br bradd cargo-rpm-macros; changed_meta=1
+        log "[AUTO] $n: +BR cargo-rpm-macros" ;;
+    ws-manifest)
+        local d; d=$(detect_cdir "$n")
+        if [ -n "$d" ]; then json_edit "$n" cdir set "$d"; changed_meta=1
+            log "[AUTO] $n: воркспейс -> cdir=$d"
+        else log "[HUMAN] $n: воркспейс, каталог не определён"; fi ;;
+    pkgconfig-dep)
+        local dep; dep=$(echo "$L" | grep -oE 'Dependency "[a-z0-9_+-]+" not found' | head -1 \
+                        | sed -E 's/Dependency "([^"]+)".*/\1/' | tr -cd 'a-z0-9-')
+        [ -n "$dep" ] && { json_edit "$n" br bradd "${dep}-devel"; json_edit "$n" br bradd pkgconf-pkg-config
+                           changed_meta=1; log "[AUTO] $n: +BR ${dep}-devel pkgconf-pkg-config"; } ;;
+    pydist-exclude)
+        local dep; dep=$(echo "$L" | grep -oE 'python3dist\([a-z0-9_-]+\)' | head -1 \
+                        | sed -E 's/python3dist\(([^)]+)\)/\1/')
+        [ -n "$dep" ] && { json_edit "$n" pbr_exclude listadd "$dep"; changed_meta=1
+                           log "[AUTO] $n: исключена зависимость $dep"; } ;;
+    gem-git)
+        json_edit "$n" gem_git true; json_edit "$n" br bradd git-core; changed_meta=1
+        log "[AUTO] $n: gemspec требует git -> gem_git=true" ;;
+    stat-file)
+        # реальное имя файла ищем в локальном тарболе и подменяем files[]
+        local f cand stem base bad
+        bad=$(echo "$L" | grep -oE "cannot stat '[^']+'" | head -1 | sed -E "s/cannot stat '//; s/'//")
+        base=$(basename "$bad")
+        f=$(ls SOURCES/"$n"-*.tar.gz 2>/dev/null | head -1)
+        if [ -n "$f" ] && [ -n "$bad" ]; then
+            stem=${base%.*}
+            cand=$(tar tzf "$f" 2>/dev/null | sed "s|^[^/]*/||" | grep -iE "(^|/)${stem}" | grep -vE "/$" | head -1)
+            if [ -n "$cand" ]; then
+                json_edit "$n" files listadd "$cand"
+                # убрать старую неверную запись files
+                python3 - "$n" "$base" <<'PY'
+import json,sys
+n,b=sys.argv[1],sys.argv[2]
+p=json.load(open("pkgs.json"))
+for x in p["packages"]:
+    if x["name"]==n and isinstance(x.get("files"),list):
+        x["files"]=[e for e in x["files"] if e!=b]
+json.dump(p,open("pkgs.json","w"),ensure_ascii=False,indent=1)
+PY
+                changed_meta=1; log "[AUTO] $n: files[] $base -> $cand"
+            else
+                log "[HUMAN] $n: файл '$base' не найден в тарболе"
+            fi
+        else log "[HUMAN] $n: cannot stat без локального тарбола"; fi ;;
+    need-autoreconf)
+        json_edit "$n" autoreconf true; json_edit "$n" br bradd autoconf
+        json_edit "$n" br bradd automake; changed_meta=1
+        log "[AUTO] $n: нет configure -> autoreconf=true" ;;
+    need-glslang)
+        json_edit "$n" br bradd glslang; changed_meta=1
+        log "[AUTO] $n: +BR glslang" ;;
+    need-webp)
+        json_edit "$n" br bradd libwebp-devel; changed_meta=1
+        log "[AUTO] $n: +BR libwebp-devel" ;;
+    git-submodule)
+        json_edit "$n" enabled false; m_note="cmake FetchContent требует сеть при сборке — отключён до vendored релиза"
+        json_edit "$n" note set "$m_note"; changed_meta=1
+        log "[AUTO] $n: отключён (git-сабмодули в оффлайн-сборке)" ;;
+    debugsource-old|rust-prefix-old)
+        FIXED="$FIXED $n"; changed_meta=1
+        log "[AUTO] $n: глобальный фикс активен -> пересборка" ;;
+    *)
+        local h; h=$(echo "$L" | md5sum | cut -c1-10)
+        grep -qx "$h" state/triage-unknown.hash 2>/dev/null && return 0
+        echo "$h" >> state/triage-unknown.hash
+        log "[HUMAN] $n: неизвестная ошибка (sig=$h)" ;;
+    esac
 }
 
 TRI=state/triaged.ids; touch "$TRI"
 while read -r id name; do
     grep -qx "$id" "$TRI" && continue
-    L=$(curl -sL --max-time 60 \
+    D=logs/builder/$id
+    curl -sL --max-time 60 -o "$D.log.gz" \
       "https://download.copr.fedorainfracloud.org/results/arcticlore/candy/fedora-44-x86_64/${id}-${name}/builder-live.log.gz" \
-      | zcat 2>/dev/null) || L=""
-    [ -z "$L" ] && continue
+      || { log "[WARN] $id/$name: лог недоступен"; continue; }
+    L=$(zcat "$D.log.gz" 2>/dev/null) || { log "[WARN] $id/$name: битый лог"; echo "$id" >> "$TRI"; continue; }
 
-    if echo "$L" | grep -q "File not found:.*share/man"; then
-        set_flag "$name" noman true; changed_meta=1
-        log "[AUTO] $name: man отсутствует -> noman=true"; FIXED="$FIXED $name"; continue
+    TAG=$(sig "$L")
+    if [ -n "$TAG" ]; then
+        apply_fix "$name" "$TAG" "$L"
+    else
+        apply_fix "$name" "" "$L"
     fi
-    if echo "$L" | grep -q "%cargo_prep -v vendor$"; then
-        set_flag "$name" br cargo-rpm-macros; changed_meta=1
-        log "[AUTO] $name: нет cargo-макросов -> BR cargo-rpm-macros"; FIXED="$FIXED $name"; continue
-    fi
-    if echo "$L" | grep -q "found a virtual manifest"; then
-        d=$(detect_cdir "$name")
-        if [ -n "$d" ]; then
-            set_flag "$name" cdir "$d"; changed_meta=1
-            log "[AUTO] $name: воркспейс -> cdir=$d"; FIXED="$FIXED $name"
-        else
-            log "[HUMAN] $name: виртуальный манифест, каталог не определён"
-        fi
-        continue
-    fi
-    if echo "$L" | grep -qE "No matching package to install|Failed to resolve the transaction"; then
-        log "[HUMAN] $name: неразрешимые BR — нужен человек"; continue
-    fi
-    log "[HUMAN] $name: незнакомая ошибка, разбор утром (build $id)"
+    echo "$id" >> "$TRI"
 done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '$NF=="failed"{print $1,$2}')
-# помечаем все просмотренные как отработанные (включая [HUMAN])
-awk '$NF=="failed"{print $1}' /tmp/opencode/all*.txt 2>/dev/null >>"$TRI"
-copr-cli list-builds arcticlore/candy 2>/dev/null | awk '$NF=="failed"{print $1}' >>"$TRI"
-sort -u "$TRI" -o "$TRI"
 
+# перезаказ исправленных
 if [ "$changed_meta" = 1 ]; then
     ./bin/gen_specs.py --all >/dev/null 2>&1
-    python3 - $FIXED <<'PY'
+    python3 - "$FIXED" <<'PY'
 import json,sys
 st=json.load(open("state/state.json"))
-fixed=sys.argv[1].split()
-for n in filter(None,fixed): st.pop(n,None)
+for n in filter(None,sys.argv[1].split()): st.pop(n,None)
 json.dump(st,open("state/state.json","w"),indent=1)
-print("requeued (только исправленные):",len(fixed))
+print()
 PY
-    log "[AUTO] спеки перегенерированы, упавшие перевыставлены"
+    log "[AUTO] спеки перегенерированы; на пересборку: $(echo $FIXED | wc -w) пак."
 fi

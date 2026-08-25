@@ -14,6 +14,8 @@ missing=""
 for r in $(seq 1 "$ROUNDS"); do
     echo "[converge] ══ раунд $r/$ROUNDS ($(date '+%T'))"
     OUT=$(bin/update-check.sh 2>&1)
+    RD="logs/runs/$(date +%Y%m%d-%H%M%S)-converge-r$r"
+    mkdir -p "$RD"; echo "$OUT" > "$RD/converge.log"
     echo "$OUT" >> "$LOG"
     summary=$(echo "$OUT" | grep "\[ИТОГ\]" | tail -1)
     num() { echo "$1" | grep -oE "$2: [0-9]+" | grep -oE "[0-9]+"; }

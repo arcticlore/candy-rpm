@@ -72,8 +72,23 @@ def body_script(m, br, req):
     add_br_req(out, br, req)
     out += ["", prep(m), "", "%build", "# чистый скрипт, сборка не требуется", "", "%install"]
     targets = m.get("files") or []
+    import os
+    fl = [l for l in os.environ.get("CANDY_FILELIST","").split("\n") if l]
     for f in targets:
         base = f.split("/")[-1]
+        if fl:
+            exact=[l for l in fl if l==f or l.endswith("/"+base)]
+            if exact:
+                f=exact[0]
+            else:
+                stem=base.rsplit(".",1)[0]
+                fuzzy=[l for l in fl if stem in l.split("/")[-1]]
+                if fuzzy:
+                    out.append(f"# AUTO-FIXED: {base} -> {fuzzy[0]}")
+                    f=fuzzy[0]
+                else:
+                    out.append(f"# WARNING: '{base}' нет в тарболе — пропущено")
+                    continue
         out.append(f"install -Dpm0755 {f} %{{buildroot}}%{{_bindir}}/{base}")
     sh = m.get("share")
     if sh:
