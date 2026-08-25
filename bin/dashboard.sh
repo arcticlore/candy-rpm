@@ -46,6 +46,15 @@ collect() {   # собирает свежие данные и атомарно �
     TODAY=$(date '+%F')
     SENT=$(grep "\[COPR\]" logs/update.log 2>/dev/null | grep -c "$TODAY")
     INQ=$(echo "$BL" | grep -cE "pending|running|starting")
+    CUR=$(grep -hE "\[(UPD|COPR)\]|\[OK\] SRPMS|\[FAIL\] " logs/update.log 2>/dev/null | tail -1)
+    case "$CUR" in
+        *"[UPD]"*) CP=$(echo "$CUR" | sed -E 's/.*\[UPD\] ([^:]+):.*/\1/');
+                   echo "║  ${C_D}⇪ сейчас готовится и летит в COPR: $CP${C_0}";;
+        *"PUSH OK"*) : ;;
+        *"[COPR]"*) CP=$(echo "$CUR" | sed -E 's/.*SRPMS\/([^ ]*)-1\.fc44.*/\1/');
+                   echo "║  ${C_D}⇪ последний отправленный: $CP${C_0}";;
+        *) echo "║  ${C_D}⇪ волна в ожидании${C_0}";;
+    esac
     bar "$OKN"  "$TOT" "  зелёные пакеты     "
     bar "$DONE" "$TOT" "  отправлено успешно "
     bar "$SENT" "$SENT$INQ" "  прогресс очереди    "

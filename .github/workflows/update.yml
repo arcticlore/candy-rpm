@@ -1,8 +1,11 @@
 name: nightly update
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 3 * * *"   # ежедневно 03:00 UTC
   workflow_dispatch:
+
+permissions:
+  contents: write          # чтобы закоммитить state обратно в репо
 
 jobs:
   update:
@@ -23,11 +26,31 @@ jobs:
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
-      - name: Converge (retry until fully submitted)
+      - name: Auto-triage (лечит известные ошибки по логам билдеров)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-triage.sh || true
+
+      - name: Converge — волны до полной передачи в COPR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDY_PROJ: arcticlore/candy
-        run: bin/converge.sh 8   # упадёт красным, если что-то не передалось
+        run: bin/converge.sh 8   # красным, если что-то так и не улетело
+
+      - name: Auto-triage после волн
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-triage.sh || true
+
+      - name: Persist state/pkgs/specs обратно в репозиторий
+        run: |
+          git config user.name  "candy-bot"
+          git config user.email "candy-bot@users.noreply.github.com"
+          git add state/state.json pkgs.json SOURCES.md SPECS/ || true
+          if ! git diff --cached --quiet; then
+            git commit -qm "state sync after nightly run [skip ci]"
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
+          fi
 
       - name: Upload logs
         if: always()
