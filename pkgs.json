@@ -166,7 +166,7 @@
   },
   {
    "name": "viddy",
-   "eco": "go",
+   "eco": "cargo",
    "host": "github",
    "slug": "sachaos/viddy",
    "tagp": "v",
@@ -175,7 +175,6 @@
    "bins": [
     "viddy"
    ],
-   "gpkg": ".",
    "prio": 1,
    "use": "viddy 'df -h' — watch с подсветкой diff",
    "alt": "go install github.com/sachaos/viddy@latest"
@@ -634,7 +633,8 @@
    "install_cmd": "install -Dpm0755 rain %{buildroot}%{_bindir}/ascii-rain",
    "verify": true,
    "prio": 3,
-   "use": "ascii-rain — дождь, Ctrl+C выход"
+   "use": "ascii-rain — дождь, Ctrl+C выход",
+   "fallback": "commit"
   },
   {
    "name": "tty-clock",

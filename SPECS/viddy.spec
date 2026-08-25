@@ -6,10 +6,13 @@ Summary:        Modern watch command (with key bindings and diffs)
 License:        MIT
 URL:            https://github.com/sachaos/viddy
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-node-vendor-%{version}.tar.gz
+Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  golang
+BuildRequires:  cargo
+BuildRequires:  rust
+BuildRequires:  gcc
+BuildRequires:  cargo-rpm-macros
 
 %description
 Modern watch command (with key bindings and diffs)
@@ -27,16 +30,15 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -N -a1 -n %{name}-%{version}
+%cargo_prep -v vendor
 
 %build
-export GOFLAGS='-mod=vendor'
-export CGO_ENABLED=0
-export GOPATH=$(mktemp -d)
-export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o viddy .
+%cargo_build
 
 %install
-install -Dpm0755 viddy %{buildroot}%{_bindir}/viddy
+%cargo_install
+# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
+rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
