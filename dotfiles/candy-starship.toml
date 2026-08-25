@@ -1,0 +1,26 @@
+# 🍬 candy theme for starship
+format = "$directory$git_branch$git_status$python$golang$rust$nodejs$cmd_duration$line_break$character"
+add_newline = true
+
+[character]
+success_symbol = "[❯](bold #ff6ec7)"
+error_symbol = "[❯](bold #f43f5e)"
+
+[directory]
+style = "bold #38bdf8"
+truncation_length = 3
+
+[git_branch]
+symbol = "🌿 "
+style = "#a78bfa"
+
+[cmd_duration]
+min_time = 2000
+style = "bold #febc2e"
+
+[python]
+symbol = "🐍 "
+[golang]
+symbol = "🐹 "
+[rust]
+symbol = "🦀 "

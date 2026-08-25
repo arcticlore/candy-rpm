@@ -1,0 +1,16 @@
+name: 📦 Запрос пакета / Package request
+description: Предложить новый тулзятник в репо / Suggest a new tool
+labels: [package-request]
+body:
+  - type: input
+    id: name
+    attributes: { label: Пакет / Package, placeholder: pipesx }
+    validations: { required: true }
+  - type: input
+    id: url
+    attributes: { label: Ссылка на апстрим / Upstream URL, placeholder: https://github.com/... }
+    validations: { required: true }
+  - type: textarea
+    id: why
+    attributes: { label: Зачем / Why, placeholder: описание в двух словах }
+    validations: { required: true }

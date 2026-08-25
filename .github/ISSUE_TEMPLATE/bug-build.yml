@@ -1,0 +1,15 @@
+name: 🐞 Баг билда / Build bug
+description: Пакет не собирается или не ставится
+labels: [bug]
+body:
+  - type: input
+    id: pkg
+    attributes: { label: Пакет / Package, placeholder: starship }
+    validations: { required: true }
+  - type: dropdown
+    id: fedora
+    attributes: { label: Fedora, options: ["43", "44"] }
+  - type: textarea
+    id: what
+    attributes: { label: Что произошло / What happened }
+    validations: { required: true }

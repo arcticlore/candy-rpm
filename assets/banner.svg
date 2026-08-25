@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="240" viewBox="0 0 880 240">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff6ec7"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/><stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="880" height="240" rx="16" fill="url(#t)"/>
+  <rect x="24" y="24" width="832" height="34" rx="8" fill="#334155"/>
+  <circle cx="44" cy="41" r="6" fill="#ff5f57"/><circle cx="62" cy="41" r="6" fill="#febc2e"/><circle cx="80" cy="41" r="6" fill="#28c840"/>
+  <text x="40" y="130" font-family="monospace" font-size="52" font-weight="bold" fill="url(#g)">~/candy-rpm</text>
+  <text x="40" y="170" font-family="monospace" font-size="20" fill="#94a3b8">$ dnf copr enable arcticlore/candy &amp;&amp; sudo dnf install eye-candy</text>
+  <text x="40" y="205" font-family="monospace" font-size="15" fill="#64748b">79 packages · nightly builds · F43/F44 · 4 arches · auto-triage</text>
+  <text x="700" y="205" font-family="monospace" font-size="15" fill="#ff6ec7">▓▓░ candy</text>
+</svg>
