@@ -30,6 +30,17 @@ def load_langs():
     except Exception: return {}
 def save_langs(d): json.dump(d, open(LANGF, "w"), ensure_ascii=False, indent=1)
 LANGS = load_langs()
+MAPF = os.path.expanduser("~/.config/candy/tg-mail-map.json")
+def load_map():
+    try: return json.load(open(MAPF))
+    except Exception: return {}
+def save_map(d): json.dump(d, open(MAPF,"w"), ensure_ascii=False, indent=1)
+MAILMAP = load_map()
+
+def norm(s):
+    import re
+    s = s.lower().replace("ё","е")
+    return re.sub(r"[^a-zа-я0-9]+", "", s)
 
 T = {
  "ru": {"choose_lang": "🌐 Выбери язык:", "menu": "🍬 Главное меню:",
@@ -82,11 +93,11 @@ def send(chat, text, kb=None, cb=None):
     if cb:   kw["parse_mode"] = "HTML"
     data = urllib.parse.urlencode(kw).encode()
     try:
-        r = urllib.request.urlopen(
-            f"https://api.telegram.org/bot{TOKEN}/sendMessage", data=data, timeout=25)
-        return r.status == 200
+        r = json.load(urllib.request.urlopen(
+            f"https://api.telegram.org/bot{TOKEN}/sendMessage", data=data, timeout=25))
+        return r.get("result", {})
     except Exception as e:
-        print(f"{chat}: {e}", file=sys.stderr); return False
+        print(f"{chat}: {e}", file=sys.stderr); return {}
 
 def send_kb(chat, text):
     data = urllib.parse.urlencode({
@@ -157,10 +168,10 @@ def handle_text(cid, txt):
          if cmd.startswith("/") else None
     if fn:
         send(cid, fn(cid)); return
-    # подписи кнопок reply-клавиатуры: «📊 Статус / Status» и т.п.
+    # подписи кнопок reply-клавиатуры: сравниваем без эмодзи/регистра
+    nt = norm(txt)
     hit = next((f for k,f in ACT.items()
-                if txt == k or txt == k.split(" /")[0] or k.lower().startswith(txt.lower()+":")
-                or txt.split(" /")[0].lower() in k.lower()), None)
+                if nt and (norm(k) == nt or norm(k).startswith(nt) or nt in norm(k))), None)
     if txt.startswith("🌐") or "язык" in txt.lower() or "lang" in txt.lower():
         kb = {"inline_keyboard": [[
             {"text":"🇷🇺 Русский","callback_data":"lang:ru","style":"primary"},
@@ -185,10 +196,21 @@ if LISTEN:
                 cid = str((msg.get("chat") or {}).get("id",""))
                 txt = (msg.get("text") or "").strip()
                 if not cid or not txt: continue
+                if cid == CHATS[0]:
+                    rep = (msg.get("reply_to_message") or {})
+                    rid = str(rep.get("message_id",""))
+                    tgt = MAILMAP.get(rid)
+                    if tgt:
+                        send(tgt, "📨 Ответ владельца candy-rpm:\n"+txt)
+                        send(cid, "✅ доставлено")
+                        continue
                 if cid not in CHATS:
                     who=(msg.get("from") or {}).get("first_name","?")
                     un=(msg.get("from") or {}).get("username","")
-                    send(CHATS[0], f"📮 {who}"+(f" (@{un})" if un else "")+f" [chat_id={cid}]:\n{txt}")
+                    sent = send(CHATS[0], f"📮 {who}"+(f" (@{un})" if un else "")+f" [chat_id={cid}]:\n{txt}\n\n(↩ repлай на это сообщение = ответить человеку)")
+                    if sent.get("message_id"):
+                        MAILMAP[str(sent["message_id"])] = cid
+                        save_map(MAILMAP)
                     send(cid, tr(cid,"relay_ack"))
                     open(os.path.join(ROOT,"logs/tg-mail.log"),"a").write(f"[{cid}] {txt}\n")
                     continue
