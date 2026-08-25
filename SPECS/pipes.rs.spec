@@ -1,5 +1,5 @@
 Name:           pipes.rs
-Version:        1.6.4
+Version:        0
 Release:        1%{?dist}
 Summary:        Over-engineered pipes.sh на Rust
 
@@ -26,7 +26,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n pipes-rs-1.6.4
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pipes
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 1.6.4-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

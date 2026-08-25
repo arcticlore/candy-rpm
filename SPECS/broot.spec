@@ -1,11 +1,10 @@
-Name:           choose
+Name:           broot
 Version:        0
 Release:        1%{?dist}
-Summary:        Умный cut на Rust
-# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
+Summary:        Дерево каталогов с навигацией и предпросмотром
 
-License:        MIT
-URL:            https://github.com/theryangeary/choose
+License:        AGPL-3.0-or-later
+URL:            https://github.com/Canop/broot
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -16,7 +15,10 @@ BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
 
 %description
-Умный cut на Rust
+Дерево каталогов с навигацией и предпросмотром
+
+Официальный способ установки от апстрима / Upstream official install method:
+  cargo install broot
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -43,7 +45,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/choose
+%{_bindir}/broot
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

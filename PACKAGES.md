@@ -7,6 +7,7 @@
 | Пакет | Описание | Запуск | Источник |
 |---|---|---|---|
 | **bottom** | Cross-platform graphical process/system monitor | `btm — монитор процессов с графиками` | github.com/ClementTsang/bottom |
+| **broot** | Дерево каталогов с навигацией и предпросмотром | `broot — интерактивное дерево файлов` | github.com/Canop/broot |
 | **csview** | Быстрый csv-просмотрщик с поддержкой CJK/эмодзи | `—` | github.com/wfxr/csview |
 | **curlie** | The power of curl, the ease of use of httpie | `curlie https://api.github.com` | github.com/rs/curlie |
 | **doggo** | Fast command-line DNS client for humans | `doggo example.com MX` | github.com/mr-karan/doggo |
@@ -14,29 +15,41 @@
 | **glow** | Рендер markdown прямо в терминале с подсветкой (charm) | `glow README.md — читай markdown в терминале` | github.com/charmbracelet/glow |
 | **gping** | Ping, but with a graph | `gping 1.1.1.1 — ping с графиком` | github.com/orf/gping |
 | **gum** | Glamorous tool для шелл-скриптов: спиннеры, выбор, ввод (charm-стиль) | `gum choose 'вариант 1' 'вариант 2'; gum spin -- sleep 2` | github.com/charmbracelet/gum |
+| **hyperfine** | Бенчмарк команд со статистикой и экспортом | `hyperfine 'sleep 0.3'` | github.com/sharkdp/hyperfine |
+| **just** | Современный command runner (Make без боли) | `just <рецепт>; just --list` | github.com/casey/just |
 | **lazydocker** | Lazier way to manage everything docker | `запусти lazydocker при работающем docker` | github.com/jesseduffield/lazydocker |
 | **lazygit** | Simple terminal UI for git commands | `запусти lazygit внутри git-репозитория` | github.com/jesseduffield/lazygit |
 | **lf** | Terminal file manager | `lf — файловый менеджер` | github.com/gokcehan/lf |
 | **sd** | Intuitive find & replace CLI (sed alternative) | `sd 'старый текст' 'новый текст' file.txt` | github.com/chmln/sd |
 | **starship** | Minimal, blazing-fast, infinitely customizable cross-shell prompt | `eval "$(starship init bash)" — добавь в ~/.bashrc` | github.com/starship/starship |
+| **tealdeer** | Быстрый tldr-client: примеры команд вместо man | `tldr tar — шпаргалки` | github.com/dbrgn/tealdeer |
+| **tokei** | Статистика кода по языкам, молниеносная | `tokei ./src` | github.com/XAMPPRocky/tokei |
 | **viddy** | Modern watch command (with key bindings and diffs) | `viddy 'df -h' — watch с подсветкой diff` | github.com/sachaos/viddy |
 | **xh** | Friendly and fast tool for sending HTTP requests | `xh GET https://api.github.com` | github.com/ducaale/xh |
 | **yazi** | Blazing fast terminal file manager written in Rust | `yazi — файловый менеджер; выход Q` | github.com/sxyazi/yazi |
 | **albafetch** | Faster neofetch alternative written in C | `albafetch` | github.com/alba4k/albafetch |
 | **animfetch** | Animated system fetch pinned above your shell | `animfetch — анимированный fetch` | github.com/Andrew-Velox/animfetch |
 | **archey4** | Arch Linux system information tool (maintained fork) | `archey` | github.com/HorlogeSkynet/archey4 |
+| **bacon** | Фоновый компилятор/тестер Rust-проектов на лету | `bacon — фоновая проверка проекта` | github.com/Canop/bacon |
 | **bunnyfetch** | Tiny system info fetch utility | `bunnyfetch` | github.com/Rosettea/bunnyfetch |
 | **CrabFetch** | Extremely fast and featureful command-line fetcher | `crabfetch` | github.com/LivacoNew/CrabFetch |
+| **ctop** | top для контейнеров (docker/podman) | `ctop — живой монитор контейнеров` | github.com/bcicen/ctop |
 | **disfetch** | Yet another *nix distro fetching program, less complex | `disfetch` | github.com/q60/disfetch |
+| **dua** | Анализ места на диске + интерактивное удаление | `dua i — интерактивный режим` | github.com/Byron/dua-cli |
 | **ghfetch** | Neofetch-like utility to fetch GitHub info in the terminal | `ghfetch <логин-github>` | github.com/SafarSoFar/ghfetch |
 | **gitfetch** | GitHub contribution visualization tool inspired by neofetch | `gitfetch <логин-github>` | github.com/FabricSoul/gitfetch |
+| **grex** | Генератор регулярок из примеров строк | `grex a1 b2 → '^a[12]b[12]$'` | github.com/pemistahl/grex |
+| **kondo** | Чистка build-артефактов проектов (node_modules/target) | `kondo ~/dev — найти мусор` | github.com/tbillington/kondo |
 | **macchina** | System information fetcher with an emphasis on performance | `macchina — инфа о системе` | github.com/Macchina-CLI/macchina |
 | **neofetch** | Command-line system information tool | `neofetch` | github.com/dylanaraps/neofetch |
 | **nerdfetch** | POSIX nix fetch script using Nerdfonts | `nerdfetch (нужен Nerd Font)` | codeberg.org/thatonecalculator/NerdFetch |
 | **pokemon-icat** | Show any Pokemon sprite in your terminal | `pokemon-icat pikachu — спрайт покемона` | github.com/aflaag/pokemon-icat |
+| **presenterm** | Терминальные презентации из markdown с темами | `presenterm slides.md` | github.com/mfontanini/presenterm |
 | **pridefetch** | Neofetch, but gay | `pridefetch` | github.com/cartoon-raccoon/pridefetch |
 | **rxfetch** | Custom system fetching tool written in bash | `rxfetch` | github.com/mngshm/rxfetch |
+| **slides** | Презентации прямо в терминале из markdown | `slides deck.md — презентация` | github.com/maaslalani/slides |
 | **ufetch** | Tiny system info for Unix-like operating systems | `ufetch` | gitlab.com/jschx/ufetch |
+| **wtfutil** | Личный дашборд-терминал из модулей (ops-style) | `wtfutil — дашборд модулей` | github.com/wtfutil/wtfutil |
 | **arttime** | ASCII art, clock, timer and time manager for the terminal | `arttime — ASCII-арт+часы; arttime -m сообщение` | github.com/poetaman/arttime |
 | **ascii-image-converter** | Конвертация изображений в ASCII-art прямо в терминале | `ascii-image-converter photo.jpg --color` | github.com/TheZoraiz/ascii-image-converter |
 | **ascii-rain** | Comfy rain for your console | `ascii-rain — дождь, Ctrl+C выход` | github.com/nkleemann/ascii-rain |
@@ -56,6 +69,7 @@
 | **PyBonsai** | Procedural ASCII bonsai tree generator | `pybonsai — растит бонсай` | pypi.org/project/pybonsai |
 | **snakes** | Snakes crawling across your terminal | `snakes.pl — змейки` | github.com/pipeseroni/snakes.pl |
 | **snowmachine** | Snow in your terminal | `snowmachine — снегопад` | pypi.org/project/snowmachine |
+| **tabiew** | TUI-просмотр csv/parquet/json датасетов | `tabiew data.csv` | github.com/fathulfahmy/tabiew |
 | **terminal-parrot** | Party parrot time, in your terminal | `terminal-parrot — танцующий попугай` | github.com/jmhobbs/terminal-parrot |
 | **terminaltexteffects** | Terminal text effects engine — анимации печати и эффектов в терминале | `tte "твой текст" — эффекты печати; tte --list-effects` | pypi.org/project/terminaltexteffects |
 | **tfire** | Fire animation in your terminal | `tfire.sh — огонь` | github.com/tech-chad/tfire |
@@ -63,11 +77,13 @@
 | **tty-clock** | Digital clock in ncurses | `tty-clock -c -C 4 — часы по центру, цвет 4` | github.com/xorg62/tty-clock |
 | **ttyper** | Тренажёр слепой печати в терминале | `ttyper — тест слепой печати (ru: --language ru1000)` | github.com/max-niederman/ttyper |
 | **ttysvr** | Набор скринсейверов для терминала | `—` | github.com/cxreiff/ttysvr |
+| **typioca** | Минималистичный тест скорости печати | `typioca — печать на скорость` | github.com/bloznelis/typioca |
 | **unimatrix** | Матрица из unicode-символов (гибкий аналог cmatrix) | `unimatrix -s 96 — unicode-матрица` | github.com/will8211/unimatrix |
 | **weave** | Weaving pattern screensaver | `weave.sh — плетение узоров` | github.com/pipeseroni/weave.sh |
 | **zenta** | Meditative zen terminal screensaver | `zenta.sh — дзен-скринсейвер` | github.com/e6a5/zenta |
 | **artem** | Convert images from multiple formats to ASCII art | `artem photo.jpg — картинка в ASCII` | github.com/FineFindus/artem |
 | **cadubi** | Creative ASCII drawing utility | `cadubi — рисование ASCII` | github.com/statico/cadubi |
+| **dog** | DNS-клиент doggo-класса с цветным выводом | `—` | github.com/ogham/dog |
 | **durdraw** | ANSI/ASCII and Unicode art editor with animation | `durdraw — редактор ANSI-арта` | github.com/cmang/durdraw |
 | **jp2a** | Convert JPG/PNG images to ASCII art | `jp2a photo.jpg --width=80` | github.com/Talinx/jp2a |
 | **parrotsay** | Party parrot says things in your terminal | `parrotsay 'Привет!'` | npmjs.com/package/parrotsay |
@@ -85,8 +101,10 @@
 | **pywal** | Generate and change color-schemes on the fly | `wal -i обои.jpg — палитра из картинки` | pypi.org/project/pywal |
 | **tint** | Terminal theme switcher with live preview | `tint dracula — сменить тему терминала; tint -l список` | github.com/corygabrielsen/tint |
 | **wallust** | Generate colorschemes from images (pywal successor) | `wallust run обои.jpg` | codeberg.org/explosion-mental/wallust |
+| **himalaya** | Email-клиент целиком в CLI | `himalaya list — письма в терминале` | github.com/pimalaya/himalaya |
 | **rickrollrc** | Rick Astley rickrolls your terminal | `—` | github.com/keroserene/rickrollrc |
 | **termusic** | TUI музыкальный плеер (mpv/ytdlp) | `—` | github.com/tramhao/termusic |
+| **zenith** | Системный дашборд: CPU/GPU/сеть/диски графиками | `zenith` | github.com/bvaisnard/zenith |
 | **colorls** | Prettifies ls output with colors and font-awesome icons | `colorls — красивый ls (нужен Nerd Font)` | github.com/athityakumar/colorls |
 | **musikcube** | Terminal-based music player, library and streaming server | `musikcube — консольный плеер` | github.com/clangen/musikcube |
 | **zellij** | Terminal workspace with panels, plugins and layouts | `zellij — мультиплексор, Ctrl+p для помощи` | github.com/zellij-org/zellij |

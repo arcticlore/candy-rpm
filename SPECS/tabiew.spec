@@ -1,22 +1,18 @@
-Name:           choose
+Name:           tabiew
 Version:        0
 Release:        1%{?dist}
-Summary:        Умный cut на Rust
-# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
+Summary:        TUI-просмотр csv/parquet/json датасетов
 
 License:        MIT
-URL:            https://github.com/theryangeary/choose
+URL:            https://github.com/fathulfahmy/tabiew
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-vendor-%{version}.tar.gz
+Source1:        %{name}-node-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  cargo-rpm-macros
+BuildRequires:  golang
 
 %description
-Умный cut на Rust
+TUI-просмотр csv/parquet/json датасетов
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -28,22 +24,23 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -N -a1 -n %{name}-%{version}
-%cargo_prep -v vendor
 
 %build
-%cargo_build
+export GOFLAGS='-mod=vendor'
+export CGO_ENABLED=0
+export GOPATH=$(mktemp -d)
+export GOCACHE=$GOPATH/cache
+go build -trimpath -ldflags '-s -w' -o tabiew .
 
 %install
-%cargo_install
-# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
-rm -rf %{buildroot}%{_datadir}/cargo
+install -Dpm0755 tabiew %{buildroot}%{_bindir}/tabiew
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/choose
+%{_bindir}/tabiew
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

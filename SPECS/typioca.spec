@@ -1,11 +1,10 @@
-Name:           choose
+Name:           typioca
 Version:        0
 Release:        1%{?dist}
-Summary:        Умный cut на Rust
-# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
+Summary:        Минималистичный тест скорости печати
 
 License:        MIT
-URL:            https://github.com/theryangeary/choose
+URL:            https://github.com/bloznelis/typioca
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -16,7 +15,7 @@ BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
 
 %description
-Умный cut на Rust
+Минималистичный тест скорости печати
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -43,7 +42,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/choose
+%{_bindir}/typioca
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

@@ -1823,6 +1823,275 @@
    ],
    "exp": true,
    "prio": 5
+  },
+  {
+   "name": "broot",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Canop/broot",
+   "tagp": "v",
+   "summary": "Дерево каталогов с навигацией и предпросмотром",
+   "license": "AGPL-3.0-or-later",
+   "bins": [
+    "broot"
+   ],
+   "use": "broot — интерактивное дерево файлов",
+   "prio": 1,
+   "alt": "cargo install broot"
+  },
+  {
+   "name": "just",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "casey/just",
+   "tagp": "",
+   "summary": "Современный command runner (Make без боли)",
+   "license": "CC0-1.0 OR MIT",
+   "bins": [
+    "just"
+   ],
+   "use": "just <рецепт>; just --list",
+   "prio": 1
+  },
+  {
+   "name": "hyperfine",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sharkdp/hyperfine",
+   "tagp": "v",
+   "summary": "Бенчмарк команд со статистикой и экспортом",
+   "license": "Apache-2.0 OR MIT",
+   "bins": [
+    "hyperfine"
+   ],
+   "use": "hyperfine 'sleep 0.3'",
+   "prio": 1
+  },
+  {
+   "name": "tokei",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "XAMPPRocky/tokei",
+   "tagp": "v",
+   "summary": "Статистика кода по языкам, молниеносная",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "tokei"
+   ],
+   "use": "tokei ./src",
+   "prio": 1
+  },
+  {
+   "name": "tealdeer",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "dbrgn/tealdeer",
+   "tagp": "v",
+   "summary": "Быстрый tldr-client: примеры команд вместо man",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "tldr"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "use": "tldr tar — шпаргалки",
+   "br": [
+    "gzip"
+   ],
+   "prio": 1
+  },
+  {
+   "name": "dog",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "ogham/dog",
+   "tagp": "v",
+   "summary": "DNS-клиент doggo-класса с цветным выводом",
+   "license": "EUPL-1.2",
+   "bins": [
+    "dog"
+   ],
+   "verify": true,
+   "prio": 4
+  },
+  {
+   "name": "zenith",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "bvaisnard/zenith",
+   "tagp": "v",
+   "summary": "Системный дашборд: CPU/GPU/сеть/диски графиками",
+   "license": "MIT",
+   "bins": [
+    "zenith"
+   ],
+   "exp": true,
+   "use": "zenith",
+   "prio": 7
+  },
+  {
+   "name": "ctop",
+   "eco": "go",
+   "host": "github",
+   "slug": "bcicen/ctop",
+   "tagp": "v",
+   "summary": "top для контейнеров (docker/podman)",
+   "license": "MIT",
+   "bins": [
+    "ctop"
+   ],
+   "gpkg": ".",
+   "use": "ctop — живой монитор контейнеров",
+   "prio": 2
+  },
+  {
+   "name": "wtfutil",
+   "eco": "go",
+   "host": "github",
+   "slug": "wtfutil/wtfutil",
+   "tagp": "v",
+   "summary": "Личный дашборд-терминал из модулей (ops-style)",
+   "license": "MPL-2.0",
+   "bins": [
+    "wtfutil"
+   ],
+   "gpkg": ".",
+   "fallback": "commit",
+   "use": "wtfutil — дашборд модулей",
+   "prio": 2
+  },
+  {
+   "name": "slides",
+   "eco": "go",
+   "host": "github",
+   "slug": "maaslalani/slides",
+   "tagp": "v",
+   "summary": "Презентации прямо в терминале из markdown",
+   "license": "MIT",
+   "bins": [
+    "slides"
+   ],
+   "gpkg": ".",
+   "use": "slides deck.md — презентация",
+   "prio": 2
+  },
+  {
+   "name": "presenterm",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mfontanini/presenterm",
+   "tagp": "v",
+   "summary": "Терминальные презентации из markdown с темами",
+   "license": "BSD-2-Clause",
+   "bins": [
+    "presenterm"
+   ],
+   "use": "presenterm slides.md",
+   "prio": 2
+  },
+  {
+   "name": "tabiew",
+   "eco": "go",
+   "host": "github",
+   "slug": "fathulfahmy/tabiew",
+   "tagp": "v",
+   "summary": "TUI-просмотр csv/parquet/json датасетов",
+   "license": "MIT",
+   "bins": [
+    "tabiew"
+   ],
+   "gpkg": ".",
+   "fallback": "commit",
+   "verify": true,
+   "use": "tabiew data.csv",
+   "prio": 3
+  },
+  {
+   "name": "typioca",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "bloznelis/typioca",
+   "tagp": "",
+   "summary": "Минималистичный тест скорости печати",
+   "license": "MIT",
+   "bins": [
+    "typioca"
+   ],
+   "use": "typioca — печать на скорость",
+   "prio": 3
+  },
+  {
+   "name": "bacon",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Canop/bacon",
+   "tagp": "v",
+   "summary": "Фоновый компилятор/тестер Rust-проектов на лету",
+   "license": "AGPL-3.0-or-later",
+   "bins": [
+    "bacon"
+   ],
+   "use": "bacon — фоновая проверка проекта",
+   "prio": 2
+  },
+  {
+   "name": "kondo",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "tbillington/kondo",
+   "tagp": "v",
+   "summary": "Чистка build-артефактов проектов (node_modules/target)",
+   "license": "MIT",
+   "bins": [
+    "kondo"
+   ],
+   "use": "kondo ~/dev — найти мусор",
+   "prio": 2
+  },
+  {
+   "name": "grex",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "pemistahl/grex",
+   "tagp": "v",
+   "summary": "Генератор регулярок из примеров строк",
+   "license": "Apache-2.0",
+   "bins": [
+    "grex"
+   ],
+   "use": "grex a1 b2 → '^a[12]b[12]$'",
+   "prio": 2
+  },
+  {
+   "name": "himalaya",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "pimalaya/himalaya",
+   "tagp": "v",
+   "summary": "Email-клиент целиком в CLI",
+   "license": "MIT",
+   "bins": [
+    "himalaya"
+   ],
+   "exp": true,
+   "use": "himalaya list — письма в терминале",
+   "prio": 6,
+   "note": "проверить BR openssl/rustls при сборке"
+  },
+  {
+   "name": "dua",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Byron/dua-cli",
+   "tagp": "v",
+   "summary": "Анализ места на диске + интерактивное удаление",
+   "license": "MIT",
+   "bins": [
+    "dua"
+   ],
+   "gpkg": ".",
+   "use": "dua i — интерактивный режим",
+   "prio": 2
   }
  ]
 }
