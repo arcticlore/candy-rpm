@@ -13,22 +13,7 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  c
-BuildRequires:  a
-BuildRequires:  r
-BuildRequires:  g
-BuildRequires:  o
-BuildRequires:  -
-BuildRequires:  r
-BuildRequires:  p
-BuildRequires:  m
-BuildRequires:  -
-BuildRequires:  m
-BuildRequires:  a
-BuildRequires:  c
-BuildRequires:  r
-BuildRequires:  o
-BuildRequires:  s
+BuildRequires:  cargo-rpm-macros
 
 %description
 Ping, but with a graph

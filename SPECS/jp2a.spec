@@ -10,11 +10,11 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  make
+BuildRequires:  autoconf
+BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
-BuildRequires:  autoconf
-BuildRequires:  automake
 BuildRequires:  libwebp-devel
 BuildRequires:  autoconf
 BuildRequires:  automake

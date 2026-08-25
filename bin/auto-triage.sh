@@ -21,7 +21,11 @@ val={"true":True}.get(v,v)
 for x in p["packages"]:
     if x["name"]==n:
         cur=x.get(f)
-        if isinstance(cur,list):
+        if f=="br":
+            lst=cur if isinstance(cur,list) else ([cur] if cur else [])
+            if v not in lst: lst.append(v)
+            x["br"]=lst
+        elif isinstance(cur,list):
             if v not in cur: cur.append(v)
         else: x[f]=val
 json.dump(p,open("pkgs.json","w"),ensure_ascii=False,indent=1)

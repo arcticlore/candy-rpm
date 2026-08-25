@@ -10,9 +10,9 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
+BuildRequires:  python3-dbus
 BuildRequires:  python3-distro
 BuildRequires:  python3-netifaces
-BuildRequires:  python3-dbus
 BuildRequires:  python3-setproctitle
 
 %generate_buildrequires

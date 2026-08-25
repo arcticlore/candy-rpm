@@ -1,5 +1,5 @@
 Name:           Rio
-Version:        0.5.26
+Version:        0
 Release:        1%{?dist}
 Summary:        Hardware-accelerated terminal emulator focused on typography
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -14,10 +14,10 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  fontconfig-devel
-BuildRequires:  pkgconf-pkg-config
-BuildRequires:  glslang
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  fontconfig-devel
+BuildRequires:  glslang
+BuildRequires:  pkgconf-pkg-config
 
 %description
 Hardware-accelerated terminal emulator focused on typography
@@ -31,7 +31,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n rio-0.5.26
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -50,5 +50,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/rio
 
 %changelog
-* Tue Aug 25 2026 candy-bot <candy@localhost> - 0.5.26-1
+* Tue Aug 25 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

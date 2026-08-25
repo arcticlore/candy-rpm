@@ -12,8 +12,8 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
-BuildRequires:  gcc-c++
 BuildRequires:  fftw-devel
+BuildRequires:  gcc-c++
 BuildRequires:  ncurses-devel
 BuildRequires:  pulseaudio-libs-devel
 

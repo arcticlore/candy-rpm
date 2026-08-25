@@ -13,8 +13,8 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  git-core
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  git-core
 
 %description
 Blazing fast terminal file manager written in Rust

@@ -10,8 +10,8 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
-BuildRequires:  python3-rich
 BuildRequires:  python3-pytz
+BuildRequires:  python3-rich
 BuildRequires:  python3-tomli-w?
 
 %generate_buildrequires

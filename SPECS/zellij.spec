@@ -14,8 +14,8 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  perl
 BuildRequires:  openssl-devel
+BuildRequires:  perl
 
 %description
 Terminal workspace with panels, plugins and layouts

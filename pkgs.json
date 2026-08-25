@@ -90,8 +90,8 @@
    "prio": 1,
    "use": "yazi — файловый менеджер; выход Q",
    "br": [
-    "git-core",
-    "cargo-rpm-macros"
+    "cargo-rpm-macros",
+    "git-core"
    ],
    "build_env": [
     "VERGEN_GIT_SHA=\"copr-build\""
@@ -192,7 +192,9 @@
    "prio": 1,
    "use": "gping 1.1.1.1 — ping с графиком",
    "cdir": "gping",
-   "br": "cargo-rpm-macros",
+   "br": [
+    "cargo-rpm-macros"
+   ],
    "alt": "cargo install gping"
   },
   {
@@ -241,8 +243,8 @@
    "prio": 8,
    "use": "zellij — мультиплексор, Ctrl+p для помощи",
    "br": [
-    "perl",
-    "openssl-devel"
+    "openssl-devel",
+    "perl"
    ],
    "alt": "curl -sSfL https://get.zellij.dev | sh (или cargo install zellij)"
   },
@@ -479,7 +481,9 @@
    "verify": true,
    "prio": 2,
    "use": "animfetch — анимированный fetch",
-   "br": "cargo-rpm-macros"
+   "br": [
+    "cargo-rpm-macros"
+   ]
   },
   {
    "name": "archey4",
@@ -490,9 +494,9 @@
    "summary": "Arch Linux system information tool (maintained fork)",
    "license": "GPL-3.0-or-later",
    "br": [
+    "python3-dbus",
     "python3-distro",
     "python3-netifaces",
-    "python3-dbus",
     "python3-setproctitle"
    ],
    "verify": true,
@@ -700,8 +704,8 @@
    "summary": "ASCII art, clock, timer and time manager for the terminal",
    "license": "GPL-3.0-or-later",
    "br": [
-    "python3-rich",
     "python3-pytz",
+    "python3-rich",
     "python3-tomli-w?"
    ],
    "verify": true,
@@ -1118,11 +1122,11 @@
    "summary": "Convert JPG/PNG images to ASCII art",
    "license": "GPL-2.0-only",
    "br": [
+    "autoconf",
+    "automake",
     "gcc",
     "libjpeg-turbo-devel",
     "libpng-devel",
-    "autoconf",
-    "automake",
     "libwebp-devel"
    ],
    "autoreconf": true,
@@ -1248,8 +1252,8 @@
    "summary": "Visualize processes as a circular tree wallpaper",
    "license": "GPL-2.0-or-later",
    "br": [
-    "gcc",
     "cairo-devel",
+    "gcc",
     "glib2-devel",
     "make"
    ],
@@ -1395,8 +1399,8 @@
    "license": "MIT",
    "br": [
     "cmake",
-    "gcc-c++",
     "fftw-devel",
+    "gcc-c++",
     "ncurses-devel",
     "pulseaudio-libs-devel"
    ],
@@ -1431,13 +1435,13 @@
    "summary": "Terminal-based music player, library and streaming server",
    "license": "BSD-3-Clause",
    "br": [
-    "cmake",
-    "gcc-c++",
-    "pulseaudio-libs-devel",
     "alsa-lib-devel",
-    "ncurses-devel",
+    "cmake",
     "ffmpeg-devel",
-    "libmicrodns-devel"
+    "gcc-c++",
+    "libmicrodns-devel",
+    "ncurses-devel",
+    "pulseaudio-libs-devel"
    ],
    "exp": true,
    "prio": 8,
@@ -1535,10 +1539,10 @@
    "exp": true,
    "prio": 9,
    "br": [
+    "cargo-rpm-macros",
     "fontconfig-devel",
-    "pkgconf-pkg-config",
     "glslang",
-    "cargo-rpm-macros"
+    "pkgconf-pkg-config"
    ]
   },
   {

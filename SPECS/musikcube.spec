@@ -11,13 +11,13 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  cmake
-BuildRequires:  gcc-c++
-BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  alsa-lib-devel
-BuildRequires:  ncurses-devel
+BuildRequires:  cmake
 BuildRequires:  ffmpeg-devel
+BuildRequires:  gcc-c++
 BuildRequires:  libmicrodns-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  pulseaudio-libs-devel
 
 %description
 Terminal-based music player, library and streaming server
