@@ -1,68 +1,100 @@
 #!/usr/bin/env python3
-"""Генерирует docs/index.html — веб-дашборд из публичного API COPR.
-Работает без авторизации: данные читаются из открытого эндпоинта."""
-import json, urllib.request, datetime, os
+"""Генерирует docs/index.html — веб-панель конвейера candy-rpm.
+Данные: публичный API COPR (без авторизации). Автообновление каждые 5 минут."""
+import html, json, sys, urllib.request, datetime, os
 
 OWNER, PROJECT = "arcticlore", "candy"
-API = f"https://copr.fedorainfracloud.org/api_3/build/list?ownername={OWNER}&projectname={PROJECT}&limit=800"
+API = f"https://copr.fedorainfracloud.org/api_3/build/list?ownername={OWNER}&projectname={PROJECT}&limit=1000"
 
 def fetch():
     try:
-        return json.load(urllib.request.urlopen(API, timeout=30)).get("items", [])
+        return json.load(urllib.request.urlopen(API, timeout=40)).get("items", [])
     except Exception as e:
         print("api error:", e, file=sys.stderr); return []
 
 def state_color(s):
     return {"succeeded":"#4ade80","failed":"#f87171","running":"#60a5fa",
-            "starting":"#fbbf24","pending":"#94a3b8","importing":"#94a3b8"}.get(s,"#64748b")
+            "starting":"#fbbf24","pending":"#94a3b8","importing":"#94a3b8",
+            "waiting":"#94a3b8","canceled":"#475569"}.get(s,"#64748b")
 
-def esc(s): return s.replace("&","&amp;").replace("<","&lt;")
+def esc(s): return html.escape(str(s), quote=False)
 
-builds = fetch()
-latest = {}
-for b in sorted(builds, key=lambda x: x.get("id",0)):
-    name = b.get("source_package",{}).get("name") or "?"
-    st   = b.get("state","?")
-    latest[name] = (st, b.get("id"), b.get("ended_on") or b.get("submitted_on"))
+def dot(state):
+    c = {"succeeded":"#4ade80","failed":"#f87171","running":"#60a5fa",
+         "starting":"#fbbf24","pending":"#94a3b8","importing":"#94a3b8",
+         "waiting":"#94a3b8","canceled":"#475569"}.get(state,"#64748b")
+    return f"<span class='dot' style='background:{c}'></span>"
+
+def bar(cur, tot, label, color="#4ade80"):
+    tot = max(tot,1); pct = min(int(cur*100/tot),100); n = int(pct*34/100)
+    b = "▓"*n + "░"*(34-n)
+    return (f"<div class='bar'><span class='bl'>{label}</span>"
+            f"<span class='bf' style='color:{color}'>{b}</span> {pct}% ({cur}/{tot})</div>")
+
+builds = sorted(fetch(), key=lambda b: b.get("id",0))
+
+latest = {}   # name -> последний билд
+for b in builds:
+    n = (b.get("source_package") or {}).get("name") or "?"
+    latest[n] = {"state": b.get("state","?"), "id": b.get("id"), "ts": b.get("ended_on") or b.get("submitted_on") or 0}
 
 counts = {}
-for n,(s,i,t) in latest.items(): counts[s] = counts.get(s,0)+1
-total = len(latest)
-ok = counts.get("succeeded",0)
+for n,d in latest.items(): counts[d["state"]] = counts.get(d["state"],0)+1
+total = len(latest); ok = counts.get("succeeded",0)
 
-rows=[]
+states_rows = "".join(
+    f"<div class='chip'><span class='dot' style='background:{state_color(s)}'></span>{esc(s)}: {c}</div>"
+    for s,c in sorted(counts.items(), key=lambda kv:-kv[1]))
+
+pkg_rows = ""
 for n in sorted(latest):
-    s,bid,t = latest[n]
-    tstr = datetime.datetime.fromtimestamp(t).strftime("%d.%m %H:%M") if isinstance(t,(int,float)) and t else ""
-    rows.append(f"<tr><td>{esc(n)}</td><td><span class='dot' style='background:{state_color(s)}'></span>{s}"
-                f"</td><td class='dim'>#{bid} · {tstr}</td></tr>")
-rows_html="\n".join(rows)
+    d = latest[n]
+    tstr = datetime.datetime.fromtimestamp(d["ts"]).strftime("%d.%m %H:%M") if isinstance(d["ts"],(int,float)) and d["ts"] else "—"
+    pkg_rows += (f"<tr><td><b>{esc(n)}</b></td>"
+                 f"<td>{dot(d['state'])}{esc(d['state'])}</td>"
+                 f"<td class='dim'>#{d['id']} · {tstr}</td></tr>")
 
-bars="".join(f"<div class='chip'><span style='background:{state_color(s)}'></span>{s}: {c}</div>"
-             for s,c in sorted(counts.items(), key=lambda kv:-kv[1]))
+now = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
 
-now=datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
-html=f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
+html = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta http-equiv="refresh" content="300">
-<title>candy-rpm dashboard</title>
+<title>🍬 candy-rpm panel</title>
 <style>
- body{{background:#0f172a;color:#e2e8f0;font-family:'JetBrains Mono',monospace;margin:24px}}
- h1{{background:linear-gradient(90deg,#ff6ec7,#a78bfa,#38bdf8);-webkit-background-clip:text;color:transparent}}
- .grid{{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}}
- .chip{{background:#1e293b;border-radius:8px;padding:6px 12px}} .chip span{{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}}
- table{{border-collapse:collapse;width:100%}} td{{padding:5px 10px;border-bottom:1px solid #1e293b}}
- .dot{{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}}
- .dim{{color:#64748b}} a{{color:#38bdf8;text-decoration:none}}
-</style></head><body>
-<h1>🍬 candy-rpm</h1>
-<p>Обновляется автоматически каждые 5 минут · сгенерировано {now} ·
-<a href="https://github.com/arcticlore/candy-rpm">исходники</a></p>
-<div class="grid">{bars}</div>
-<h2>Пакеты ({total})</h2>
-<table>{rows_html}</table>
-<p class="dim">Подключение: dnf copr enable arcticlore/candy</p>
-</body></html>"""
+ body{{background:#0b1220;color:#dbe4f0;font-family:'JetBrains Mono',Consolas,monospace;margin:24px}}
+ h1{{font-size:30px;margin:6px 0}} h2{{color:#7dd3fc;margin-top:28px}}
+ .wrap{{max-width:1100px;margin:auto}}
+ .banner{{background:linear-gradient(135deg,#ff6ec7,#a78bfa,#38bdf8);border-radius:12px;padding:2px;margin-bottom:18px}}
+ .inner{{background:#0b1220;border-radius:11px;padding:16px 22px}}
+ a{{color:#7dd3fc;text-decoration:none}} code{{color:#fbbf24}}
+ .grid{{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 22px}}
+ .chip{{background:#16202e;border-radius:8px;padding:7px 13px;font-size:14px}}
+ .chip .dot{{margin-right:7px}}
+ table{{border-collapse:collapse;width:100%;font-size:14px}}
+ th,td{{padding:6px 12px;text-align:left;border-bottom:1px solid #16202e}}
+ th{{color:#7dd3fc;font-weight:normal}}
+ .bar{{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:14px}}
+ .bl{{width:230px;color:#93a6bd}} .bf{{letter-spacing:2px}}
+ .dot{{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}}
+ .dim{{color:#55637a}}
+</style></head><body><div class="wrap">
+<div class="banner"><div class="inner"><h1>🍬 candy-rpm · панель конвейера</h1>
+<span class="dim">автообновление каждые 5 мин · сгенерировано {now} ·
+<a href="https://github.com/arcticlore/candy-rpm">github</a></span></div></div>
+
+<h2>📊 Прогресс передачи в COPR</h2>
+{bar(ok,total,"зелёные пакеты","#4ade80")}
+{bar(total-ok,total,"не зелёные (фиксятся)","#38bdf8")}
+
+<h2>⚙️ Состояния билдов</h2>
+<div class="grid">{states_rows}</div>
+
+<h2>🧩 Пакеты ({total})</h2>
+<table><tr><th>пакет</th><th>статус</th><th>билд</th></tr>
+{pkg_rows}
+</table>
+<p class="dim">Подключение: <code>sudo dnf copr enable arcticlore/candy</code></p>
+</div></body></html>"""
 
 os.makedirs("docs", exist_ok=True)
 open("docs/index.html","w").write(html)
-print(f"docs/index.html: {total} пакетов")
+print(f"docs/index.html обновлён: пакетов {total}, succeeded {ok}")

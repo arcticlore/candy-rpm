@@ -2321,7 +2321,8 @@
    ],
    "gpkg": ".",
    "use": "sudo trip example.com",
-   "prio": 1
+   "prio": 1,
+   "cdir": "crates/trippy"
   },
   {
    "name": "watchexec",

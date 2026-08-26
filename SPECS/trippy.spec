@@ -1,5 +1,5 @@
 Name:           trippy
-Version:        0.13.0
+Version:        0
 Release:        1%{?dist}
 Summary:        Гибрид mtr/traceroute с живым TUI
 
@@ -26,13 +26,15 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n trippy-0.13.0
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
+cd crates/trippy
 %cargo_build
 
 %install
+cd crates/trippy
 %cargo_install
 # бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
 rm -rf %{buildroot}%{_datadir}/cargo
@@ -45,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/trippy
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0.13.0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

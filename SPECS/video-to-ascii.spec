@@ -1,5 +1,5 @@
 Name:           video-to-ascii
-Version:        1.3.1
+Version:        0
 Release:        1%{?dist}
 Summary:        Играть видео прямо в терминале ASCII-символами
 
@@ -28,7 +28,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n video_to_ascii-1.3.1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %pyproject_wheel
@@ -43,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/video-to-ascii
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 1.3.1-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

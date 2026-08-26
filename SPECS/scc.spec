@@ -1,5 +1,5 @@
 Name:           scc
-Version:        4.0.0
+Version:        0
 Release:        1%{?dist}
 Summary:        Счётчик строк кода по языкам — быстрее cloc
 
@@ -23,7 +23,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n scc-4.0.0
+%autosetup -N -a1 -n %{name}-%{version}
 
 %build
 export GOFLAGS='-mod=vendor'
@@ -43,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/scc
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 4.0.0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
