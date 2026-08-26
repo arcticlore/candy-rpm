@@ -10,6 +10,8 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  make
+BuildRequires:  autoconf
+BuildRequires:  automake
 BuildRequires:  cairo-devel
 BuildRequires:  gcc
 BuildRequires:  glib2-devel

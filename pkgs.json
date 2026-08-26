@@ -94,6 +94,7 @@
    "prio": 1,
    "use": "yazi — файловый менеджер; выход Q",
    "br": [
+    "cargo-rpm-macros",
     "git-core"
    ],
    "build_env": [
@@ -194,7 +195,9 @@
    "prio": 1,
    "use": "gping 1.1.1.1 — ping с графиком",
    "cdir": "gping",
-   "br": [],
+   "br": [
+    "cargo-rpm-macros"
+   ],
    "alt": "cargo install gping"
   },
   {
@@ -452,6 +455,7 @@
    "prio": 2,
    "br": [
     "ncurses-devel",
+    "pkgconf-pkg-config",
     "sqlite3-devel"
    ],
    "use": "albafetch"
@@ -485,7 +489,9 @@
    "verify": true,
    "prio": 2,
    "use": "animfetch — анимированный fetch",
-   "br": []
+   "br": [
+    "cargo-rpm-macros"
+   ]
   },
   {
    "name": "archey4",
@@ -966,7 +972,9 @@
    "tagp": "v",
    "summary": "Fire animation in your terminal",
    "license": "GPL-3.0-or-later",
-   "files": [],
+   "files": [
+    "tfire.py"
+   ],
    "req": [
     "bash"
    ],
@@ -1237,8 +1245,8 @@
    "exp": true,
    "prio": 9,
    "use": "diagon math — интерактивные ASCII-диаграммы",
-   "enabled": false,
-   "note": "cmake тянет git-сабмодули — COPR без сети; ждать vendored release"
+   "enabled": "false",
+   "note": "cmake FetchContent требует сеть при сборке — отключён до vendored релиза"
   },
   {
    "name": "tulizu",
@@ -1300,6 +1308,8 @@
    "summary": "Visualize processes as a circular tree wallpaper",
    "license": "GPL-2.0-or-later",
    "br": [
+    "autoconf",
+    "automake",
     "cairo-devel",
     "gcc",
     "glib2-devel",
@@ -1594,6 +1604,7 @@
    "exp": true,
    "prio": 9,
    "br": [
+    "cargo-rpm-macros",
     "fontconfig-devel",
     "glslang",
     "pkgconf-pkg-config"

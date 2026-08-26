@@ -13,6 +13,7 @@ BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  cargo-rpm-macros
 BuildRequires:  git-core
 
 %description

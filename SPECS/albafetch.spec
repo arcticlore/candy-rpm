@@ -11,6 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  meson
 BuildRequires:  gcc
 BuildRequires:  ncurses-devel
+BuildRequires:  pkgconf-pkg-config
 BuildRequires:  sqlite3-devel
 
 %description

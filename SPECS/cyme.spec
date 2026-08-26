@@ -1,5 +1,5 @@
 Name:           cyme
-Version:        3.0.1
+Version:        0
 Release:        1%{?dist}
 Summary:        lsusb с красивым выводом и фильтрами
 
@@ -27,7 +27,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n cyme-3.0.1
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/cyme
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 3.0.1-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

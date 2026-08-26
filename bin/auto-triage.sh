@@ -7,6 +7,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 LOG=logs/auto-triage.log
 mkdir -p logs/builder state
+exec 8>state/.triage.lock
+flock -n 8 || { echo "[SKIP] другой триаж уже работает"; exit 0; }
 
 TOKEN=""
 [ -f ~/.config/candy/push-token ] && TOKEN=$(grep -o 'ghp_[A-Za-z0-9]*' ~/.config/candy/push-token | head -1)
@@ -34,7 +36,8 @@ for x in p["packages"]:
         if v not in lst: x[f]=lst+[v]
     else:
         x[f]=val
-json.dump(p,open("pkgs.json","w"),ensure_ascii=False,indent=1)
+json.dump(p,open("pkgs.json.tmp","w"),ensure_ascii=False,indent=1)
+import os as _os; _os.replace("pkgs.json.tmp","pkgs.json")
 PY
 }
 
@@ -42,13 +45,15 @@ detect_cdir() {
     local n="$1" f cand safe
     f=$(ls SOURCES/"$n"-*.tar.gz 2>/dev/null | head -1)
     [ -n "$f" ] || return 0
-    while read -r cand; do
-        [[ "$cand" == */Cargo.toml ]] || continue
-        tar xzf "$f" -O "$cand" 2>/dev/null | grep -q "\[\[bin\]\]" || continue
-        safe=${cand#*/}; safe=${safe%/Cargo.toml}
-        if [ "$safe" = "$(echo "$safe" | tr -cd 'A-Za-z0-9._/-')" ]; then echo "$safe"; fi
-        return 0
-    done < <(tar tzf "$f" 2>/dev/null | grep "Cargo.toml$" | cut -d/ -f1 | sort -u | sed 's|$|/Cargo.toml|')
+    while read -r cm; do
+        d=$(dirname "$cm")
+        tar xzf "$f" -O "$cm" 2>/dev/null | grep -q "\[\[bin\]\]" || continue
+        safe=$(echo "$d" | sed 's|^[^/]*/||')
+        if [ "$safe" = "$(echo "$safe" | tr -cd 'A-Za-z0-9._/-')" ] && [ -n "$safe" ]; then
+            echo "$safe"; return 0
+        fi
+    done < <(tar tzf "$f" 2>/dev/null | grep "/Cargo.toml$")
+
 }
 
 # ---- база сигнатур: REGEX -> TAG ----
@@ -116,7 +121,8 @@ p=json.load(open("pkgs.json"))
 for x in p["packages"]:
     if x["name"]==n and isinstance(x.get("files"),list):
         x["files"]=[e for e in x["files"] if e!=b]
-json.dump(p,open("pkgs.json","w"),ensure_ascii=False,indent=1)
+json.dump(p,open("pkgs.json.tmp","w"),ensure_ascii=False,indent=1)
+import os as _os; _os.replace("pkgs.json.tmp","pkgs.json")
 PY
                 changed_meta=1; log "[AUTO] $n: files[] $base -> $cand"
             else
