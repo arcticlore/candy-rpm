@@ -14,6 +14,7 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 
 # NOTE: проверить BR openssl/rustls при сборке

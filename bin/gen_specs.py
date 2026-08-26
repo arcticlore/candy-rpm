@@ -143,7 +143,7 @@ def body_python_script(m, br, req):
 
 
 def body_cargo(m, br, req):
-    br = ["cargo", "rust", "gcc", "cargo-rpm-macros"] + br
+    br = ["cargo", "rust", "gcc", "gcc-c++", "cargo-rpm-macros"] + br
     out = []
     add_br_req(out, br, req)
     cdir = m.get("cdir")

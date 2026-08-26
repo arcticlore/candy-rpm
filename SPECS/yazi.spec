@@ -13,6 +13,7 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  git-core
