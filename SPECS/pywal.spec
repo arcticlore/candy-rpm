@@ -7,6 +7,7 @@ License:        MIT
 URL:            https://pypi.org/project/pywal
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros

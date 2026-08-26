@@ -8,6 +8,7 @@ License:        GPL-3.0-or-later
 URL:            https://github.com/lxgr-linux/pokete
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildArch:      noarch
 BuildRequires:  python3

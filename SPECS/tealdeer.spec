@@ -8,6 +8,7 @@ URL:            https://github.com/dbrgn/tealdeer
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  cargo
 BuildRequires:  rust

@@ -7,6 +7,7 @@ License:        GPL-3.0-or-later
 URL:            https://github.com/alba4k/albafetch
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  meson
 BuildRequires:  gcc

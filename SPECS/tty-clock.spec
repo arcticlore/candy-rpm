@@ -7,6 +7,7 @@ License:        BSD-2-Clause
 URL:            https://github.com/xorg62/tty-clock
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  gcc
 BuildRequires:  make

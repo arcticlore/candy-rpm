@@ -2251,7 +2251,7 @@
   },
   {
    "name": "mise",
-   "eco": "go",
+   "eco": "cargo",
    "host": "github",
    "slug": "jdx/mise",
    "tagp": "v",
@@ -2260,7 +2260,6 @@
    "bins": [
     "mise"
    ],
-   "gpkg": ".",
    "use": "mise use --pin node@22",
    "prio": 1,
    "alt": "curl https://mise.run | sh"
@@ -2381,7 +2380,9 @@
     "tetris"
    ],
    "use": "tetris — стрелки и пробел",
-   "prio": 4
+   "prio": 9,
+   "enabled": false,
+   "note": "Апстрим на Haskell (Setup.hs) — в COPR не собрать без GHC"
   },
   {
    "name": "diagram",

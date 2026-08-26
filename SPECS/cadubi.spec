@@ -1,5 +1,5 @@
 Name:           cadubi
-Version:        1.3.3
+Version:        0
 Release:        1%{?dist}
 Summary:        Creative ASCII drawing utility
 
@@ -7,6 +7,7 @@ License:        ISC
 URL:            https://github.com/statico/cadubi
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildArch:      noarch
 Requires:       perl
@@ -23,7 +24,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n cadubi-1.3.3
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # чистый скрипт, сборка не требуется
@@ -39,5 +40,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/cadubi
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 1.3.3-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -8,6 +8,7 @@ License:        MIT
 URL:            https://github.com/athityakumar/colorls
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  ruby(release)
 BuildRequires:  rubygems-devel

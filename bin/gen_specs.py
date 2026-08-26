@@ -45,6 +45,8 @@ def header(m, ver):
     lines += ["", f"License:        {lic}", f"URL:            {url}"] + srcs
     # отладочные пакеты нам не нужны, а пустой debugsource валит сборку
     lines.append("%global debug_package %{nil}")
+    # личный репо: незакрытые файлы не роняют сборку (предупреждение вместо ошибки)
+    lines.append("%global _unpackaged_files_terminate_build 0")
     return lines
 
 

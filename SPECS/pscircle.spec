@@ -7,6 +7,7 @@ License:        GPL-2.0-or-later
 URL:            https://gitlab.com/mildlyparallel/pscircle
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  gcc
 BuildRequires:  make

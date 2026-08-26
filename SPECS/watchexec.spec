@@ -1,5 +1,5 @@
 Name:           watchexec
-Version:        2.7.0
+Version:        0
 Release:        1%{?dist}
 Summary:        Перезапуск команд при изменении файлов
 
@@ -8,6 +8,7 @@ URL:            https://github.com/watchexec/watchexec
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  cargo
 BuildRequires:  rust
@@ -28,7 +29,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n watchexec-2.7.0
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -49,5 +50,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/watchexec
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 2.7.0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

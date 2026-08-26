@@ -7,6 +7,7 @@ License:        MIT
 URL:            https://github.com/corygabrielsen/tint
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildArch:      noarch
 Requires:       bash

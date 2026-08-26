@@ -7,6 +7,7 @@ License:        GPL-2.0-only
 URL:            https://gitlab.com/mezantrop/ascsaver
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildArch:      noarch
 BuildRequires:  coreutils

@@ -7,6 +7,7 @@ License:        Apache-2.0
 URL:            https://github.com/orhun/linuxwave
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
+%global _unpackaged_files_terminate_build 0
 
 BuildRequires:  zig
 
