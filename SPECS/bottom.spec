@@ -1,5 +1,5 @@
 Name:           bottom
-Version:        0
+Version:        0.14.8
 Release:        1%{?dist}
 Summary:        Cross-platform graphical process/system monitor
 
@@ -31,7 +31,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n bottom-0.14.8
 %cargo_prep -v vendor
 
 %build
@@ -50,5 +50,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/btm
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0.14.8-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

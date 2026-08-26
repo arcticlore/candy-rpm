@@ -52,6 +52,15 @@ for N in $(enabled_pkgs); do
         continue
     fi
 
+    # ЗАЩИТА: если последняя сборка пакета в COPR полностью успешна — не трогаем
+    LASTSTATE=$(copr-cli list-builds arcticlore/candy 2>/dev/null | awk -v p="$N" '$2==p{print $NF; exit}')
+    if [ "$LASTSTATE" = "succeeded" ]; then
+        log "[SKIP] $N: уже полностью собран (succeeded) — не трогаю"
+        jq --arg n "$N" --arg v "$NEW" '.[$n] = {ver: $v, ts: now, locked: true}' "$STATE" > "$STATE.tmp" \
+            && mv "$STATE.tmp" "$STATE"
+        continue
+    fi
+
     if [ "$DRY" = 1 ]; then
         echo "[DRY] $N: $OLD -> $NEW"
         CHANGED=$((CHANGED+1)); continue
