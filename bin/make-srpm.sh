@@ -152,9 +152,10 @@ npm)
 esac
 fi
 
-# список файлов тарбола — источник правды для files[] в спеке
-export CANDY_FILELIST
-CANDY_FILELIST=$(tar tzf "$SRC" 2>/dev/null | sed "s|^[^/]*/||" | grep -vE "^$" || true)
+# список файлов тарбола -> файл (не env: у musikcube тысячный лист ломал E2BIG)
+FL="$RUNDIR/filelist.txt"
+tar tzf "$SRC" 2>/dev/null | sed "s|^[^/]*/||" | grep -vE "^$" > "$FL" || true
+export CANDY_FILELIST_PATH="$FL"
 
 # автодетект верхнего каталога тарбола
 if TD=$(tar tzf "$SRC" 2>/dev/null | head -1 | cut -d/ -f1); [ -n "${TD:-}" ] && [ "${TD:-x}" != "$SRC" ]; then

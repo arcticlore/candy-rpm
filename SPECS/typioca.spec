@@ -1,18 +1,15 @@
 Name:           typioca
-Version:        0
+Version:        3.1.0
 Release:        1%{?dist}
 Summary:        Минималистичный тест скорости печати
 
 License:        MIT
 URL:            https://github.com/bloznelis/typioca
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-vendor-%{version}.tar.gz
+Source1:        %{name}-node-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  cargo-rpm-macros
+BuildRequires:  golang
 
 %description
 Минималистичный тест скорости печати
@@ -26,16 +23,17 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
-%cargo_prep -v vendor
+%autosetup -N -a1 -n typioca-3.1.0
 
 %build
-%cargo_build
+export GOFLAGS='-mod=vendor'
+export CGO_ENABLED=0
+export GOPATH=$(mktemp -d)
+export GOCACHE=$GOPATH/cache
+go build -trimpath -ldflags '-s -w' -o typioca .
 
 %install
-%cargo_install
-# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
-rm -rf %{buildroot}%{_datadir}/cargo
+install -Dpm0755 typioca %{buildroot}%{_bindir}/typioca
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
@@ -45,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/typioca
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 3.1.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

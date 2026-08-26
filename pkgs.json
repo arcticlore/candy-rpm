@@ -2020,7 +2020,7 @@
   },
   {
    "name": "typioca",
-   "eco": "cargo",
+   "eco": "go",
    "host": "github",
    "slug": "bloznelis/typioca",
    "tagp": "",
@@ -2030,7 +2030,8 @@
     "typioca"
    ],
    "use": "typioca — печать на скорость",
-   "prio": 3
+   "prio": 3,
+   "gpkg": "."
   },
   {
    "name": "bacon",
@@ -2143,7 +2144,7 @@
   },
   {
    "name": "zk",
-   "eco": "cargo",
+   "eco": "go",
    "host": "github",
    "slug": "zk-org/zk",
    "tagp": "v",
@@ -2155,7 +2156,8 @@
    "fallback": "commit",
    "verify": true,
    "use": "zk new; zk list",
-   "prio": 2
+   "prio": 2,
+   "gpkg": "."
   },
   {
    "name": "cyme",

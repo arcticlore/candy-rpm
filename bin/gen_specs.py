@@ -73,7 +73,8 @@ def body_script(m, br, req):
     out += ["", prep(m), "", "%build", "# чистый скрипт, сборка не требуется", "", "%install"]
     targets = m.get("files") or []
     import os
-    fl = [l for l in os.environ.get("CANDY_FILELIST","").split("\n") if l]
+    p_ = os.environ.get("CANDY_FILELIST_PATH","")
+    fl = [l for l in open(p_).read().split("\n")] if p_ and os.path.exists(p_) else []
     for f in targets:
         base = f.split("/")[-1]
         if fl:
