@@ -35,10 +35,12 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
+cd yazi-build
 export VERGEN_GIT_SHA="copr-build"
 %cargo_build
 
 %install
+cd yazi-build
 %cargo_install
 # бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
 rm -rf %{buildroot}%{_datadir}/cargo

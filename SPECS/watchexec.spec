@@ -1,10 +1,10 @@
-Name:           wallust
+Name:           watchexec
 Version:        0
 Release:        1%{?dist}
-Summary:        Generate colorschemes from images (pywal successor)
+Summary:        Перезапуск команд при изменении файлов
 
-License:        MIT
-URL:            https://codeberg.org/explosion-mental/wallust
+License:        Apache-2.0
+URL:            https://github.com/watchexec/watchexec
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -14,11 +14,10 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
 
-%description
-Generate colorschemes from images (pywal successor)
+# NOTE: воркспейс; CLI в crates/cli
 
-Официальный способ установки от апстрима / Upstream official install method:
-  cargo install wallust
+%description
+Перезапуск команд при изменении файлов
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -33,9 +32,11 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
+cd crates/cli
 %cargo_build
 
 %install
+cd crates/cli
 %cargo_install
 # бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
 rm -rf %{buildroot}%{_datadir}/cargo
@@ -45,8 +46,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/wallust
-%{_bindir}/salsort
+%{_bindir}/watchexec
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

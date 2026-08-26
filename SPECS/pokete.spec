@@ -1,24 +1,20 @@
-Name:           wallust
+Name:           pokete
 Version:        0
 Release:        1%{?dist}
-Summary:        Generate colorschemes from images (pywal successor)
+Summary:        Покемоны в терминале (полноценная игра)
+# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
-License:        MIT
-URL:            https://codeberg.org/explosion-mental/wallust
+License:        GPL-3.0-or-later
+URL:            https://github.com/lxgr-linux/pokete
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  cargo-rpm-macros
+BuildArch:      noarch
+BuildRequires:  python3
+Requires:       python3
 
 %description
-Generate colorschemes from images (pywal successor)
-
-Официальный способ установки от апстрима / Upstream official install method:
-  cargo install wallust
+Покемоны в терминале (полноценная игра)
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -29,24 +25,23 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
-%cargo_prep -v vendor
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-%cargo_build
+# интерпретируемый модуль, сборки нет
 
 %install
-%cargo_install
-# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
-rm -rf %{buildroot}%{_datadir}/cargo
+mkdir -p %{buildroot}%{python3_sitelib}
+cp -r pokete_src %{buildroot}%{python3_sitelib}/
+install -Dpm0755 pokete_src/pokete.py %{buildroot}%{_bindir}/pokete.py
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/wallust
-%{_bindir}/salsort
+%{python3_sitelib}/pokete_src/
+%{_bindir}/pokete.py
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

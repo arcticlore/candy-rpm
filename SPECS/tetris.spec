@@ -1,10 +1,10 @@
-Name:           wallust
+Name:           tetris
 Version:        0
 Release:        1%{?dist}
-Summary:        Generate colorschemes from images (pywal successor)
+Summary:        Тетрис в терминале
 
 License:        MIT
-URL:            https://codeberg.org/explosion-mental/wallust
+URL:            https://github.com/samtay/tetris
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -15,10 +15,7 @@ BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
 
 %description
-Generate colorschemes from images (pywal successor)
-
-Официальный способ установки от апстрима / Upstream official install method:
-  cargo install wallust
+Тетрис в терминале
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -45,8 +42,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/wallust
-%{_bindir}/salsort
+%{_bindir}/tetris
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

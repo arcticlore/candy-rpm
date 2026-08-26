@@ -100,7 +100,8 @@
    "build_env": [
     "VERGEN_GIT_SHA=\"copr-build\""
    ],
-   "alt": "cargo install yazi-cli или бинарники Releases"
+   "alt": "cargo install yazi-cli или бинарники Releases",
+   "cdir": "yazi-build"
   },
   {
    "name": "lf",
@@ -2233,6 +2234,266 @@
    "summary": "TUI для taskwarrior",
    "license": "MIT",
    "note": "Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого"
+  },
+  {
+   "name": "genact",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "svenstaro/genact",
+   "tagp": "v",
+   "summary": "Генератор безумной активности — притворись хакером",
+   "license": "MIT",
+   "bins": [
+    "genact"
+   ],
+   "use": "genact — Ctrl+C остановить",
+   "prio": 3
+  },
+  {
+   "name": "mise",
+   "eco": "go",
+   "host": "github",
+   "slug": "jdx/mise",
+   "tagp": "v",
+   "summary": "Менеджер рантаймов node/python/ruby — быстрый asdf-killer",
+   "license": "MIT",
+   "bins": [
+    "mise"
+   ],
+   "gpkg": ".",
+   "use": "mise use --pin node@22",
+   "prio": 1,
+   "alt": "curl https://mise.run | sh"
+  },
+  {
+   "name": "bandwhich",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "imsnif/bandwhich",
+   "tagp": "v",
+   "summary": "Какой процесс жрёт сеть — в реальном времени",
+   "license": "MIT",
+   "bins": [
+    "bandwhich"
+   ],
+   "use": "sudo bandwhich -i wlan0",
+   "prio": 1
+  },
+  {
+   "name": "oha",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "hatoo/oha",
+   "tagp": "v",
+   "summary": "HTTP бенчмарк с красивым TUI",
+   "license": "MIT",
+   "bins": [
+    "oha"
+   ],
+   "use": "oha -n 200 https://example.com",
+   "prio": 1
+  },
+  {
+   "name": "scc",
+   "eco": "go",
+   "host": "github",
+   "slug": "boyter/scc",
+   "tagp": "v",
+   "summary": "Счётчик строк кода по языкам — быстрее cloc",
+   "license": "MIT OR Unlicense",
+   "bins": [
+    "scc"
+   ],
+   "gpkg": ".",
+   "use": "scc ./project",
+   "prio": 1
+  },
+  {
+   "name": "trippy",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "fujiapple852/trippy",
+   "tagp": "",
+   "summary": "Гибрид mtr/traceroute с живым TUI",
+   "license": "Apache-2.0 OR MIT",
+   "bins": [
+    "trippy"
+   ],
+   "gpkg": ".",
+   "use": "sudo trip example.com",
+   "prio": 1
+  },
+  {
+   "name": "watchexec",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "watchexec/watchexec",
+   "tagp": "",
+   "summary": "Перезапуск команд при изменении файлов",
+   "license": "Apache-2.0",
+   "bins": [
+    "watchexec"
+   ],
+   "cdir": "crates/cli",
+   "note": "воркспейс; CLI в crates/cli",
+   "use": "watchexec -- make test",
+   "prio": 1
+  },
+  {
+   "name": "rmpc",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mierak/rmpc",
+   "tagp": "v",
+   "summary": "Красивый TUI клиент MPD",
+   "license": "BSD-3-Clause",
+   "bins": [
+    "rmpc"
+   ],
+   "exp": true,
+   "use": "rmpc — нужен запущенный mpd",
+   "prio": 7
+  },
+  {
+   "name": "erdtree",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "solidiquis/erdtree",
+   "tagp": "v",
+   "summary": "Анализ дерева каталогов с размерами",
+   "license": "MIT",
+   "bins": [
+    "ert"
+   ],
+   "use": "ert — размеры по папкам",
+   "prio": 5
+  },
+  {
+   "name": "tetris",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "samtay/tetris",
+   "tagp": "",
+   "summary": "Тетрис в терминале",
+   "license": "MIT",
+   "bins": [
+    "tetris"
+   ],
+   "use": "tetris — стрелки и пробел",
+   "prio": 4
+  },
+  {
+   "name": "diagram",
+   "eco": "go",
+   "host": "github",
+   "slug": "esimov/diagram",
+   "tagp": "v",
+   "summary": "ASCII-диаграммы из текста",
+   "license": "MIT",
+   "bins": [
+    "diagram"
+   ],
+   "gpkg": "./cmd/diagram",
+   "use": "diagram --svg out.svg in.txt",
+   "prio": 4
+  },
+  {
+   "name": "termshot",
+   "eco": "go",
+   "host": "github",
+   "slug": "homeport/termshot",
+   "tagp": "",
+   "summary": "Скриншот команды в виде терминального окна",
+   "license": "MIT",
+   "bins": [
+    "termshot"
+   ],
+   "gpkg": ".",
+   "use": "termshot --out shot.png -- ls -la",
+   "prio": 3
+  },
+  {
+   "name": "peaclock",
+   "eco": "custom",
+   "host": "github",
+   "slug": "octobanana/peaclock",
+   "tagp": "",
+   "summary": "Часы/секундомер/таймер с цветными цифрами",
+   "license": "MIT",
+   "br": [
+    "gcc-c++",
+    "cmake",
+    "make",
+    "ncurses-devel"
+   ],
+   "build_cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build && cp build/peaclock .",
+   "bins": [
+    "peaclock"
+   ],
+   "exp": true,
+   "verify": true,
+   "use": "peaclock",
+   "prio": 8
+  },
+  {
+   "name": "dysk",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Canop/dysk",
+   "tagp": "v",
+   "summary": "df для людей: диски человекочитаемо",
+   "license": "MIT",
+   "bins": [
+    "dysk"
+   ],
+   "use": "dysk — все точки монтирования",
+   "prio": 2
+  },
+  {
+   "name": "video-to-ascii",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "video-to-ascii",
+   "summary": "Играть видео прямо в терминале ASCII-символами",
+   "license": "MIT",
+   "extra_files": [
+    "%{_bindir}/video-to-ascii"
+   ],
+   "use": "video-to-ascii -f clip.mp4 — нужны ffmpeg и portaudio",
+   "note": "нужны ffmpeg и portaudio в системе",
+   "prio": 6
+  },
+  {
+   "name": "pokete",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "lxgr-linux/pokete",
+   "tagp": "",
+   "summary": "Покемоны в терминале (полноценная игра)",
+   "license": "GPL-3.0-or-later",
+   "moddir": "pokete_src",
+   "bins": [
+    "pokete.py"
+   ],
+   "exp": true,
+   "verify": true,
+   "use": "pokete.py",
+   "prio": 8
+  },
+  {
+   "name": "gittype",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "unhappychoice/gittype",
+   "tagp": "v",
+   "summary": "Тренажёр печати на коде твоих репозиториев",
+   "license": "MIT",
+   "bins": [
+    "gittype"
+   ],
+   "exp": true,
+   "use": "gittype в каталоге репо",
+   "prio": 7
   }
  ]
 }

@@ -1,10 +1,11 @@
-Name:           wallust
+Name:           rmpc
 Version:        0
 Release:        1%{?dist}
-Summary:        Generate colorschemes from images (pywal successor)
+Summary:        Красивый TUI клиент MPD
+# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
-License:        MIT
-URL:            https://codeberg.org/explosion-mental/wallust
+License:        BSD-3-Clause
+URL:            https://github.com/mierak/rmpc
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -15,10 +16,7 @@ BuildRequires:  gcc
 BuildRequires:  cargo-rpm-macros
 
 %description
-Generate colorschemes from images (pywal successor)
-
-Официальный способ установки от апстрима / Upstream official install method:
-  cargo install wallust
+Красивый TUI клиент MPD
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -45,8 +43,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/wallust
-%{_bindir}/salsort
+%{_bindir}/rmpc
 
 %changelog
 * Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1

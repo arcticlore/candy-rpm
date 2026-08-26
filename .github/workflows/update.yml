@@ -4,6 +4,10 @@ on:
     - cron: "0 */2 * * *"   # каждые 2 часа
   workflow_dispatch:
 
+permissions:
+  contents: write          # коммит state/спеков/дашборда обратно в репо
+  issues: write            # авто-issue по красным пакетам
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -15,7 +19,7 @@ jobs:
       - name: Install toolchain
         run: |
           dnf install -y copr-cli golang npm jq git cargo rust \
-                         rpm-build rpmdevtools >/dev/null
+                         rpm-build rpmdevtools python3 >/dev/null
 
       - name: Configure COPR
         run: |
@@ -23,13 +27,52 @@ jobs:
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
+      - name: Auto-triage до волн (лечит известные ошибки)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-triage.sh || true
+
       - name: Converge — волны до полной передачи в COPR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDY_PROJ: arcticlore/candy
         run: bin/converge.sh 8   # красным, если что-то так и не улетело
 
-      - name: Upload logs + state
+      - name: Auto-triage после волн
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-triage.sh || true
+
+      - name: Web dashboard (docs/index.html)
+        if: always()
+        run: python3 bin/gen-pages-html.py || true
+
+      - name: Persist state/pkgs/specs/dashboard в репозиторий
+        if: always()
+        run: |
+          git config user.name  "candy-bot"
+          git config user.email "candy-bot@users.noreply.github.com"
+          git add state/state.json pkgs.json SOURCES.md SPECS/ PACKAGES.md docs/index.html || true
+          if ! git diff --cached --quiet; then
+            git commit -qm "nightly sync [skip ci]"
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
+          fi
+
+      - name: Auto-issue failures report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-issue.sh || true
+
+      - name: Telegram summary
+        if: always()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          dnf install -y python3 >/dev/null
+          python3 tools/tg-notify.py "🌙 candy nightly: ${{ job.status }} — детали во вкладке Actions" || true
+
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:

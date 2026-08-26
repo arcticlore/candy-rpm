@@ -1,24 +1,23 @@
-Name:           wallust
-Version:        0
+Name:           video-to-ascii
+Version:        1.3.1
 Release:        1%{?dist}
-Summary:        Generate colorschemes from images (pywal successor)
+Summary:        Играть видео прямо в терминале ASCII-символами
 
 License:        MIT
-URL:            https://codeberg.org/explosion-mental/wallust
+URL:            https://pypi.org/project/video-to-ascii
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  cargo-rpm-macros
+BuildRequires:  python3-devel
+BuildRequires:  pyproject-rpm-macros
+
+%generate_buildrequires
+%pyproject_buildrequires
+
+# NOTE: нужны ffmpeg и portaudio в системе
 
 %description
-Generate colorschemes from images (pywal successor)
-
-Официальный способ установки от апстрима / Upstream official install method:
-  cargo install wallust
+Играть видео прямо в терминале ASCII-символами
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -29,25 +28,20 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
-%cargo_prep -v vendor
+%autosetup -p1 -n video_to_ascii-1.3.1
 
 %build
-%cargo_build
+%pyproject_wheel
 
 %install
-%cargo_install
-# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
-rm -rf %{buildroot}%{_datadir}/cargo
+%pyproject_install
+%pyproject_save_files -l '*'
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
-%files
-%{_licensedir}/%{name}
-
-%{_bindir}/wallust
-%{_bindir}/salsort
+%files -f %{pyproject_files}
+%{_bindir}/video-to-ascii
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 1.3.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
