@@ -73,6 +73,7 @@ for x in meta["packages"]:
         done.append(n)
         continue
 
+    ver = (state.get(n) or {}).get("ver","?")
     need=[]
     for c in CHROOTS:
         key=f"{n}|{c}"
