@@ -41,8 +41,9 @@ def fetch_builds() -> list[dict[str, Any]]:
     """
     try:
         resp = urllib.request.urlopen(API_URL, timeout=40)
-        data = json.loads(resp.read())
-        return data.get("items", [])
+        data: dict[str, Any] = json.loads(resp.read())
+        result: list[dict[str, Any]] = data.get("items", [])
+        return result
     except (urllib.error.URLError, json.JSONDecodeError) as e:
         print(f"api error: {e}", file=sys.stderr)
         return []

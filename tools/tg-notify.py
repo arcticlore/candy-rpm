@@ -42,7 +42,8 @@ def load_config() -> None:
 def load_langs() -> dict[str, str]:
     """Load language preferences."""
     try:
-        return json.loads(LANGF.read_text())
+        result: dict[str, str] = json.loads(LANGF.read_text())
+        return result
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
@@ -55,7 +56,8 @@ def save_langs(d: dict[str, str]) -> None:
 def load_mailmap() -> dict[str, str]:
     """Load mail relay map."""
     try:
-        return json.loads(MAPF.read_text())
+        result: dict[str, str] = json.loads(MAPF.read_text())
+        return result
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
@@ -134,7 +136,8 @@ def api(method: str, **kw: Any) -> dict[str, Any]:
     data = urllib.parse.urlencode(kw).encode()
     try:
         resp = urllib.request.urlopen(url, data=data, timeout=55)
-        return json.loads(resp.read())
+        result: dict[str, Any] = json.loads(resp.read())
+        return result
     except (urllib.error.URLError, json.JSONDecodeError) as e:
         print(f"API error: {e}", file=sys.stderr)
         return {}
@@ -149,7 +152,7 @@ def run(cmd: str) -> str:
 
 
 # Menu keyboard
-MENU_KB = {
+MENU_KB: dict[str, Any] = {
     "keyboard": [
         [
             {"text": "📊 Статус", "style": "primary"},
@@ -169,7 +172,7 @@ MENU_KB = {
 
 
 def send(
-    chat: str, text: str, kb: dict | None = None, html: bool = False
+    chat: str, text: str, kb: dict[str, Any] | None = None, html: bool = False
 ) -> dict[str, Any]:
     """Send message to chat."""
     kw: dict[str, Any] = {"chat_id": chat, "text": text[:4000]}
@@ -182,7 +185,8 @@ def send(
         resp = urllib.request.urlopen(
             f"https://api.telegram.org/bot{TOKEN}/sendMessage", data=data, timeout=25
         )
-        return json.loads(resp.read()).get("result", {})
+        result: dict[str, Any] = json.loads(resp.read()).get("result", {})
+        return result
     except (urllib.error.URLError, json.JSONDecodeError) as e:
         print(f"{chat}: {e}", file=sys.stderr)
         return {}
