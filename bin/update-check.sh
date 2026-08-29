@@ -12,6 +12,12 @@ exec 8>"$LOCK"
 flock -n 8 || { echo "[SKIP] $LOCK занят"; exit 0; }
 [ -f ~/.config/gh-token ] && export GITHUB_TOKEN="$(cat ~/.config/gh-token)"
 
+# Use Go binary if available
+if [ -x bin/candy-check ]; then
+    exec bin/candy-check -root "$ROOT" "$@"
+fi
+
+# Fallback to bash implementation
 PROJ="${CANDY_PROJ:-$(jq -r .project.copr_name pkgs.json)}"
 STATE="state/state.json"
 LOG="logs/update.log"
@@ -39,21 +45,35 @@ log() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
 
 CHANGED=0; FAILED=0; SKIPPED=0
 
-# кеш состояний билдов (один раз на весь прогон)
+# кеш состояний билдов через curl --ipv4 (copr-cli виснет на IPv6)
 declare -A BUILD_STATES
 while read -r _name _state; do
     BUILD_STATES["$_name"]="$_state"
-done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '!seen[$2]++{print $2, $NF}')
+done < <(curl -s --connect-timeout 5 --ipv4 \
+    "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" 2>/dev/null \
+    | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+seen=set()
+for b in d.get('items',[]):
+    n=b['source_package']['name']
+    if n not in seen:
+        seen.add(n)
+        print(n, b['state'])
+" 2>/dev/null)
 
 # запуск чрут-движка для определения нужных чрутов
 CHROOT_PLAN=""
-if [ -f bin/chroot-engine.py ] && python3 -c "import concurrent.futures" 2>/dev/null; then
+if [ -x bin/candy-engine ]; then
+    log "[ENGINE] запуск candy-engine..."
+    bin/candy-engine -root "$ROOT" > logs/chroot-engine-out.log 2>&1 || true
+elif [ -f bin/chroot-engine.py ] && python3 -c "import concurrent.futures" 2>/dev/null; then
     log "[ENGINE] запуск chroot-engine..."
     python3 bin/chroot-engine.py > logs/chroot-engine-out.log 2>&1 || true
-    if [ -f logs/chroot-plan.json ]; then
-        CHROOT_PLAN=logs/chroot-plan.json
-        log "[ENGINE] план: $(jq -r '.plan | keys | length' "$CHROOT_PLAN" 2>/dev/null || echo 0) пакетов в плане"
-    fi
+fi
+if [ -f logs/chroot-plan.json ]; then
+    CHROOT_PLAN=logs/chroot-plan.json
+    log "[ENGINE] план: $(jq -r '.plan | keys | length' "$CHROOT_PLAN" 2>/dev/null || echo 0) пакетов в плане"
 fi
 
 for N in $(enabled_pkgs); do
@@ -86,16 +106,24 @@ for N in $(enabled_pkgs); do
 
     # Версия не изменилась и FORCE=0
     if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ]; then
-        # failed — retry с cooldown 30 мин
-        if [ "$LASTSTATE" = "failed" ]; then
-            LAST_TS=$(jq -r --arg n "$N" '.[$n].ts // 0' "$STATE" 2>/dev/null || echo 0)
+        # failed ИЛИ нет кеша (никогда не отправлялся/build lost) — retry с cooldown
+        if [ "$LASTSTATE" = "failed" ] || [ -z "$LASTSTATE" ]; then
+            IS_LOCKED=$(jq -r --arg n "$N" '.[$n].locked // false' "$STATE" 2>/dev/null)
+            if [ "$IS_LOCKED" = "true" ]; then
+                continue  # залоченный — не трогаем
+            fi
+            LAST_TS=$(jq -r --arg n "$N" '(.[$n].ts // 0) | floor' "$STATE" 2>/dev/null || echo 0)
             NOW_TS=$(date +%s)
             COOLDOWN=1800
-            if [ $((NOW_TS - LAST_TS)) -lt $COOLDOWN ]; then
-                log "[SKIP] $N: failed, cooldown ещё $(( (COOLDOWN - NOW_TS + LAST_TS) / 60 )) мин"
+            if [ $((NOW_TS - LAST_TS)) -lt $COOLDOWN ] && [ "$LAST_TS" -gt 0 ]; then
+                log "[SKIP] $N: failed/новый, cooldown ещё $(( (COOLDOWN - NOW_TS + LAST_TS) / 60 )) мин"
                 continue
             fi
-            log "[RETRY] $N: failed, cooldown прошёл — пересборка"
+            if [ -z "$LASTSTATE" ]; then
+                log "[SUBMIT] $N: нет кеша COPR — отправляю впервые"
+            else
+                log "[RETRY] $N: failed, cooldown прошёл — пересборка"
+            fi
         else
             # не failed и версия та же — пропускаем
             continue
