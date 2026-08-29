@@ -65,49 +65,41 @@ for N in $(enabled_pkgs); do
         log "[WARN] $N: версия недоступна (репо переехало/404?) — пропуск"
         SKIPPED=$((SKIPPED+1)); continue
     fi
-    if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ]; then
-        continue
-    fi
 
-    # ЗАЩИТА: проверяем состояние последней сборки в COPR
+    # Сначала определяем состояние последней сборки (ДО проверки версии!)
     LASTSTATE="${BUILD_STATES[$N]:-}"
-    
-    # Если последняя сборка успешна — не трогаем
+
+    # succeeded — не трогаем, помечаем locked
     if [ "$LASTSTATE" = "succeeded" ]; then
-        log "[SKIP] $N: уже полностью собран (succeeded) — не трогаю"
+        log "[SKIP] $N: уже собран (succeeded)"
         jq --arg n "$N" --arg v "$NEW" '.[$n] = {ver: $v, ts: now, locked: true}' "$STATE" > "$STATE.tmp" \
             && mv "$STATE.tmp" "$STATE"
         continue
     fi
-    
-    # Если сборка в процессе (running/starting) — не трогаем
-    if [ "$LASTSTATE" = "running" ] || [ "$LASTSTATE" = "starting" ]; then
-        log "[SKIP] $N: сборка в процессе ($LASTSTATE) — не трогаю"
+
+    # running/starting/pending/importing — ждём
+    if [ "$LASTSTATE" = "running" ] || [ "$LASTSTATE" = "starting" ] || \
+       [ "$LASTSTATE" = "pending" ] || [ "$LASTSTATE" = "importing" ]; then
+        log "[SKIP] $N: сборка в процессе ($LASTSTATE)"
         continue
     fi
-    
-    # Если сборка pending/importing — не трогаем (ждет очереди)
-    if [ "$LASTSTATE" = "pending" ] || [ "$LASTSTATE" = "importing" ]; then
-        log "[SKIP] $N: ожидает очереди ($LASTSTATE) — не трогаю"
-        continue
-    fi
-    
-    # Если версия не изменилась и сборка не failed — пропускаем
-    if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ] && [ "$LASTSTATE" != "failed" ]; then
-        continue
-    fi
-    
-    # Если версия не изменилась, но сборка failed — пробуем пересобрать (с cooldown)
-    if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ] && [ "$LASTSTATE" = "failed" ]; then
-        # Проверяем cooldown: не чаще 1 раза в 30 минут
-        LAST_TS=$(jq -r --arg n "$N" '.[$n].ts // 0' "$STATE" 2>/dev/null || echo 0)
-        NOW_TS=$(date +%s)
-        COOLDOWN=1800  # 30 минут
-        if [ $((NOW_TS - LAST_TS)) -lt $COOLDOWN ]; then
-            log "[SKIP] $N: failed, но cooldown ($(( (COOLDOWN - NOW_TS + LAST_TS) / 60 )) мин)"
+
+    # Версия не изменилась и FORCE=0
+    if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ]; then
+        # failed — retry с cooldown 30 мин
+        if [ "$LASTSTATE" = "failed" ]; then
+            LAST_TS=$(jq -r --arg n "$N" '.[$n].ts // 0' "$STATE" 2>/dev/null || echo 0)
+            NOW_TS=$(date +%s)
+            COOLDOWN=1800
+            if [ $((NOW_TS - LAST_TS)) -lt $COOLDOWN ]; then
+                log "[SKIP] $N: failed, cooldown ещё $(( (COOLDOWN - NOW_TS + LAST_TS) / 60 )) мин"
+                continue
+            fi
+            log "[RETRY] $N: failed, cooldown прошёл — пересборка"
+        else
+            # не failed и версия та же — пропускаем
             continue
         fi
-        log "[RETRY] $N: failed, версия не изменилась — пробуем пересобрать"
     fi
 
     if [ "$DRY" = 1 ]; then
