@@ -1,52 +1,148 @@
 #!/usr/bin/env python3
-"""gen-pages-html.py v3 — веб-панель с JS-фильтрами, поиском и сортировкой.
-Данные: публичный API COPR (без авторизации). Автообновление каждые 5 минут."""
-import html as h, json, sys, urllib.request, datetime, os
+"""Web dashboard generator v4 — panel with JS filters, search, and sorting.
 
-OWNER, PROJECT = "arcticlore", "candy"
-API = f"https://copr.fedorainfracloud.org/api_3/build/list?ownername={OWNER}&projectname={PROJECT}&limit=1000"
+Data source: Public COPR API (no auth). Auto-refresh every 5 minutes.
+"""
 
-def fetch():
-    try: return json.load(urllib.request.urlopen(API, timeout=40)).get("items", [])
-    except Exception as e: print("api error:", e, file=sys.stderr); return []
+from __future__ import annotations
 
-def sc(s):
-    return {"succeeded":"#4ade80","failed":"#f87171","running":"#60a5fa",
-            "starting":"#fbbf24","pending":"#94a3b8","importing":"#94a3b8",
-            "waiting":"#94a3b8","canceled":"#475569"}.get(s,"#64748b")
+import datetime
+import html as h
+import json
+import sys
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
-def dot(s):
-    return f"<span class='dot' style='background:{sc(s)}'></span>"
+# Configuration
+OWNER = "arcticlore"
+PROJECT = "candy"
+API_URL = (
+    f"https://copr.fedorainfracloud.org/api_3/build/list"
+    f"?ownername={OWNER}&projectname={PROJECT}&limit=1000"
+)
 
-def bar(cur,tot,label,col="#4ade80"):
-    tot=max(tot,1); pct=min(int(cur*100/tot),100); n=int(pct*34/100)
-    b="▓"*n+"░"*(34-n)
-    return (f"<div class='bar'><span class='bl'>{label}</span>"
-            f"<span class='bf' style='color:{col}'>{b}</span> {pct}% ({cur}/{tot})</div>")
 
-builds=sorted(fetch(), key=lambda b:b.get("id",0))
-latest={}
-for b in builds:
-    n=(b.get("source_package") or {}).get("name") or "?"
-    latest[n]={"state":b.get("state","?"),"id":b.get("id"),"ts":b.get("ended_on") or b.get("submitted_on") or 0}
+@dataclass
+class BuildInfo:
+    """Build information for a package."""
 
-counts={}
-for n,d in latest.items(): counts[d["state"]]=counts.get(d["state"],0)+1
-total=len(latest); ok=counts.get("succeeded",0)
+    state: str
+    build_id: int
+    timestamp: int | float | None
 
-states_chips="".join(
-    f"<button class='chip' data-filter='{s}' onclick=\"filterState('{s}')\"><span class='dot' style='background:{sc(s)}'></span>{h.escape(s)}: {c}</button>"
-    for s,c in sorted(counts.items(),key=lambda kv:-kv[1]))
 
-pkg_rows=""
-for n in sorted(latest):
-    d=latest[n]
-    tstr=datetime.datetime.fromtimestamp(d["ts"]).strftime("%d.%m %H:%M") if isinstance(d["ts"],(int,float)) and d["ts"] else "—"
-    pkg_rows+=f"<tr data-state='{d['state']}'><td><b>{h.escape(n)}</b></td><td>{dot(d['state'])}{h.escape(d['state'])}</td><td class='dim'>#{d['id']} · {tstr}</td></tr>\n"
+def fetch_builds() -> list[dict[str, Any]]:
+    """Fetch builds from COPR API.
 
-now=datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+    Returns:
+        List of build dictionaries.
+    """
+    try:
+        resp = urllib.request.urlopen(API_URL, timeout=40)
+        data = json.loads(resp.read())
+        return data.get("items", [])
+    except (urllib.error.URLError, json.JSONDecodeError) as e:
+        print(f"api error: {e}", file=sys.stderr)
+        return []
 
-html=f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
+
+def state_color(state: str) -> str:
+    """Get color for build state."""
+    colors = {
+        "succeeded": "#4ade80",
+        "failed": "#f87171",
+        "running": "#60a5fa",
+        "starting": "#fbbf24",
+        "pending": "#94a3b8",
+        "importing": "#94a3b8",
+        "waiting": "#94a3b8",
+        "canceled": "#475569",
+    }
+    return colors.get(state, "#64748b")
+
+
+def state_dot(state: str) -> str:
+    """Generate HTML for state indicator dot."""
+    return f"<span class='dot' style='background:{state_color(state)}'></span>"
+
+
+def progress_bar(current: int, total: int, label: str, color: str = "#4ade80") -> str:
+    """Generate HTML progress bar."""
+    total = max(total, 1)
+    pct = min(int(current * 100 / total), 100)
+    filled = int(pct * 34 / 100)
+    bar = "▓" * filled + "░" * (34 - filled)
+
+    return (
+        f"<div class='bar'>"
+        f"<span class='bl'>{label}</span>"
+        f"<span class='bf' style='color:{color}'>{bar}</span> "
+        f"{pct}% ({current}/{total})"
+        f"</div>"
+    )
+
+
+def generate_html(builds: list[dict[str, Any]]) -> str:
+    """Generate dashboard HTML.
+
+    Args:
+        builds: List of build dictionaries from COPR API.
+
+    Returns:
+        Complete HTML document.
+    """
+    # Process builds
+    sorted_builds = sorted(builds, key=lambda b: b.get("id", 0))
+    latest: dict[str, BuildInfo] = {}
+
+    for b in sorted_builds:
+        name = (b.get("source_package") or {}).get("name") or "?"
+        latest[name] = BuildInfo(
+            state=b.get("state", "?"),
+            build_id=b.get("id", 0),
+            timestamp=b.get("ended_on") or b.get("submitted_on") or 0,
+        )
+
+    # Count states
+    counts: dict[str, int] = {}
+    for info in latest.values():
+        counts[info.state] = counts.get(info.state, 0) + 1
+
+    total = len(latest)
+    ok = counts.get("succeeded", 0)
+
+    # State chips
+    states_chips = "".join(
+        f"<button class='chip' data-filter='{s}' onclick=\"filterState('{s}')\">"
+        f"<span class='dot' style='background:{state_color(s)}'></span>"
+        f"{h.escape(s)}: {c}</button>"
+        for s, c in sorted(counts.items(), key=lambda kv: -kv[1])
+    )
+
+    # Package rows
+    pkg_rows = ""
+    for name in sorted(latest):
+        info = latest[name]
+        if isinstance(info.timestamp, (int, float)) and info.timestamp:
+            tstr = datetime.datetime.fromtimestamp(
+                info.timestamp, tz=datetime.timezone.utc
+            ).strftime("%d.%m %H:%M")
+        else:
+            tstr = "—"
+
+        pkg_rows += (
+            f"<tr data-state='{info.state}'>"
+            f"<td><b>{h.escape(name)}</b></td>"
+            f"<td>{state_dot(info.state)}{h.escape(info.state)}</td>"
+            f"<td class='dim'>#{info.build_id} · {tstr}</td>"
+            f"</tr>\n"
+        )
+
+    now = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%d.%m.%Y %H:%M")
+
+    return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta http-equiv="refresh" content="300">
 <title>🍬 candy-rpm panel</title>
 <style>
@@ -79,8 +175,8 @@ th:hover{{color:#fff}}
 <a href="https://github.com/arcticlore/candy-rpm">github</a></span></div></div>
 
 <h2>📊 Прогресс</h2>
-{bar(ok,total,"зелёные пакеты","#4ade80")}
-{bar(total-ok,total,"фиксятся","#38bdf8")}
+{progress_bar(ok, total, "зелёные пакеты", "#4ade80")}
+{progress_bar(total - ok, total, "фиксятся", "#38bdf8")}
 
 <h2>⚙️ Состояния</h2>
 <div class="grid">{states_chips}</div>
@@ -125,6 +221,29 @@ function sortTable(col){{
 </script>
 </body></html>"""
 
-os.makedirs("docs",exist_ok=True)
-open("docs/index.html","w").write(html)
-print(f"docs/index.html v3: {total} пакетов, {ok} succeeded")
+
+def main() -> None:
+    """Main entry point."""
+    builds = fetch_builds()
+    html_content = generate_html(builds)
+
+    # Write output
+    out_dir = Path("docs")
+    out_dir.mkdir(exist_ok=True)
+    (out_dir / "index.html").write_text(html_content)
+
+    # Count stats
+    sorted_builds = sorted(builds, key=lambda b: b.get("id", 0))
+    latest: dict[str, Any] = {}
+    for b in sorted_builds:
+        name = (b.get("source_package") or {}).get("name") or "?"
+        latest[name] = b
+
+    total = len(latest)
+    ok = sum(1 for b in latest.values() if b.get("state") == "succeeded")
+
+    print(f"docs/index.html v4: {total} packages, {ok} succeeded")
+
+
+if __name__ == "__main__":
+    main()
