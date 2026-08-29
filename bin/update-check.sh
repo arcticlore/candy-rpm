@@ -39,6 +39,17 @@ log() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
 
 CHANGED=0; FAILED=0; SKIPPED=0
 
+# запуск чрут-движка для определения нужных чрутов
+CHROOT_PLAN=""
+if [ -f bin/chroot-engine.py ] && python3 -c "import concurrent.futures" 2>/dev/null; then
+    log "[ENGINE] запуск chroot-engine..."
+    python3 bin/chroot-engine.py > logs/chroot-engine-out.log 2>&1 || true
+    if [ -f logs/chroot-plan.json ]; then
+        CHROOT_PLAN=logs/chroot-plan.json
+        log "[ENGINE] план: $(jq -r '.plan | keys | length' "$CHROOT_PLAN" 2>/dev/null || echo 0) пакетов в плане"
+    fi
+fi
+
 for N in $(enabled_pkgs); do
     if [ ${#FILTERS[@]} -gt 0 ] && ! printf '%s\n' "${FILTERS[@]}" | grep -qx "$N"; then continue; fi
     OLD=$(jq -r --arg n "$N" '.[$n].ver // ""' "$STATE")
@@ -79,8 +90,22 @@ for N in $(enabled_pkgs); do
 
     if command -v copr-cli >/dev/null; then
         log "[COPR] загрузка $SRPM в $PROJ"
-        if ! copr-cli build "$PROJ" "$SRPM" --nowait >>"$LOG" 2>&1; then
-            log "[FAIL] $N: copr-cli отклонил билд"; FAILED=$((FAILED+1)); continue
+        # определяем нужные чруты из плана
+        BUILD_CHROOTS=""
+        if [ -n "$CHROOT_PLAN" ]; then
+            BUILD_CHROOTS=$(jq -r --arg n "$N" '.plan[$n] // [] | .[]' "$CHROOT_PLAN" 2>/dev/null | tr '\n' ' ')
+        fi
+        if [ -n "$BUILD_CHROOTS" ]; then
+            log "[ENGINE] $N: ограниченные чруты: $BUILD_CHROOTS"
+            CHROOT_FLAGS=""
+            for c in $BUILD_CHROOTS; do CHROOT_FLAGS="$CHROOT_FLAGS -r $c"; done
+            if ! copr-cli build "$PROJ" "$SRPM" --nowait $CHROOT_FLAGS >>"$LOG" 2>&1; then
+                log "[FAIL] $N: copr-cli отклонил билд"; FAILED=$((FAILED+1)); continue
+            fi
+        else
+            if ! copr-cli build "$PROJ" "$SRPM" --nowait >>"$LOG" 2>&1; then
+                log "[FAIL] $N: copr-cli отклонил билд"; FAILED=$((FAILED+1)); continue
+            fi
         fi
     else
         log "[WARN] copr-cli не установлен — SRPM готов локально: $SRPM (в state НЕ отмечен)"

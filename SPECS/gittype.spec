@@ -1,5 +1,5 @@
 Name:           gittype
-Version:        0.10.2
+Version:        0
 Release:        1%{?dist}
 Summary:        Тренажёр печати на коде твоих репозиториев
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -16,6 +16,7 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  perl
 
 %description
 Тренажёр печати на коде твоих репозиториев
@@ -29,7 +30,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n gittype-0.10.2
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -48,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/gittype
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0.10.2-1
+* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

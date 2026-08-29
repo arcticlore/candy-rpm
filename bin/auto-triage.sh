@@ -72,6 +72,16 @@ sig() { # $1=log  возвращает тег известного класса 
     if echo "$L" | grep -qiE "no GLSL.SPIR-V compiler|glslangValidator"; then echo need-glslang; return; fi
     if echo "$L" | grep -q "webp/decode.h";                          then echo need-webp; return; fi
     if echo "$L" | grep -q "could not find git for clone";           then echo git-submodule; return; fi
+    # --- v2.5 new signatures ---
+    if echo "$L" | grep -qE "gcc: command not found|cc: command not found"; then echo need-gcc; return; fi
+    if echo "$L" | grep -qE "perl: command not found|'perl' not found";     then echo need-perl; return; fi
+    if echo "$L" | grep -qiE "openssl-sys.*library.*not found|libssl.*not found|pkgconfig\(openssl\)"; then echo need-openssl; return; fi
+    if echo "$L" | grep -qiE "alsa-sys.*failed to run custom build|alsa/asoundlib.h"; then echo need-alsa; return; fi
+    if echo "$L" | grep -qiE "libexif/exif-data.h.*No such file|pkgconfig\(libexif\)"; then echo need-libexif; return; fi
+    if echo "$L" | grep -qE "File must begin with /";                 then echo extra-files; return; fi
+    if echo "$L" | grep -qE "Two files on one path";                  then echo duplicate-files; return; fi
+    if echo "$L" | grep -qiE "not owned by package";                  then echo unowned-dir; return; fi
+    if echo "$L" | grep -q "Copr build error: Build failed";          then echo generic-fail; return; fi
     echo ""
 }
 
@@ -146,6 +156,30 @@ PY
     debugsource-old|rust-prefix-old)
         FIXED="$FIXED $n"; changed_meta=1
         log "[AUTO] $n: глобальный фикс активен -> пересборка" ;;
+    need-gcc)
+        json_edit "$n" br bradd gcc; changed_meta=1
+        log "[AUTO] $n: +BR gcc (cc-rs/cc воркфлоу)" ;;
+    need-perl)
+        json_edit "$n" br bradd perl; changed_meta=1
+        log "[AUTO] $n: +BR perl" ;;
+    need-openssl)
+        json_edit "$n" br bradd openssl-devel; json_edit "$n" br bradd pkgconf-pkg-config; changed_meta=1
+        log "[AUTO] $n: +BR openssl-devel pkgconf-pkg-config" ;;
+    need-alsa)
+        json_edit "$n" br bradd alsa-lib-devel; changed_meta=1
+        log "[AUTO] $n: +BR alsa-lib-devel" ;;
+    need-libexif)
+        json_edit "$n" br bradd libexif-devel; changed_meta=1
+        log "[AUTO] $n: +BR libexif-devel" ;;
+    extra-files)
+        log "[HUMAN] $n: extra files — нужно вручную вычистить %files" ;;
+    duplicate-files)
+        log "[HUMAN] $n: два файла на одном пути — проверь %install/%files" ;;
+    unowned-dir)
+        log "[HUMAN] $n: не принадлежащая директория — добавь %dir" ;;
+    generic-fail)
+        local h; h=$(echo "$L" | md5sum | cut -c1-10)
+        log "[HUMAN] $n: generic build failure (sig=$h)" ;;
     *)
         local h; h=$(echo "$L" | md5sum | cut -c1-10)
         grep -qx "$h" state/triage-unknown.hash 2>/dev/null && return 0
@@ -158,9 +192,13 @@ TRI=state/triaged.ids; touch "$TRI"
 while read -r id name; do
     grep -qx "$id" "$TRI" && continue
     D=logs/builder/$id
-    curl -sL --max-time 60 -o "$D.log.gz" \
-      "https://download.copr.fedorainfracloud.org/results/arcticlore/candy/fedora-44-x86_64/${id}-${name}/builder-live.log.gz" \
-      || { log "[WARN] $id/$name: лог недоступен"; continue; }
+    DOWNLOADED=0
+    for chroot in fedora-44-x86_64 fedora-43-x86_64 fedora-rawhide-x86_64 fedora-44-aarch64; do
+        curl -sL --max-time 60 -o "$D.log.gz" \
+          "https://download.copr.fedorainfracloud.org/results/arcticlore/candy/${chroot}/${id}-${name}/builder-live.log.gz" 2>/dev/null \
+          && DOWNLOADED=1 && break
+    done
+    [ "$DOWNLOADED" = 0 ] && { log "[WARN] $id/$name: лог недоступен ни в одном chroot"; echo "$id" >> "$TRI"; continue; }
     L=$(zcat "$D.log.gz" 2>/dev/null) || { log "[WARN] $id/$name: битый лог"; echo "$id" >> "$TRI"; continue; }
 
     TAG=$(sig "$L")

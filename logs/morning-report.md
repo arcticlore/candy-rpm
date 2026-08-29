@@ -1,21 +1,21 @@
-# 🌅 Утренний отчёт 2026-08-26 07:55:31
+# 🌅 Утренний отчёт 2026-08-29 07:55:27
 
 ## Компоненты
-- воркеров: 16 | нянька: active | вотчер: active | таймер: active
+- воркеров: 2 | нянька: active | вотчер: active | таймер: inactive
 
 ## COPR — состояния билдов
-- failed: 164
+- failed: 358
+- succeeded: 142
 - canceled: 120
-- succeeded: 91
-- pending: 25
-- running: 20
+- running: 1
 
 ## Зелёные пакеты (последний билд)
 - animfetch
-- artem
+- archey4
 - ascii-image-converter
 - ascsaver
 - bacon
+- bandwhich
 - cadubi
 - choose
 - cli-fx
@@ -26,18 +26,23 @@
 - disfetch
 - dua
 - duckpond
+- durdraw
+- dysk
+- genact
 - gping
 - grex
 - hollywood
 - hyperfine
 - joshuto
 - just
+- lavat
 - lolcrab
 - macchina
 - maze
 - nb
 - neofetch
 - nerdfetch
+- oha
 - oh-my-zsh
 - pet
 - pipes.sh
@@ -47,102 +52,110 @@
 - presenterm
 - pridefetch
 - pure
+- pywal
 - rickrollrc
+- rmpc
 - slides
+- snowmachine
 - tealdeer
 - terminal-parrot
+- terminaltexteffects
 - tfire
 - tint
 - tokei
 - tspace
 - tty-clock
 - ttyper
+- tulizu
 - typioca
 - ufetch
 - viddy
 - viu
-- wallust
 - weave
 - xh
-- zellij
 - zenta
 - zk
 
 ## Красные пакеты (последний билд)
 - albafetch
-- archey4
+- artem
 - arttime
 - ascii-patrol
 - ascii-rain
+- bottom
 - broot
 - cbeams
 - colorls
 - diagon
 - diagram
 - dog
-- durdraw
+- erdtree
 - ghfetch
+- gittype
 - glow
 - gum
 - himalaya
 - jp2a
 - kondo
-- lavat
 - linuxwave
+- mise
 - musikcube
+- None
+- peaclock
 - pipes.rs
 - pokemon-icat
+- pokete
 - pscircle
 - PyBonsai
-- pywal
 - ricksay
 - Rio
 - rxfetch
 - scc
 - snakes
-- snowmachine
+- starship
 - systeroid
-- terminaltexteffects
 - termshot
 - termusic
+- trippy
 - ttysvr
-- tulizu
 - unimatrix
 - video-to-ascii
+- wallust
+- watchexec
 - yazi
 
 ## [HUMAN] из авто-триажа (нужно внимание человека)
-[2026-08-26 06:55:05] [HUMAN] ricksay: неизвестная ошибка (sig=ee211e56eb)
-[2026-08-26 06:56:54] [HUMAN] snakes: неизвестная ошибка (sig=215e2d4bdc)
-[2026-08-26 06:56:55] [HUMAN] ghfetch: неизвестная ошибка (sig=0668f576d4)
-[2026-08-26 06:58:44] [HUMAN] lavat: неизвестная ошибка (sig=dbf3171e06)
-[2026-08-26 07:22:48] [HUMAN] lavat: неизвестная ошибка (sig=499d7490fd)
-[2026-08-26 07:40:02] [HUMAN] broot: неизвестная ошибка (sig=043ad21fc0)
-[2026-08-26 07:45:57] [HUMAN] diagram: неизвестная ошибка (sig=a70febb51e)
-[2026-08-26 07:47:46] [HUMAN] video-to-ascii: неизвестная ошибка (sig=bc45589b7d)
-[2026-08-26 07:49:35] [HUMAN] termshot: неизвестная ошибка (sig=39aa703da1)
-[2026-08-26 07:51:25] [HUMAN] scc: неизвестная ошибка (sig=6f41dbfe35)
+[2026-08-26 23:43:36] [HUMAN] pscircle: неизвестная ошибка (sig=50b72eda58)
+[2026-08-26 23:43:37] [HUMAN] colorls: неизвестная ошибка (sig=a1fa7e93d9)
+[2026-08-26 23:43:38] [HUMAN] linuxwave: неизвестная ошибка (sig=1efd6ad775)
+[2026-08-26 23:43:39] [HUMAN] ricksay: неизвестная ошибка (sig=dc1dc7d434)
+[2026-08-26 23:43:39] [HUMAN] snakes: неизвестная ошибка (sig=c1a38e6848)
+[2026-08-26 23:43:40] [HUMAN] ascii-patrol: неизвестная ошибка (sig=23216e013b)
+[2026-08-26 23:48:45] [HUMAN] scc: неизвестная ошибка (sig=a6945b74ac)
+[2026-08-26 23:48:46] [HUMAN] gum: неизвестная ошибка (sig=daad6d8ffc)
+[2026-08-26 23:50:44] [HUMAN] rxfetch: неизвестная ошибка (sig=a3abd660f1)
+[2026-08-26 23:52:36] [HUMAN] ascii-rain: неизвестная ошибка (sig=8a35d94404)
 
 ## Хроника ночи (night-watch)
-0 | failed=151 canceled=120 succeeded=81 pending=38 running=22 | посл:tetris: не удалось собрать SRPM
-06:58 воркеры=0
-0 | failed=157 canceled=120 succeeded=85 pending=30 running=20 | посл:tetris: не удалось собрать SRPM
-07:08 воркеры=0
-0 | failed=158 canceled=120 succeeded=85 pending=32 running=17 | посл:tetris: не удалось собрать SRPM
-07:18 воркеры=0
-0 | failed=158 canceled=120 succeeded=86 pending=31 running=16 starting=1 | посл:tetris: не удалось собрать SRPM
-07:28 воркеры=0
-0 | failed=159 canceled=120 succeeded=88 pending=30 running=15 | посл:tetris: не удалось собрать SRPM
-07:38 воркеры=0
-0 | failed=159 canceled=120 succeeded=88 pending=31 running=15 starting=1 | посл:tetris: не удалось собрать SRPM
-07:48 воркеры=16 | failed=163 canceled=120 succeeded=91 pending=27 running=19 | посл:mise: не удалось собрать SRPM
+22:40 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+22:50 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+23:00 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+23:10 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+23:20 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+23:31 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+23:41 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+23:51 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+00:01 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+00:12 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+00:22 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
+00:33 воркеры=2 | failed=349 succeeded=142 canceled=120 running=1 | посл:oh-my-zsh: уже полностью собран (succeeded) — не трогаю
 
 ## GitHub Actions
-- 08-26T04:35UTC completed failure
-- 08-26T02:59UTC completed failure
-- 08-26T01:02UTC completed failure
-- 08-26T00:45UTC completed failure
-- 08-25T22:21UTC completed success
+- 08-29T01:24UTC completed failure
+- 08-28T16:31UTC completed failure
+- 08-28T03:59UTC completed failure
+- 08-27T18:46UTC completed failure
+- 08-27T06:59UTC completed failure
 
 ## Локальная очередь
-- ждут отправки: 6
+- ждут отправки: 4
