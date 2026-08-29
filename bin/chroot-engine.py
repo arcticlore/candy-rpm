@@ -15,6 +15,7 @@
 Выход: logs/chroot-plan.json  {"plan":{pkg:[chroots]}, "done":[pkg]}
 """
 import json, os, sys, time, subprocess, urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://download.copr.fedorainfracloud.org/results/arcticlore/candy"
@@ -36,14 +37,17 @@ def save_lock():
 
 def http_text(url):
     try:
-        return urllib.request.urlopen(url, timeout=25).read().decode(errors="ignore")
+        return urllib.request.urlopen(url, timeout=10).read().decode(errors="ignore")
     except Exception:
         return ""
 
 def copr_failed_latest():
     """имя -> id последнего failed билда (для сигнатур), плюс все последние."""
-    out = subprocess.run(["copr-cli","list-builds",PROJECT],
-                         capture_output=True,text=True).stdout
+    try:
+        out = subprocess.run(["copr-cli","list-builds",PROJECT],
+                             capture_output=True,text=True,timeout=30).stdout
+    except subprocess.TimeoutExpired:
+        return {},{}
     latest={}; failed={}
     for line in out.splitlines():
         p=line.split()
@@ -58,6 +62,19 @@ latest, failed_map = copr_failed_latest()
 plan = {}
 done = []
 now = time.time()
+
+def check_chroot(args):
+    """Проверяет один чрут для одного пакета. Возвращает (pkg, chroot, need_rebuild)."""
+    n, c, bid, bstate, ver = args
+    key = f"{n}|{c}"
+    idx = f"{BASE}/{c}/{bid}-{n}/"
+    listing = http_text(idx)
+    if not listing:
+        return (n, c, False)  # билдер не дошёл
+    has_rpm = ".rpm" in listing.split("builder-live.log.gz")[0]
+    if has_rpm:
+        return (n, c, False)  # RPM есть → OK
+    return (n, c, True)  # лог есть, rpm нет → failed
 
 for x in meta["packages"]:
     n = x["name"]
@@ -74,26 +91,19 @@ for x in meta["packages"]:
         continue
 
     ver = (state.get(n) or {}).get("ver","?")
-    need=[]
-    for c in CHROOTS:
-        key=f"{n}|{c}"
-        rec=lock.get(key) or {}
-        idx=f"{BASE}/{c}/{bid}-{n}/"
-        listing=http_text(idx)
-        if not listing:
-            # билдер до этого чрута не дошёл
-            continue
-        has_rpm=".rpm" in listing.split("builder-live.log.gz")[0]
-        if has_rpm:
-            e=lock.setdefault(key,{})
-            e.setdefault("ok_vers",[])
-            if ver not in e["ok_vers"]: e["ok_vers"].append(ver)
-            continue
-        # лог есть, rpm нет => failed на этом чруте
-        need.append(c)
+    
+    # Параллельная проверка чрутов
+    tasks = [(n, c, bid, bstate, ver) for c in CHROOTS]
+    need = []
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        futures = {executor.submit(check_chroot, t): t for t in tasks}
+        for future in as_completed(futures):
+            pkg, chroot, needs_rebuild = future.result()
+            if needs_rebuild:
+                need.append(chroot)
 
     if need:
-        plan[n]=need
+        plan[n] = need
 
 # применяем правила к плану с учётом зависших pending
 final={}
