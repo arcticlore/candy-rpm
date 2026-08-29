@@ -69,13 +69,45 @@ for N in $(enabled_pkgs); do
         continue
     fi
 
-    # ЗАЩИТА: если последняя сборка пакета в COPR полностью успешна — не трогаем
+    # ЗАЩИТА: проверяем состояние последней сборки в COPR
     LASTSTATE="${BUILD_STATES[$N]:-}"
+    
+    # Если последняя сборка успешна — не трогаем
     if [ "$LASTSTATE" = "succeeded" ]; then
         log "[SKIP] $N: уже полностью собран (succeeded) — не трогаю"
         jq --arg n "$N" --arg v "$NEW" '.[$n] = {ver: $v, ts: now, locked: true}' "$STATE" > "$STATE.tmp" \
             && mv "$STATE.tmp" "$STATE"
         continue
+    fi
+    
+    # Если сборка в процессе (running/starting) — не трогаем
+    if [ "$LASTSTATE" = "running" ] || [ "$LASTSTATE" = "starting" ]; then
+        log "[SKIP] $N: сборка в процессе ($LASTSTATE) — не трогаю"
+        continue
+    fi
+    
+    # Если сборка pending/importing — не трогаем (ждет очереди)
+    if [ "$LASTSTATE" = "pending" ] || [ "$LASTSTATE" = "importing" ]; then
+        log "[SKIP] $N: ожидает очереди ($LASTSTATE) — не трогаю"
+        continue
+    fi
+    
+    # Если версия не изменилась и сборка не failed — пропускаем
+    if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ] && [ "$LASTSTATE" != "failed" ]; then
+        continue
+    fi
+    
+    # Если версия не изменилась, но сборка failed — пробуем пересобрать (с cooldown)
+    if [ "$NEW" = "$OLD" ] && [ "$FORCE" = 0 ] && [ "$LASTSTATE" = "failed" ]; then
+        # Проверяем cooldown: не чаще 1 раза в 30 минут
+        LAST_TS=$(jq -r --arg n "$N" '.[$n].ts // 0' "$STATE" 2>/dev/null || echo 0)
+        NOW_TS=$(date +%s)
+        COOLDOWN=1800  # 30 минут
+        if [ $((NOW_TS - LAST_TS)) -lt $COOLDOWN ]; then
+            log "[SKIP] $N: failed, но cooldown ($(( (COOLDOWN - NOW_TS + LAST_TS) / 60 )) мин)"
+            continue
+        fi
+        log "[RETRY] $N: failed, версия не изменилась — пробуем пересобрать"
     fi
 
     if [ "$DRY" = 1 ]; then

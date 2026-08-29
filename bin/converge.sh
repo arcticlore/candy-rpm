@@ -40,10 +40,21 @@ for r in $(seq 1 "$ROUNDS"); do
     total_err=$((total_err + err))
     total_skip=$((total_skip + skp))
 
+    # Проверяем количество active builds в COPR
+    ACTIVE_BUILDS=$(timeout 10 curl -s --connect-timeout 5 --ipv4 \
+        "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=10" 2>/dev/null \
+        | python3 -c "import sys,json; d=json.load(sys.stdin); print(sum(1 for b in d.get('items',[]) if b['state'] in ('running','starting')))" 2>/dev/null || echo "?")
+    
+    # Проверяем пакеты без успеха
     missing=$(comm -23 <(enabled_list) <(jq -r 'keys[]' state/state.json 2>/dev/null | sort))
     nmiss=$(echo "$missing" | grep -c . || true)
-
-    echo "[converge] отправлено=$upd ошибок=$err пропущено=$skp ещё_без_успеха=$nmiss"
+    
+    echo "[converge] active_builds=$ACTIVE_BUILDS отправлено=$upd ошибок=$err пропущено=$skp ещё_без_успеха=$nmiss"
+    
+    # Если нет active builds и ничего не отправлено — возможно все заблокированы
+    if [ "$ACTIVE_BUILDS" = "0" ] && [ "$upd" = 0 ] && [ "$err" = 0 ]; then
+        echo "[converge] нет активных сборок и ничего не отправлено"
+    fi
 
     # история раундов
     echo "{\"ts\":\"$(date -Iseconds)\",\"round\":$r,\"sent\":$upd,\"err\":$err,\"skip\":$skp,\"missing\":$nmiss}" >> "$HIST"
