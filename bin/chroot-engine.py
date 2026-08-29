@@ -110,4 +110,5 @@ for n,chs in plan.items():
 
 json.dump({"plan":final,"done":done},
           open(os.path.join(ROOT,"logs/chroot-plan.json"),"w"),ensure_ascii=False,indent=1)
+save_lock()
 print(json.dumps(final,ensure_ascii=False))

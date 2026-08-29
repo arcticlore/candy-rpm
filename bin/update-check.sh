@@ -39,6 +39,12 @@ log() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
 
 CHANGED=0; FAILED=0; SKIPPED=0
 
+# кеш состояний билдов (один раз на весь прогон)
+declare -A BUILD_STATES
+while read -r _name _state; do
+    BUILD_STATES["$_name"]="$_state"
+done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '!seen[$2]++{print $2, $NF}')
+
 # запуск чрут-движка для определения нужных чрутов
 CHROOT_PLAN=""
 if [ -f bin/chroot-engine.py ] && python3 -c "import concurrent.futures" 2>/dev/null; then
@@ -64,7 +70,7 @@ for N in $(enabled_pkgs); do
     fi
 
     # ЗАЩИТА: если последняя сборка пакета в COPR полностью успешна — не трогаем
-    LASTSTATE=$(copr-cli list-builds arcticlore/candy 2>/dev/null | awk -v p="$N" '$2==p{print $NF; exit}')
+    LASTSTATE="${BUILD_STATES[$N]:-}"
     if [ "$LASTSTATE" = "succeeded" ]; then
         log "[SKIP] $N: уже полностью собран (succeeded) — не трогаю"
         jq --arg n "$N" --arg v "$NEW" '.[$n] = {ver: $v, ts: now, locked: true}' "$STATE" > "$STATE.tmp" \

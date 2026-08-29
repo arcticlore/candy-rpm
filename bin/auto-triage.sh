@@ -10,9 +10,6 @@ mkdir -p logs/builder state
 exec 8>state/.triage.lock
 flock -n 8 || { echo "[SKIP] другой триаж уже работает"; exit 0; }
 
-TOKEN=""
-[ -f ~/.config/candy/push-token ] && TOKEN=$(grep -o 'ghp_[A-Za-z0-9]*' ~/.config/candy/push-token | head -1)
-
 log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 
 changed_meta=0
@@ -81,7 +78,6 @@ sig() { # $1=log  возвращает тег известного класса 
     if echo "$L" | grep -qE "File must begin with /";                 then echo extra-files; return; fi
     if echo "$L" | grep -qE "Two files on one path";                  then echo duplicate-files; return; fi
     if echo "$L" | grep -qiE "not owned by package";                  then echo unowned-dir; return; fi
-    if echo "$L" | grep -q "Copr build error: Build failed";          then echo generic-fail; return; fi
     echo ""
 }
 
@@ -177,9 +173,6 @@ PY
         log "[HUMAN] $n: два файла на одном пути — проверь %install/%files" ;;
     unowned-dir)
         log "[HUMAN] $n: не принадлежащая директория — добавь %dir" ;;
-    generic-fail)
-        local h; h=$(echo "$L" | md5sum | cut -c1-10)
-        log "[HUMAN] $n: generic build failure (sig=$h)" ;;
     *)
         local h; h=$(echo "$L" | md5sum | cut -c1-10)
         grep -qx "$h" state/triage-unknown.hash 2>/dev/null && return 0
