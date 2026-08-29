@@ -60,9 +60,9 @@ for r in $(seq 1 "$ROUNDS"); do
 done
 
 # итоговая сводка
-echo "[converge] ══ ИТОГО: отправлено=$total_sent ошибок=$total_skip пропущено=$total_skip"
+echo "[converge] ══ ИТОГО: отправлено=$total_sent ошибок=$total_err пропущено=$total_skip"
 
-if [ "$converge" = 1 ]; then
+if [ "$converged" = 1 ]; then
     echo "[converge] ✅ ВСЁ ПЕРЕДАНО В COPR"
     RESULT=0
 else
@@ -72,7 +72,7 @@ fi
 
 # Telegram-сводка
 if [ "$TG" = 1 ]; then
-    STATUS_EMOJI=$( [ "$converge" = 1 ] && echo "✅" || echo "⚠️" )
+    STATUS_EMOJI=$( [ "$converged" = 1 ] && echo "✅" || echo "⚠️" )
     MSG="${STATUS_EMOJI} <b>Converge завершён</b> ( раундов: ${r}/${ROUNDS} )
 
 📦 Отправлено: ${total_sent}

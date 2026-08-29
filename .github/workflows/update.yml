@@ -36,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDY_PROJ: arcticlore/candy
-        run: bin/converge.sh 8   # красным, если что-то так и не улетело
+        run: bin/converge.sh --rounds 8   # красным, если что-то так и не улетело
 
       - name: Auto-triage после волн
         env:

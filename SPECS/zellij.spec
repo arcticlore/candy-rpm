@@ -1,5 +1,5 @@
 Name:           zellij
-Version:        0
+Version:        0.45.1
 Release:        1%{?dist}
 Summary:        Terminal workspace with panels, plugins and layouts
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -34,7 +34,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n zellij-0.45.1
 %cargo_prep -v vendor
 
 %build
@@ -53,5 +53,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/zellij
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sat Aug 29 2026 candy-bot <candy@localhost> - 0.45.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

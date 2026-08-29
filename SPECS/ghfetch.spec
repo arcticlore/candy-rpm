@@ -1,5 +1,5 @@
 Name:           ghfetch
-Version:        0
+Version:        20260829.4b44a4f
 Release:        1%{?dist}
 Summary:        Neofetch-like utility to fetch GitHub info in the terminal
 
@@ -28,7 +28,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n ghfetch-4b44a4f442101b2c91849effef37e1b04c34fd9f
 %cargo_prep -v vendor
 
 %build
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ghfetch
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sat Aug 29 2026 candy-bot <candy@localhost> - 20260829.4b44a4f-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           ascii-rain
-Version:        0
+Version:        20260829.39396de
 Release:        1%{?dist}
 Summary:        Comfy rain for your console
 
@@ -25,7 +25,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n ascii-rain-39396dea0a84b4580f0ee5f46de9de4468566ed0
 
 %build
 export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_mandir}/*
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sat Aug 29 2026 candy-bot <candy@localhost> - 20260829.39396de-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

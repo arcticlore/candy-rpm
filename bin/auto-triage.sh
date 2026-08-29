@@ -30,7 +30,7 @@ for x in p["packages"]:
     cur=x.get(f)
     if mode=="bradd":
         lst=cur if isinstance(cur,list) else ([cur] if cur else [])
-        if v not in lst: x["br"]=lst+[v]
+        if v not in lst: x[f]=lst+[v]
     elif mode=="listadd":
         lst=cur if isinstance(cur,list) else []
         if v not in lst: x[f]=lst+[v]

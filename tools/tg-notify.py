@@ -71,7 +71,7 @@ def api(method, **kw):
 
 def run(cmd):
     return subprocess.run(cmd, shell=True, capture_output=True,
-                          text=True, cwd=ROOT).stdout.strip()[:3800] or tr_last("empty")
+                          text=True, cwd=ROOT).stdout.strip()[:3800] or "(пусто)"
 
 _last_empty = {"v": False}
 def tr_last(k):
@@ -109,9 +109,6 @@ def send_kb(chat, text):
         return True
     except Exception as e:
         print(f"{chat}: {e}", file=sys.stderr); return False
-
-def run(cmd): return subprocess.run(cmd, shell=True, capture_output=True, text=True,
-                                    cwd=ROOT).stdout.strip()[:3800] or "(пусто)"
 
 ACT = {
  "Статус / Status":    lambda cid: run("./bin/status.sh"),
