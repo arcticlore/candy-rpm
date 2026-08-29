@@ -145,7 +145,7 @@ def generate_html(builds: list[dict[str, Any]]) -> str:
 
     return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta http-equiv="refresh" content="300">
-<title>🍬 candy-rpm panel</title>
+<title>🧊 terminal-rpm panel</title>
 <style>
 body{{background:#0b1220;color:#dbe4f0;font-family:'JetBrains Mono',Consolas,monospace;margin:24px}}
 h1{{font-size:30px;margin:6px 0}} h2{{color:#7dd3fc;margin-top:28px}}
@@ -171,9 +171,10 @@ th:hover{{color:#fff}}
 #search:focus{{outline:none;border-color:#7dd3fc}}
 .badge{{background:#1e3a5f;border-radius:12px;padding:2px 10px;font-size:12px;margin-left:8px}}
 </style></head><body><div class="wrap">
-<div class="banner"><div class="inner"><h1>🍬 candy-rpm · панель конвейера</h1>
-<span class="dim">🧊 ПРОЕКТ ЗАМОРОЖЕН · автообновление 5 мин · {now} ·
-<a href="https://github.com/arcticlore/candy-rpm">github</a></span></div></div>
+<div class="banner"><div class="inner"><h1>🧊 terminal-rpm · панель конвейера</h1>
+<span class="dim">автообновление 5 мин · {now} ·
+<a href="https://github.com/arcticlore/candy-rpm">GitHub</a> ·
+<a href="https://copr.fedorainfracloud.org/coprs/arcticlore/candy/">COPR</a></span></div></div>
 
 <h2>📊 Прогресс</h2>
 {progress_bar(ok, total, "зелёные пакеты", "#4ade80")}

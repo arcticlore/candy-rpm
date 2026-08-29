@@ -1,0 +1,190 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta http-equiv="refresh" content="300">
+<title>🍬 candy-rpm panel</title>
+<style>
+body{background:#0b1220;color:#dbe4f0;font-family:'JetBrains Mono',Consolas,monospace;margin:24px}
+h1{font-size:30px;margin:6px 0} h2{color:#7dd3fc;margin-top:28px}
+.wrap{max-width:1100px;margin:auto}
+.banner{background:linear-gradient(135deg,#ff6ec7,#a78bfa,#38bdf8);border-radius:12px;padding:2px;margin-bottom:18px}
+.inner{background:#0b1220;border-radius:11px;padding:16px 22px}
+a{color:#7dd3fc;text-decoration:none} code{color:#fbbf24}
+.grid{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 22px}
+.chip{background:#16202e;border:1px solid #1e3a5f;border-radius:8px;padding:7px 13px;font-size:14px;
+       color:#dbe4f0;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:#7dd3fc;background:#1a2d44}
+.chip.active{border-color:#4ade80;background:#0d2818}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 12px;text-align:left;border-bottom:1px solid #16202e}
+th{color:#7dd3fc;font-weight:normal;cursor:pointer;user-select:none}
+th:hover{color:#fff}
+.bar{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.bl{width:230px;color:#93a6bd} .bf{letter-spacing:2px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.dim{color:#55637a}
+#search{background:#16202e;border:1px solid #1e3a5f;border-radius:8px;padding:8px 14px;
+         color:#dbe4f0;font-family:inherit;font-size:14px;width:300px;margin:10px 0}
+#search:focus{outline:none;border-color:#7dd3fc}
+.badge{background:#1e3a5f;border-radius:12px;padding:2px 10px;font-size:12px;margin-left:8px}
+</style></head><body><div class="wrap">
+<div class="banner"><div class="inner"><h1>🍬 candy-rpm · панель конвейера</h1>
+<span class="dim">🧊 ПРОЕКТ ЗАМОРОЖЕН · автообновление 5 мин · 29.08.2026 21:41 ·
+<a href="https://github.com/arcticlore/candy-rpm">github</a></span></div></div>
+
+<h2>📊 Прогресс</h2>
+<div class='bar'><span class='bl'>зелёные пакеты</span><span class='bf' style='color:#4ade80'>▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░</span> 58% (65/112)</div>
+<div class='bar'><span class='bl'>фиксятся</span><span class='bf' style='color:#38bdf8'>▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░</span> 41% (47/112)</div>
+
+<h2>⚙️ Состояния</h2>
+<div class="grid"><button class='chip' data-filter='succeeded' onclick="filterState('succeeded')"><span class='dot' style='background:#4ade80'></span>succeeded: 65</button><button class='chip' data-filter='failed' onclick="filterState('failed')"><span class='dot' style='background:#f87171'></span>failed: 46</button><button class='chip' data-filter='running' onclick="filterState('running')"><span class='dot' style='background:#60a5fa'></span>running: 1</button></div>
+
+<h2>🧩 Пакеты <span class="badge" id="count">112</span></h2>
+<input type="text" id="search" placeholder="🔍 поиск пакета..." oninput="filterTable()">
+<table><tr><th onclick="sortTable(0)">пакет ↕</th><th onclick="sortTable(1)">статус ↕</th><th onclick="sortTable(2)">билд ↕</th></tr>
+<tbody id="tbody"><tr data-state='failed'><td><b>?</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907128 · 26.08 15:55</td></tr>
+<tr data-state='failed'><td><b>PyBonsai</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905943 · 26.08 23:50</td></tr>
+<tr data-state='failed'><td><b>Rio</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907135 · 27.08 05:48</td></tr>
+<tr data-state='failed'><td><b>albafetch</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905961 · 27.08 00:00</td></tr>
+<tr data-state='succeeded'><td><b>animfetch</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10907088 · 27.08 03:55</td></tr>
+<tr data-state='succeeded'><td><b>archey4</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905936 · 26.08 23:43</td></tr>
+<tr data-state='failed'><td><b>artem</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907109 · 27.08 04:12</td></tr>
+<tr data-state='failed'><td><b>arttime</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905968 · 27.08 00:01</td></tr>
+<tr data-state='succeeded'><td><b>ascii-image-converter</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903525 · 26.08 04:03</td></tr>
+<tr data-state='failed'><td><b>ascii-patrol</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905978 · 27.08 00:05</td></tr>
+<tr data-state='failed'><td><b>ascii-rain</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918127 · 29.08 20:06</td></tr>
+<tr data-state='succeeded'><td><b>ascsaver</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903699 · 26.08 06:53</td></tr>
+<tr data-state='succeeded'><td><b>bacon</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903661 · 26.08 06:12</td></tr>
+<tr data-state='succeeded'><td><b>bandwhich</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903793 · 26.08 07:57</td></tr>
+<tr data-state='failed'><td><b>bottom</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918124 · 29.08 21:22</td></tr>
+<tr data-state='failed'><td><b>broot</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907078 · 27.08 03:44</td></tr>
+<tr data-state='succeeded'><td><b>cadubi</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10904611 · 26.08 16:12</td></tr>
+<tr data-state='failed'><td><b>cbeams</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10908152 · 27.08 05:28</td></tr>
+<tr data-state='succeeded'><td><b>choose</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903578 · 26.08 04:32</td></tr>
+<tr data-state='succeeded'><td><b>cli-fx</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901659 · 25.08 19:52</td></tr>
+<tr data-state='failed'><td><b>colorls</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905972 · 27.08 00:03</td></tr>
+<tr data-state='succeeded'><td><b>csview</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903581 · 26.08 04:46</td></tr>
+<tr data-state='succeeded'><td><b>ctop</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903649 · 26.08 05:11</td></tr>
+<tr data-state='succeeded'><td><b>ctree</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10899419 · 25.08 01:17</td></tr>
+<tr data-state='succeeded'><td><b>cyme</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903678 · 26.08 06:45</td></tr>
+<tr data-state='failed'><td><b>diagon</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10906044 · 27.08 00:52</td></tr>
+<tr data-state='failed'><td><b>diagram</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905975 · 27.08 00:04</td></tr>
+<tr data-state='succeeded'><td><b>disfetch</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901651 · 25.08 19:14</td></tr>
+<tr data-state='failed'><td><b>dog</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905998 · 27.08 00:26</td></tr>
+<tr data-state='succeeded'><td><b>dua</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903656 · 26.08 05:30</td></tr>
+<tr data-state='succeeded'><td><b>duckpond</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903692 · 26.08 06:49</td></tr>
+<tr data-state='succeeded'><td><b>durdraw</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905955 · 26.08 23:58</td></tr>
+<tr data-state='succeeded'><td><b>dysk</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903794 · 26.08 07:57</td></tr>
+<tr data-state='failed'><td><b>erdtree</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905980 · 27.08 00:08</td></tr>
+<tr data-state='succeeded'><td><b>genact</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905659 · 26.08 17:21</td></tr>
+<tr data-state='failed'><td><b>ghfetch</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918185 · 29.08 20:41</td></tr>
+<tr data-state='failed'><td><b>gittype</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907124 · 27.08 04:25</td></tr>
+<tr data-state='failed'><td><b>glow</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905935 · 26.08 23:42</td></tr>
+<tr data-state='succeeded'><td><b>gping</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905941 · 26.08 23:49</td></tr>
+<tr data-state='succeeded'><td><b>grex</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903663 · 26.08 06:18</td></tr>
+<tr data-state='failed'><td><b>gum</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905937 · 26.08 23:44</td></tr>
+<tr data-state='failed'><td><b>himalaya</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907122 · 27.08 04:39</td></tr>
+<tr data-state='succeeded'><td><b>hollywood</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901887 · 25.08 22:01</td></tr>
+<tr data-state='succeeded'><td><b>hyperfine</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903664 · 26.08 06:25</td></tr>
+<tr data-state='succeeded'><td><b>joshuto</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903616 · 26.08 04:59</td></tr>
+<tr data-state='failed'><td><b>jp2a</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905986 · 27.08 00:13</td></tr>
+<tr data-state='succeeded'><td><b>just</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903650 · 26.08 05:18</td></tr>
+<tr data-state='failed'><td><b>kondo</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907095 · 27.08 03:59</td></tr>
+<tr data-state='succeeded'><td><b>lavat</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905971 · 27.08 00:03</td></tr>
+<tr data-state='failed'><td><b>linuxwave</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907111 · 27.08 04:13</td></tr>
+<tr data-state='succeeded'><td><b>lolcrab</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903579 · 26.08 04:32</td></tr>
+<tr data-state='succeeded'><td><b>macchina</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10899478 · 25.08 01:59</td></tr>
+<tr data-state='succeeded'><td><b>maze</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903689 · 26.08 06:46</td></tr>
+<tr data-state='failed'><td><b>mise</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907081 · 27.08 03:25</td></tr>
+<tr data-state='failed'><td><b>musikcube</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905994 · 27.08 00:19</td></tr>
+<tr data-state='succeeded'><td><b>nb</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903672 · 26.08 06:31</td></tr>
+<tr data-state='succeeded'><td><b>neofetch</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901654 · 25.08 19:33</td></tr>
+<tr data-state='succeeded'><td><b>nerdfetch</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901655 · 25.08 19:36</td></tr>
+<tr data-state='succeeded'><td><b>oh-my-zsh</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903701 · 26.08 06:55</td></tr>
+<tr data-state='succeeded'><td><b>oha</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905656 · 26.08 16:54</td></tr>
+<tr data-state='failed'><td><b>peaclock</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905984 · 27.08 00:12</td></tr>
+<tr data-state='succeeded'><td><b>pet</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903675 · 26.08 06:35</td></tr>
+<tr data-state='failed'><td><b>pipes.rs</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10906032 · 27.08 00:39</td></tr>
+<tr data-state='succeeded'><td><b>pipes.sh</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901673 · 25.08 20:12</td></tr>
+<tr data-state='succeeded'><td><b>pipesX</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901674 · 25.08 20:14</td></tr>
+<tr data-state='failed'><td><b>pokemon-icat</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918186 · 29.08 20:28</td></tr>
+<tr data-state='failed'><td><b>pokete</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907129 · 27.08 04:27</td></tr>
+<tr data-state='succeeded'><td><b>ponysay</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901862 · 25.08 20:52</td></tr>
+<tr data-state='succeeded'><td><b>powerlevel10k</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901875 · 25.08 21:02</td></tr>
+<tr data-state='succeeded'><td><b>presenterm</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903653 · 26.08 05:25</td></tr>
+<tr data-state='succeeded'><td><b>pridefetch</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903687 · 26.08 06:43</td></tr>
+<tr data-state='failed'><td><b>pscircle</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907110 · 27.08 04:11</td></tr>
+<tr data-state='succeeded'><td><b>pure</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10902088 · 25.08 22:10</td></tr>
+<tr data-state='succeeded'><td><b>pywal</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905957 · 26.08 23:59</td></tr>
+<tr data-state='succeeded'><td><b>rickrollrc</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905969 · 27.08 00:02</td></tr>
+<tr data-state='failed'><td><b>ricksay</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918122 · 29.08 20:04</td></tr>
+<tr data-state='succeeded'><td><b>rmpc</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905663 · 26.08 18:31</td></tr>
+<tr data-state='failed'><td><b>rxfetch</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918129 · 29.08 20:09</td></tr>
+<tr data-state='failed'><td><b>scc</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905939 · 26.08 23:45</td></tr>
+<tr data-state='succeeded'><td><b>slides</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903674 · 26.08 06:35</td></tr>
+<tr data-state='failed'><td><b>snakes</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918120 · 29.08 20:03</td></tr>
+<tr data-state='succeeded'><td><b>snowmachine</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905974 · 27.08 00:04</td></tr>
+<tr data-state='failed'><td><b>starship</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907082 · 27.08 03:49</td></tr>
+<tr data-state='failed'><td><b>systeroid</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10906037 · 27.08 00:45</td></tr>
+<tr data-state='succeeded'><td><b>tealdeer</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903651 · 26.08 05:18</td></tr>
+<tr data-state='succeeded'><td><b>terminal-parrot</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10899422 · 25.08 01:20</td></tr>
+<tr data-state='succeeded'><td><b>terminaltexteffects</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905981 · 27.08 00:09</td></tr>
+<tr data-state='failed'><td><b>termshot</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905953 · 26.08 23:55</td></tr>
+<tr data-state='failed'><td><b>termusic</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907125 · 27.08 04:25</td></tr>
+<tr data-state='succeeded'><td><b>tfire</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905954 · 26.08 23:57</td></tr>
+<tr data-state='succeeded'><td><b>tint</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901877 · 25.08 21:21</td></tr>
+<tr data-state='succeeded'><td><b>tokei</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903669 · 26.08 06:30</td></tr>
+<tr data-state='failed'><td><b>trippy</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907083 · 27.08 03:52</td></tr>
+<tr data-state='succeeded'><td><b>tspace</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905944 · 26.08 23:50</td></tr>
+<tr data-state='succeeded'><td><b>tty-clock</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905989 · 27.08 00:16</td></tr>
+<tr data-state='succeeded'><td><b>ttyper</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903527 · 26.08 04:21</td></tr>
+<tr data-state='failed'><td><b>ttysvr</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907107 · 27.08 04:12</td></tr>
+<tr data-state='succeeded'><td><b>tulizu</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905976 · 27.08 00:05</td></tr>
+<tr data-state='succeeded'><td><b>typioca</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903758 · 26.08 07:44</td></tr>
+<tr data-state='succeeded'><td><b>ufetch</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10907105 · 27.08 04:00</td></tr>
+<tr data-state='failed'><td><b>unimatrix</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10918191 · 29.08 20:32</td></tr>
+<tr data-state='succeeded'><td><b>viddy</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903466 · 26.08 04:05</td></tr>
+<tr data-state='failed'><td><b>video-to-ascii</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905991 · 27.08 00:17</td></tr>
+<tr data-state='succeeded'><td><b>viu</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10899485 · 25.08 02:12</td></tr>
+<tr data-state='failed'><td><b>wallust</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905992 · 27.08 00:29</td></tr>
+<tr data-state='failed'><td><b>watchexec</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10907086 · 27.08 04:04</td></tr>
+<tr data-state='succeeded'><td><b>weave</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10901855 · 25.08 20:27</td></tr>
+<tr data-state='succeeded'><td><b>xh</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10899433 · 25.08 01:35</td></tr>
+<tr data-state='failed'><td><b>yazi</b></td><td><span class='dot' style='background:#f87171'></span>failed</td><td class='dim'>#10905985 · 27.08 00:14</td></tr>
+<tr data-state='running'><td><b>zellij</b></td><td><span class='dot' style='background:#60a5fa'></span>running</td><td class='dim'>#10918193 · 29.08 20:29</td></tr>
+<tr data-state='succeeded'><td><b>zenta</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10905958 · 26.08 23:59</td></tr>
+<tr data-state='succeeded'><td><b>zk</b></td><td><span class='dot' style='background:#4ade80'></span>succeeded</td><td class='dim'>#10903757 · 26.08 07:42</td></tr>
+</tbody></table>
+
+<p class="dim"><code>sudo dnf copr enable arcticlore/candy</code></p>
+</div>
+<script>
+let activeFilter=null;
+function filterState(s){
+  activeFilter=activeFilter===s?null:s;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.filter===activeFilter));
+  filterTable();
+}
+function filterTable(){
+  const q=document.getElementById('search').value.toLowerCase();
+  let vis=0;
+  document.querySelectorAll('#tbody tr').forEach(tr=>{
+    const matchState=!activeFilter||tr.dataset.state===activeFilter;
+    const matchSearch=!q||tr.cells[0].textContent.toLowerCase().includes(q);
+    const show=matchState&&matchSearch;
+    tr.style.display=show?'':'none';
+    if(show)vis++;
+  });
+  document.getElementById('count').textContent=vis;
+}
+let sortDir=[1,1,1];
+function sortTable(col){
+  const tb=document.getElementById('tbody');
+  const rows=Array.from(tb.rows);
+  sortDir[col]*=-1;
+  rows.sort((a,b)=>{
+    const av=a.cells[col].textContent, bv=b.cells[col].textContent;
+    return av.localeCompare(bv,'ru')*sortDir[col];
+  });
+  rows.forEach(r=>tb.appendChild(r));
+}
+</script>
+</body></html>

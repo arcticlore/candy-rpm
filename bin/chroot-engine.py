@@ -37,24 +37,37 @@ def save_lock():
 
 def http_text(url):
     try:
-        return urllib.request.urlopen(url, timeout=10).read().decode(errors="ignore")
+        r = subprocess.run(
+            ["curl", "-s", "--connect-timeout", "3", "--ipv4", "-m", "5", url],
+            capture_output=True, text=True, timeout=8
+        )
+        return r.stdout
     except Exception:
         return ""
 
 def copr_failed_latest():
     """имя -> id последнего failed билда (для сигнатур), плюс все последние."""
     try:
-        out = subprocess.run(["copr-cli","list-builds",PROJECT],
-                             capture_output=True,text=True,timeout=30).stdout
-    except subprocess.TimeoutExpired:
+        import subprocess
+        out = subprocess.run(
+            ["curl", "-s", "--connect-timeout", "5", "--ipv4",
+             f"https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200"],
+            capture_output=True, text=True, timeout=30
+        ).stdout
+    except Exception:
+        return {},{}
+    try:
+        data = json.loads(out)
+    except Exception:
         return {},{}
     latest={}; failed={}
-    for line in out.splitlines():
-        p=line.split()
-        if len(p)<3: continue
-        bid,name,state=p[0],p[1],p[-1]
-        if name not in latest: latest[name]=(int(bid),state)
-        if state=="failed": failed[name]=int(bid)
+    for b in data.get("items",[]):
+        name = b["source_package"]["name"]
+        state = b["state"]
+        bid = b["id"]
+        chroots = b.get("chroots", CHROOTS)
+        if name not in latest: latest[name]=(bid,state,chroots)
+        if state=="failed": failed[name]=bid
     return latest,failed
 
 latest, failed_map = copr_failed_latest()
@@ -62,6 +75,7 @@ latest, failed_map = copr_failed_latest()
 plan = {}
 done = []
 now = time.time()
+_start = time.time()
 
 def check_chroot(args):
     """Проверяет один чрут для одного пакета. Возвращает (pkg, chroot, need_rebuild)."""
@@ -76,26 +90,28 @@ def check_chroot(args):
         return (n, c, False)  # RPM есть → OK
     return (n, c, True)  # лог есть, rpm нет → failed
 
+_pkg_count = 0
 for x in meta["packages"]:
     n = x["name"]
     if x.get("enabled") is False: continue
     b = latest.get(n)
     if not b: continue
-    bid, bstate = int(b[0]), b[1]
+    bid, bstate, build_chroots = int(b[0]), b[1], b[2]
 
     # полностью зелёный последний билд -> замок по всем чрутам, не трогаем
     if bstate == "succeeded":
         ver = (state.get(n) or {}).get("ver","?")
-        e = lock.setdefault(f"{n}|*", {"ver":ver,"ok":list(CHROOTS)})
+        e = lock.setdefault(f"{n}|*", {"ver":ver,"ok":list(build_chroots)})
         done.append(n)
         continue
 
+    _pkg_count += 1
     ver = (state.get(n) or {}).get("ver","?")
     
-    # Параллельная проверка чрутов
-    tasks = [(n, c, bid, bstate, ver) for c in CHROOTS]
+    # Параллельная проверка чрутов (только те, что в билде!)
+    tasks = [(n, c, bid, bstate, ver) for c in build_chroots]
     need = []
-    with ThreadPoolExecutor(max_workers=6) as executor:
+    with ThreadPoolExecutor(max_workers=12) as executor:
         futures = {executor.submit(check_chroot, t): t for t in tasks}
         for future in as_completed(futures):
             pkg, chroot, needs_rebuild = future.result()
@@ -104,6 +120,8 @@ for x in meta["packages"]:
 
     if need:
         plan[n] = need
+    if _pkg_count % 10 == 0:
+        print(f"  [_pkg_count] {_pkg_count} packages checked in {time.time()-_start:.0f}s", file=sys.stderr, flush=True)
 
 # применяем правила к плану с учётом зависших pending
 final={}
