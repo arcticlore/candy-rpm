@@ -1,20 +1,28 @@
-# TODO / Roadmap
+# TODO — arcticlore/candy-rpm
 
-## Done
-- [x] Pipeline: pkgs.json -> spec generator -> SRPM -> COPR
-- [x] Auto-update from upstream (github/codeberg/gitlab/npm/pypi)
-- [x] Commit-SHA fallback for tagless repos
-- [x] Source fallbacks: codeload mirror + per-package `mirror` field
-- [x] Auto-triage of known build failures (man/cargo-macros/workspace cdir)
-- [x] Bilingual package descriptions + unofficial-repo disclaimer
-- [x] Chroots: Fedora 44 & 43, x86_64/aarch64/ppc64le/s390x
+## Immediate (Today)
+- [ ] Fix remaining failed builds (bottom, zellij, ricksay, unimatrix, snakes, ascii-rain, rxfetch, pokemon-icat, ghfetch)
+- [ ] Wire chroot-engine.py into update-check.sh
+- [ ] Rewrite converge.sh v2 with Telegram summary
+- [ ] Expand auto-triage signatures (new error classes)
+- [ ] Create Cloudflare Tunnel for dashboard (quick tunnel)
+- [ ] Check phone Tailscale (a22-5f offline 3d)
 
-## In progress
-- [ ] Full green matrix across all 79 packages
-- [ ] GitHub Actions nightly builds (no local PC required)
+## This Week
+- [ ] Web dashboard v3 (JS filters/search/sort)
+- [ ] Terminal dashboard v4 (trend sparkline from night-watch.log)
+- [ ] Enable GitHub Pages (Settings → Pages → master /docs)
+- [ ] Add missing packages from PACKAGES.md
+- [ ] Disk cleanup: PortProton 219G, Downloads 84G
 
-## Planned
-- [ ] fedora-45 chroots after branching (~Oct 2026)
-- [ ] i386 / riscv64 chroots
-- [ ] COPR "persistent" request (keep old builds)
-- [ ] Packit integration (build on every push)
+## Infrastructure
+- [ ] Auto-triage: add `File must begin with "/"`, `Two files on one path`, `%generate_buildrequires` fail
+- [ ] Chroot lock: verify STUCK_HOURS threshold (6h default)
+- [ ] Night watchdog: ensure guard restarts babysit properly
+- [ ] Cloud pulse: verify Actions dispatch timing
+
+## Future
+- [ ] Weekly digest issue template
+- [ ] Dashboard: add Actions section with round counts
+- [ ] Terminal: add --tg flag for Telegram summary from converge
+- [ ] Package count goal: 130+ enabled
