@@ -3,6 +3,12 @@
 ![candy-rpm](assets/banner.svg)
 ![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg) ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue) ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044-294172?logo=fedora) [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+# 🧊 PROJECT FROZEN
+
+> **Project is frozen.** Work continues, no new packages are being added.
+> If you want to use it — enable the repo below.
+> If you want to fork or develop — feel free to fork.
+
 # candy-rpm — terminal eye-candy pipeline
 
 Nightly-updated COPR repository of terminal eye-candy for **Fedora 43 & 44**

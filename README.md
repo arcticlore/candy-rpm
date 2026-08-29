@@ -3,6 +3,12 @@
 ![candy-rpm](assets/banner.svg)
 ![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg) ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue) ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044-294172?logo=fedora) [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+# 🧊 ПРОЕКТ ЗАМОРОЖЕН
+
+> **Проект заморожен.** Работа ведётся, новые пакеты не добавляются.
+> Если хотите пользоваться — подключайте репо по инструкции ниже.
+> Если хотите форкнуть или развивать — форкайте смело.
+
 # candy-rpm — конвейер terminal eye-candy
 
 Ежедневно обновляемый COPR-репозиторий с terminal eye-candy для **Fedora 43 и 44**

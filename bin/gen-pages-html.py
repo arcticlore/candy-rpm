@@ -75,7 +75,7 @@ th:hover{{color:#fff}}
 .badge{{background:#1e3a5f;border-radius:12px;padding:2px 10px;font-size:12px;margin-left:8px}}
 </style></head><body><div class="wrap">
 <div class="banner"><div class="inner"><h1>🍬 candy-rpm · панель конвейера</h1>
-<span class="dim">автообновление 5 мин · {now} ·
+<span class="dim">🧊 ПРОЕКТ ЗАМОРОЖЕН · автообновление 5 мин · {now} ·
 <a href="https://github.com/arcticlore/candy-rpm">github</a></span></div></div>
 
 <h2>📊 Прогресс</h2>
