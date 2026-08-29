@@ -17,6 +17,7 @@ BuildRequires:  gcc
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
+BuildRequires:  libexif-devel
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  gettext
@@ -56,5 +57,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_mandir}/*
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

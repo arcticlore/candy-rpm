@@ -15,8 +15,6 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  openssl-devel
-BuildRequires:  pkgconf-pkg-config
 
 %description
 Neofetch-like utility to fetch GitHub info in the terminal
@@ -49,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ghfetch
 
 %changelog
-* Wed Aug 26 2026 candy-bot <candy@localhost> - 0-1
+* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1167,7 +1167,10 @@
    "share": {
     "src": "src/quotes.json",
     "dst": "/usr/share/ricksay"
-   }
+   },
+   "br": [
+    "gcc"
+   ]
   },
   {
    "name": "jp2a",
@@ -1183,7 +1186,8 @@
     "gcc",
     "libjpeg-turbo-devel",
     "libpng-devel",
-    "libwebp-devel"
+    "libwebp-devel",
+    "libexif-devel"
    ],
    "autoreconf": true,
    "prio": 4,
@@ -1616,7 +1620,8 @@
     "fontconfig-devel",
     "glslang",
     "pkgconf-pkg-config"
-   ]
+   ],
+   "cdir": "frontends/rioterm"
   },
   {
    "name": "Ghostty",
@@ -2502,7 +2507,10 @@
    ],
    "exp": true,
    "use": "gittype в каталоге репо",
-   "prio": 7
+   "prio": 7,
+   "br": [
+    "perl"
+   ]
   }
  ]
 }
