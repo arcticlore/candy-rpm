@@ -155,7 +155,7 @@ jobs:
 
               # Get current COPR status
               states = get_copr_status()
-              active = sum(1 for s in states.values() if s in ('running', 'starting', 'pending', 'importing'))
+              active = sum(1 for s in states.values() if s in ('running', 'starting'))
               succeeded = {n for n, s in states.items() if s == 'succeeded'}
               failed = {n for n, s in states.items() if s == 'failed'}
 
