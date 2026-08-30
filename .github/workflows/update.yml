@@ -28,6 +28,15 @@ jobs:
       - name: Generate specs
         run: python3 bin/gen_specs.py --all
 
+      - name: Restore SRPM cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            SRPMS/
+            SOURCES/
+          key: srpm-cache-${{ github.run_id }}
+          restore-keys: srpm-cache-
+
       - name: Build SRPMs for packages needing submission
         run: |
           # Get list of not-yet-succeeded packages
@@ -51,14 +60,20 @@ jobs:
           " 2>/dev/null)
 
           BUILT=0
+          SKIPPED=0
           for name in $NOT_OK; do
+            # Skip if SRPM already cached
+            if ls SRPMS/"$name"-*.src.rpm >/dev/null 2>&1; then
+              SKIPPED=$((SKIPPED+1))
+              continue
+            fi
             if [ ! -f "SPECS/$name.spec" ]; then
               python3 bin/gen_specs.py "$name" 2>/dev/null || continue
             fi
             bin/make-srpm.sh "$name" 2>/dev/null || continue
             BUILT=$((BUILT+1))
           done
-          echo "SRPMs ready: $BUILT"
+          echo "SRPMs built: $BUILT, cached: $SKIPPED"
 
       - name: Smart submit with slot management
         run: |
