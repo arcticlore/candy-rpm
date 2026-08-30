@@ -1,0 +1,33 @@
+name: telegram bot
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # каждые 5 минут
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  listen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bot
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          # Run bot for ~3.5 minutes (long-poll timeout=50s)
+          timeout 210 python3 tools/tg-notify.py --listen || true
+
+      - name: Save state
+        run: |
+          git config user.name  "candy-bot"
+          git config user.email "candy-bot@users.noreply.github.com"
+          git add state/tg-offset.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -qm "tg offset [skip ci]" || true
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master || true
+          fi

@@ -420,14 +420,24 @@ def main() -> None:
         sys.exit("нужны TG_BOT_TOKEN и TG_CHAT_ID")
 
     if LISTEN:
+        # Load offset from file for GitHub Actions persistence
+        offset_file = ROOT / "state" / "tg-offset.txt"
         offset = 0
-        print(f"бот v5 слушает; whitelist={CHATS}", flush=True)
+        if offset_file.exists():
+            try:
+                offset = int(offset_file.read_text().strip()) + 1
+            except (ValueError, OSError):
+                offset = 0
+        print(f"бот v5 слушает; whitelist={CHATS}; offset={offset}", flush=True)
 
         while True:
             try:
                 res = api("getUpdates", offset=offset, timeout=50)
                 for upd in res.get("result", []):
                     offset = upd["update_id"] + 1
+                    # Persist offset after each update
+                    offset_file.parent.mkdir(parents=True, exist_ok=True)
+                    offset_file.write_text(str(offset - 1))
 
                     if "callback_query" in upd:
                         handle_callback(upd["callback_query"])
