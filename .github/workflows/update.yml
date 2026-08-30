@@ -17,7 +17,7 @@ jobs:
 
       - name: Install toolchain
         run: |
-          dnf install -y jq git rpm-build rpmdevtools python3 >/dev/null 2>&1
+          dnf install -y jq git rpm-build rpmdevtools python3 golang cargo rust 2>&1 | tail -5
 
       - name: Configure COPR
         run: |
