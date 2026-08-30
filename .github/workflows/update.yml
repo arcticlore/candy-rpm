@@ -25,42 +25,10 @@ jobs:
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
-      - name: Check if anything to submit
-        id: check
-        run: |
-          # Compare COPR builds vs enabled packages
-          COPR_BUILT=$(curl -4 -s --connect-timeout 10 \
-            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
-            | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          ok=set()
-          for b in d.get('items',[]):
-              n=b.get('source_package',{}).get('name','')
-              s=b.get('state','')
-              if n and s=='succeeded': ok.add(n)
-          print(len(ok))
-          " 2>/dev/null || echo "0")
-          
-          ENABLED=$(jq '.packages|map(select(.enabled!=false))|length' pkgs.json)
-          NEEDS_SUBMIT=$((ENABLED - COPR_BUILT))
-          echo "need_submit=$NEEDS_SUBMIT" >> $GITHUB_OUTPUT
-          echo "enabled=$ENABLED built=$COPR_BUILT need=$NEEDS_SUBMIT"
-          
-          if [ "$NEEDS_SUBMIT" -le 0 ]; then
-            echo "all_done=true" >> $GITHUB_OUTPUT
-            echo "All packages already built successfully. Nothing to submit."
-          else
-            echo "all_done=false" >> $GITHUB_OUTPUT
-            echo "$NEEDS_SUBMIT packages need submission."
-          fi
-
       - name: Generate specs
-        if: steps.check.outputs.all_done != 'true'
         run: python3 bin/gen_specs.py --all
 
       - name: Build SRPMs for packages needing submission
-        if: steps.check.outputs.all_done != 'true'
         run: |
           # Get list of not-yet-succeeded packages
           NOT_OK=$(curl -4 -s --connect-timeout 10 \
@@ -73,7 +41,6 @@ jobs:
               n=b.get('source_package',{}).get('name','')
               s=b.get('state','')
               if n and s=='succeeded': ok.add(n)
-          # all enabled names from stdin
           import os
           enabled=set()
           with open('pkgs.json') as f:
@@ -82,7 +49,7 @@ jobs:
           for n in sorted(enabled - ok):
               print(n)
           " 2>/dev/null)
-          
+
           BUILT=0
           for name in $NOT_OK; do
             if [ ! -f "SPECS/$name.spec" ]; then
@@ -93,54 +60,135 @@ jobs:
           done
           echo "SRPMs ready: $BUILT"
 
-      - name: Submit to COPR
-        if: steps.check.outputs.all_done != 'true'
+      - name: Smart submit with slot management
         run: |
+          python3 << 'PYEOF'
+          import json, subprocess, time, configparser, os, glob
+
+          MAX_BUILDS = 5
+          POLL_INTERVAL = 60  # seconds between checks
+          MAX_WAIT = 7200     # 2 hours max total wait
+
           # Read COPR credentials
-          COPR_USER=$(python3 -c "
-          import configparser, os
           c = configparser.ConfigParser()
           c.read(os.path.expanduser('~/.config/copr'))
-          print(c.get('copr-cli', 'username', fallback=''))
-          ")
-          COPR_TOKEN=$(python3 -c "
-          import configparser, os
-          c = configparser.ConfigParser()
-          c.read(os.path.expanduser('~/.config/copr'))
-          print(c.get('copr-cli', 'token', fallback=''))
-          ")
-          
-          SUBMITTED=0
-          for srpm in SRPMS/*.src.rpm; do
-            [ -f "$srpm" ] || continue
-            name=$(basename "$srpm" | sed 's/-[0-9].*//')
-            
-            # Check if already succeeded on COPR
-            STATUS=$(curl -4 -s --connect-timeout 10 \
-              "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
-              | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          for b in d.get('items',[]):
-              if b.get('source_package',{}).get('name','')=='$name' and b.get('state')=='succeeded':
-                  print('ok'); sys.exit(0)
-          print('need')
-          " 2>/dev/null || echo "need")
-            
-            if [ "$STATUS" = "ok" ]; then
-              continue
-            fi
-            
-            echo "Submitting: $name"
-            curl -4 -s --connect-timeout 10 -m 60 \
-              -u "$COPR_USER:$COPR_TOKEN" \
-              -F "srpm=@$srpm" \
-              -F "nowait=1" \
-              "https://copr.fedorainfracloud.org/api_3/new_build" >/dev/null 2>&1
-            SUBMITTED=$((SUBMITTED+1))
-            sleep 2
-          done
-          echo "Submitted: $SUBMITTED packages"
+          COPR_USER = c.get('copr-cli', 'username', fallback='')
+          COPR_TOKEN = c.get('copr-cli', 'token', fallback='')
+
+          def get_copr_status():
+              """Get current build statuses from COPR."""
+              try:
+                  r = subprocess.run(
+                      ['curl', '-4', '-s', '--connect-timeout', '10',
+                       'https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200'],
+                      capture_output=True, text=True, timeout=15
+                  )
+                  data = json.loads(r.stdout)
+                  states = {}
+                  for b in data.get('items', []):
+                      name = b['source_package']['name']
+                      state = b['state']
+                      if name not in states:
+                          states[name] = state
+                  return states
+              except Exception as e:
+                  print(f"  [WARN] COPR API error: {e}")
+                  return {}
+
+          def get_enabled_packages():
+              """Get list of enabled packages from pkgs.json."""
+              with open('pkgs.json') as f:
+                  pkgs = json.load(f)
+              return {p['name'] for p in pkgs.get('packages', []) if p.get('enabled', True)}
+
+          def get_srpm_files():
+              """Get available SRPM files."""
+              result = {}
+              for path in glob.glob('SRPMS/*.src.rpm'):
+                  name = os.path.basename(path).split('-')[0]
+                  result[name] = path
+              return result
+
+          def submit_build(srpm_path):
+              """Submit a single SRPM to COPR."""
+              r = subprocess.run(
+                  ['curl', '-4', '-s', '--connect-timeout', '10', '-m', '60',
+                   '-u', f'{COPR_USER}:{COPR_TOKEN}',
+                   '-F', f'srpm=@{srpm_path}',
+                   '-F', 'nowait=1',
+                   'https://copr.fedorainfracloud.org/api_3/new_build'],
+                  capture_output=True, text=True, timeout=70
+              )
+              return r.returncode == 0
+
+          # Main loop
+          enabled = get_enabled_packages()
+          srpms = get_srpm_files()
+          submitted = set()
+          start_time = time.time()
+
+          print(f"Enabled packages: {len(enabled)}")
+          print(f"SRPMs available: {len(srpms)}")
+          print(f"Max concurrent builds: {MAX_BUILDS}")
+          print()
+
+          while True:
+              elapsed = time.time() - start_time
+              if elapsed > MAX_WAIT:
+                  print(f"\n[DONE] Timeout reached ({MAX_WAIT}s). Submitted: {len(submitted)}")
+                  break
+
+              # Get current COPR status
+              states = get_copr_status()
+              active = sum(1 for s in states.values() if s in ('running', 'starting', 'pending', 'importing'))
+              succeeded = {n for n, s in states.items() if s == 'succeeded'}
+              failed = {n for n, s in states.items() if s == 'failed'}
+
+              # Find packages still needing submission
+              need_submit = enabled - succeeded - set(states.keys()) - submitted
+              # Also retry failed ones (they might work now)
+              need_submit |= (failed & enabled) - submitted
+
+              available_slots = MAX_BUILDS - active
+
+              print(f"[{time.strftime('%H:%M:%S')}] active={active}/{MAX_BUILDS} "
+                    f"free={available_slots} succeeded={len(succeeded)} "
+                    f"need={len(need_submit)} submitted_here={len(submitted)}")
+
+              if not need_submit and active == 0:
+                  print("\n[DONE] All packages submitted and no active builds!")
+                  break
+
+              if not need_submit and active > 0:
+                  print(f"  Waiting for {active} active builds to finish...")
+                  time.sleep(POLL_INTERVAL)
+                  continue
+
+              if available_slots <= 0:
+                  print(f"  All {MAX_BUILDS} slots full, waiting...")
+                  time.sleep(POLL_INTERVAL)
+                  continue
+
+              # Submit up to available_slots
+              to_submit = sorted(need_submit)[:available_slots]
+              for name in to_submit:
+                  if name not in srpms:
+                      print(f"  [SKIP] {name}: no SRPM file")
+                      continue
+
+                  print(f"  [SUBMIT] {name}")
+                  if submit_build(srpms[name]):
+                      submitted.add(name)
+                  else:
+                      print(f"  [FAIL] {name}: submit failed")
+
+                  time.sleep(2)  # rate limit between submits
+
+              # Brief pause before next check
+              time.sleep(10)
+
+          print(f"\nTotal submitted this run: {len(submitted)}")
+          PYEOF
 
       - name: Dashboard
         if: always()
