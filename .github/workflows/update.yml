@@ -105,6 +105,9 @@ jobs:
                       state = b['state']
                       if name not in states:
                           states[name] = state
+                      # If any build is running/pending, mark as such
+                      if state in ('running', 'starting', 'pending', 'importing'):
+                          states[name] = state
                   return states
               except Exception as e:
                   print(f"  [WARN] COPR API error: {e}")
@@ -160,9 +163,11 @@ jobs:
               failed = {n for n, s in states.items() if s == 'failed'}
 
               # Find packages still needing submission
-              need_submit = enabled - succeeded - set(states.keys()) - submitted
-              # Also retry failed ones (they might work now)
-              need_submit |= (failed & enabled) - submitted
+              # Exclude: succeeded, already in any active/pending state, already submitted this run
+              pending_or_active = {n for n, s in states.items() if s in ('pending', 'running', 'starting', 'importing')}
+              need_submit = enabled - succeeded - pending_or_active - submitted
+              # Also retry failed ones (they might work now) - but only if not already pending
+              need_submit |= (failed & enabled) - pending_or_active - submitted
 
               available_slots = MAX_BUILDS - active
 
