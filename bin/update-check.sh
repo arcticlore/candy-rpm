@@ -153,17 +153,43 @@ for N in $(enabled_pkgs); do
         if [ -n "$CHROOT_PLAN" ]; then
             BUILD_CHROOTS=$(jq -r --arg n "$N" '.plan[$n] // [] | .[]' "$CHROOT_PLAN" 2>/dev/null | tr '\n' ' ')
         fi
+
+        # читаем креды из ~/.config/copr
+        COPR_USER=$(python3 -c "
+import configparser, os
+c = configparser.ConfigParser()
+c.read(os.path.expanduser('~/.config/copr'))
+print(c.get('copr-cli', 'username', fallback=''))
+" 2>/dev/null)
+        COPR_TOKEN=$(python3 -c "
+import configparser, os
+c = configparser.ConfigParser()
+c.read(os.path.expanduser('~/.config/copr'))
+print(c.get('copr-cli', 'token', fallback=''))
+" 2>/dev/null)
+        COPR_URL=$(python3 -c "
+import configparser, os
+c = configparser.ConfigParser()
+c.read(os.path.expanduser('~/.config/copr'))
+print(c.get('copr-cli', 'copr_url', fallback='https://copr.fedorainfracloud.org'))
+" 2>/dev/null)
+
+        # собираем curl --ipv4 для загрузки SRPM
         if [ -n "$BUILD_CHROOTS" ]; then
             log "[ENGINE] $N: ограниченные чруты: $BUILD_CHROOTS"
-            CHROOT_FLAGS=""
-            for c in $BUILD_CHROOTS; do CHROOT_FLAGS="$CHROOT_FLAGS -r $c"; done
-            if ! copr-cli build "$PROJ" "$SRPM" --nowait $CHROOT_FLAGS >>"$LOG" 2>&1; then
-                log "[FAIL] $N: copr-cli отклонил билд"; FAILED=$((FAILED+1)); continue
-            fi
+            CHROOT_FORM=""
+            for c in $BUILD_CHROOTS; do CHROOT_FORM="$CHROOT_FORM -F chroots=$c"; done
         else
-            if ! copr-cli build "$PROJ" "$SRPM" --nowait >>"$LOG" 2>&1; then
-                log "[FAIL] $N: copr-cli отклонил билд"; FAILED=$((FAILED+1)); continue
-            fi
+            CHROOT_FORM=""
+        fi
+
+        if ! curl -4 --connect-timeout 10 -m 60 -s \
+            -u "$COPR_USER:$COPR_TOKEN" \
+            -F "srpm=@$SRPM" \
+            -F "nowait=1" \
+            $CHROOT_FORM \
+            "$COPR_URL/api_3/new_build" >>"$LOG" 2>&1; then
+            log "[FAIL] $N: curl не смог загрузить SRPM"; FAILED=$((FAILED+1)); continue
         fi
     else
         log "[WARN] copr-cli не установлен — SRPM готов локально: $SRPM (в state НЕ отмечен)"
