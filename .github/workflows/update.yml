@@ -1,25 +1,23 @@
-name: nightly update
+name: submit to copr
 on:
   schedule:
-    - cron: "0 */2 * * *"   # каждые 2 часа
+    - cron: "0 */3 * * *"   # каждые 3 часа
   workflow_dispatch:
 
 permissions:
-  contents: write          # коммит state/спеков/дашборда обратно в репо
-  issues: write            # авто-issue по красным пакетам
+  contents: write
 
 jobs:
-  update:
+  submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 120
     container: fedora:44
     steps:
       - uses: actions/checkout@v4
 
       - name: Install toolchain
         run: |
-          dnf install -y copr-cli golang npm jq git cargo rust \
-                         rpm-build rpmdevtools python3 >/dev/null
+          dnf install -y jq git rpm-build rpmdevtools python3 >/dev/null 2>&1
 
       - name: Configure COPR
         run: |
@@ -27,56 +25,141 @@ jobs:
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
-      - name: Auto-triage до волн (лечит известные ошибки)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-triage.sh || true
+      - name: Check if anything to submit
+        id: check
+        run: |
+          # Compare COPR builds vs enabled packages
+          COPR_BUILT=$(curl -4 -s --connect-timeout 10 \
+            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
+            | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          ok=set()
+          for b in d.get('items',[]):
+              n=b.get('source_package',{}).get('name','')
+              s=b.get('state','')
+              if n and s=='succeeded': ok.add(n)
+          print(len(ok))
+          " 2>/dev/null || echo "0")
+          
+          ENABLED=$(jq '.packages|map(select(.enabled!=false))|length' pkgs.json)
+          NEEDS_SUBMIT=$((ENABLED - COPR_BUILT))
+          echo "need_submit=$NEEDS_SUBMIT" >> $GITHUB_OUTPUT
+          echo "enabled=$ENABLED built=$COPR_BUILT need=$NEEDS_SUBMIT"
+          
+          if [ "$NEEDS_SUBMIT" -le 0 ]; then
+            echo "all_done=true" >> $GITHUB_OUTPUT
+            echo "All packages already built successfully. Nothing to submit."
+          else
+            echo "all_done=false" >> $GITHUB_OUTPUT
+            echo "$NEEDS_SUBMIT packages need submission."
+          fi
 
-      - name: Converge — волны до полной передачи в COPR
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CANDY_PROJ: arcticlore/candy
-        run: bin/converge.sh --rounds 8   # красным, если что-то так и не улетело
+      - name: Generate specs
+        if: steps.check.outputs.all_done != 'true'
+        run: python3 bin/gen_specs.py --all
 
-      - name: Auto-triage после волн
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-triage.sh || true
+      - name: Build SRPMs for packages needing submission
+        if: steps.check.outputs.all_done != 'true'
+        run: |
+          # Get list of not-yet-succeeded packages
+          NOT_OK=$(curl -4 -s --connect-timeout 10 \
+            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
+            | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          ok=set()
+          for b in d.get('items',[]):
+              n=b.get('source_package',{}).get('name','')
+              s=b.get('state','')
+              if n and s=='succeeded': ok.add(n)
+          # all enabled names from stdin
+          import os
+          enabled=set()
+          with open('pkgs.json') as f:
+              for p in json.load(f).get('packages',[]):
+                  if p.get('enabled',True): enabled.add(p['name'])
+          for n in sorted(enabled - ok):
+              print(n)
+          " 2>/dev/null)
+          
+          BUILT=0
+          for name in $NOT_OK; do
+            if [ ! -f "SPECS/$name.spec" ]; then
+              python3 bin/gen_specs.py "$name" 2>/dev/null || continue
+            fi
+            bin/make-srpm.sh "$name" 2>/dev/null || continue
+            BUILT=$((BUILT+1))
+          done
+          echo "SRPMs ready: $BUILT"
 
-      - name: Web dashboard (docs/index.html)
+      - name: Submit to COPR
+        if: steps.check.outputs.all_done != 'true'
+        run: |
+          # Read COPR credentials
+          COPR_USER=$(python3 -c "
+          import configparser, os
+          c = configparser.ConfigParser()
+          c.read(os.path.expanduser('~/.config/copr'))
+          print(c.get('copr-cli', 'username', fallback=''))
+          ")
+          COPR_TOKEN=$(python3 -c "
+          import configparser, os
+          c = configparser.ConfigParser()
+          c.read(os.path.expanduser('~/.config/copr'))
+          print(c.get('copr-cli', 'token', fallback=''))
+          ")
+          
+          SUBMITTED=0
+          for srpm in SRPMS/*.src.rpm; do
+            [ -f "$srpm" ] || continue
+            name=$(basename "$srpm" | sed 's/-[0-9].*//')
+            
+            # Check if already succeeded on COPR
+            STATUS=$(curl -4 -s --connect-timeout 10 \
+              "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
+              | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          for b in d.get('items',[]):
+              if b.get('source_package',{}).get('name','')=='$name' and b.get('state')=='succeeded':
+                  print('ok'); sys.exit(0)
+          print('need')
+          " 2>/dev/null || echo "need")
+            
+            if [ "$STATUS" = "ok" ]; then
+              continue
+            fi
+            
+            echo "Submitting: $name"
+            curl -4 -s --connect-timeout 10 -m 60 \
+              -u "$COPR_USER:$COPR_TOKEN" \
+              -F "srpm=@$srpm" \
+              -F "nowait=1" \
+              "https://copr.fedorainfracloud.org/api_3/new_build" >/dev/null 2>&1
+            SUBMITTED=$((SUBMITTED+1))
+            sleep 2
+          done
+          echo "Submitted: $SUBMITTED packages"
+
+      - name: Dashboard
         if: always()
         run: python3 bin/gen-pages-html.py || true
 
-      - name: Persist state/pkgs/specs/dashboard в репозиторий
+      - name: Commit state
         if: always()
         run: |
           git config user.name  "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git add state/state.json pkgs.json SOURCES.md SPECS/ PACKAGES.md docs/index.html || true
+          git add state/state.json pkgs.json SPECS/ docs/index.html || true
           if ! git diff --cached --quiet; then
-            git commit -qm "nightly sync [skip ci]"
+            git commit -qm "submit sync [skip ci]"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
           fi
-
-      - name: Auto-issue failures report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-issue.sh || true
-
-      - name: Telegram summary
-        if: always()
-        env:
-          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: |
-          dnf install -y python3 >/dev/null
-          python3 tools/tg-notify.py "🌙 candy nightly: ${{ job.status }} — детали во вкладке Actions" || true
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: update-logs
-          path: |
-            logs/
-            state/state.json
+          name: submit-logs-${{ github.run_number }}
+          path: logs/
