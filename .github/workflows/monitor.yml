@@ -46,6 +46,27 @@ jobs:
       - name: Dashboard
         run: python3 bin/gen-pages-html.py || true
 
+      - name: Telegram alert on failures
+        run: |
+          FAILED=$(curl -4 -s --connect-timeout 10 \
+            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
+            | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          failed=[b['source_package']['name'] for b in d.get('items',[]) if b.get('state')=='failed']
+          print(','.join(sorted(set(failed))) if failed else '')
+          " 2>/dev/null)
+          if [ -n "$FAILED" ]; then
+            CHAT_ID="${{ secrets.TG_CHAT_ID }}"
+            BOT_TOKEN="${{ secrets.TG_BOT_TOKEN }}"
+            if [ -n "$CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
+              MSG="⚠️ <b>candy monitor</b>: failed packages detected
+$(echo "$FAILED" | tr ',' '\n' | head -10 | sed 's/^/• /')"
+              curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+                -d chat_id="$CHAT_ID" -d parse_mode=HTML -d text="$MSG" >/dev/null 2>&1 || true
+            fi
+          fi
+
       - name: Commit dashboard
         run: |
           git config user.name  "candy-bot"

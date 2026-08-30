@@ -190,6 +190,16 @@ jobs:
           print(f"\nTotal submitted this run: {len(submitted)}")
           PYEOF
 
+      - name: Auto-triage (fix known failures)
+        if: always()
+        run: bin/auto-triage.sh || true
+
+      - name: Auto-issue (report failures)
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-issue.sh || true
+
       - name: Dashboard
         if: always()
         run: python3 bin/gen-pages-html.py || true
@@ -203,6 +213,23 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -qm "submit sync [skip ci]"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
+          fi
+
+      - name: Telegram notification
+        if: always()
+        run: |
+          if [ -f ~/.config/candy/tg.conf ]; then
+            CHAT_ID=$(grep -oP 'TG_CHAT_ID=\K.*' ~/.config/candy/tg.conf | head -1)
+            BOT_TOKEN=$(grep -oP 'TG_BOT_TOKEN=\K.*' ~/.config/candy/tg.conf | head -1)
+          fi
+          # fallback to secrets
+          CHAT_ID="${CHAT_ID:-${{ secrets.TG_CHAT_ID }}}"
+          BOT_TOKEN="${BOT_TOKEN:-${{ secrets.TG_BOT_TOKEN }}}"
+          if [ -n "$CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
+            STATUS="${{ job.status }}"
+            MSG="🤖 <b>candy submit</b>: ${STATUS}"
+            curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+              -d chat_id="$CHAT_ID" -d parse_mode=HTML -d text="$MSG" >/dev/null 2>&1 || true
           fi
 
       - name: Upload logs
