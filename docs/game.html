@@ -2,150 +2,232 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>ЦУП terminal-rpm — CONTROL ROOM</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ЦУП terminal-rpm</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace;touch-action:none;user-select:none;-webkit-user-select:none}
-canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a1d23;font-family:'Courier New',monospace;touch-action:none;user-select:none;-webkit-user-select:none}
 
-/* ── HUD ── */
-#hud{position:fixed;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,rgba(0,0,0,.9));display:flex;align-items:flex-end;padding:0 12px 8px;gap:8px;z-index:10;pointer-events:none}
-.hud-panel{background:rgba(10,14,20,.85);border:1px solid #1e2a38;border-radius:4px;padding:6px 10px;font-size:10px;color:#8b9bb4;min-width:0;flex-shrink:0}
-.hud-val{font-size:16px;font-weight:700;line-height:1}
-.hud-green{color:#00e676}.hud-amber{color:#ffc107}.hud-red{color:#ff1744}.hud-blue{color:#448aff}
+canvas#game{display:block;position:absolute;top:0;left:0;width:100%;height:100%;image-rendering:pixelated}
 
-/* ── TOP BAR ── */
-#topbar{position:fixed;top:0;left:0;right:0;height:28px;background:rgba(0,0,0,.8);border-bottom:1px solid #1e2a38;display:flex;align-items:center;padding:0 10px;font-size:10px;color:#5a6a7a;z-index:10;pointer-events:none;justify-content:space-between}
-#topbar .left{display:flex;align-items:center;gap:8px}
-#topbar .dot{width:6px;height:6px;border-radius:50%;background:#00e676;box-shadow:0 0 6px #00e676}
+/* ═══ PANEL —的整体 НИЖНИЙ БЩУ ═══ */
+#panel{position:fixed;bottom:0;left:0;right:0;z-index:10;pointer-events:none;
+  background:linear-gradient(180deg,rgba(26,29,35,0) 0%,rgba(26,29,35,.95) 30%);
+  padding:30px 8px 8px;display:flex;flex-direction:column;gap:6px}
 
-/* ── CROSSHAIR ── */
-#crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;pointer-events:none;opacity:.4}
-#crosshair::before,#crosshair::after{content:'';position:absolute;background:#00e5ff}
-#crosshair::before{width:2px;height:16px;left:-1px;top:-8px}
-#crosshair::after{width:16px;height:2px;top:-1px;left:-8px}
+.panel-row{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
 
-/* ── INTERACT PROMPT ── */
-#interact{position:fixed;top:55%;left:50%;transform:translateX(-50%);background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:#00e5ff;padding:6px 16px;border-radius:4px;font-size:12px;z-index:10;display:none;pointer-events:none;text-align:center}
+/* ═══ БЛОКИ ЩИТА ═══ */
+.shield-block{
+  background:#22262e;border:1px solid #33373f;border-radius:3px;
+  padding:4px 8px;min-width:70px;text-align:center;position:relative;pointer-events:auto}
+.shield-block::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:#444}
 
-/* ── CONSOLE OVERLAY ── */
-#console-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-#console-overlay.open{display:flex}
-#console-box{background:#0a0e14;border:2px solid #00e5ff;border-radius:8px;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding:16px;box-shadow:0 0 40px rgba(0,229,255,.15)}
-#console-box h2{color:#00e5ff;font-size:14px;margin-bottom:12px;border-bottom:1px solid #1e2a38;padding-bottom:8px}
-#console-box .row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(30,42,56,.5)}
-#console-box .row .k{color:#5a6a7a}.row .v{color:#c5d0e0;text-align:right}
-#console-box .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;margin:1px}
-.tag-run{background:#004d26;color:#00e676}.tag-pend{background:#4d3800;color:#ffc107}.tag-fail{background:#4d0713;color:#ff1744}.tag-ok{background:#004d26;color:#00e676}.tag-can{background:#1e2a38;color:#5a6a7a}
-#console-close{position:fixed;top:16px;right:16px;background:none;border:1px solid #5a6a7a;color:#5a6a7a;padding:6px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;z-index:101}
-#console-close:hover{border-color:#00e5ff;color:#00e5ff}
+.shield-label{font-size:7px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.shield-value{font-size:18px;font-weight:700;line-height:1}
+.shield-sub{font-size:7px;color:#555;margin-top:1px}
 
-/* ── MOBILE CONTROLS ── */
-#mobile-controls{position:fixed;bottom:90px;left:0;right:0;display:none;justify-content:space-between;padding:0 16px;z-index:20;pointer-events:none}
-.joystick-area{width:120px;height:120px;border:2px solid rgba(0,229,255,.2);border-radius:50%;position:relative;pointer-events:auto}
-.joystick-knob{width:40px;height:40px;background:rgba(0,229,255,.3);border:2px solid rgba(0,229,255,.5);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:none}
-.action-btn{width:60px;height:60px;border:2px solid rgba(0,229,255,.3);border-radius:50%;background:rgba(0,229,255,.1);color:#00e5ff;font-size:10px;display:flex;align-items:center;justify-content:center;pointer-events:auto;font-family:monospace}
+.c-green{color:#4caf50}.c-amber{color:#ff9800}.c-red{color:#f44336}.c-blue{color:#42a5f5}.c-cyan{color:#26c6da}.c-white{color:#ccc}
 
-/* ── MINIMAP ── */
-#minimap{position:fixed;top:36px;right:8px;border:1px solid #1e2a38;border-radius:4px;z-index:10;pointer-events:none;opacity:.7}
+/* ═══ ИНДИКАТОРНАЯ ЛАМПА ═══ */
+.led{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;border:1px solid rgba(255,255,255,.1)}
+.led-on{box-shadow:0 0 6px currentColor}
+.led-green{background:#4caf50;color:#4caf50}.led-green{box-shadow:0 0 6px #4caf50}
+.led-amber{background:#ff9800;color:#ff9800;animation:blink 1.5s infinite}
+.led-red{background:#f44336;color:#f44336;box-shadow:0 0 8px #f44336;animation:blink .8s infinite}
+.led-off{background:#2a2d33;box-shadow:inset 0 0 3px rgba(0,0,0,.5)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── START SCREEN ── */
-#start{position:fixed;inset:0;background:#000;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
-#start h1{color:#00e5ff;font-size:24px;text-shadow:0 0 20px rgba(0,229,255,.5)}
-#start p{color:#5a6a7a;font-size:12px;text-align:center;max-width:400px;line-height:1.6}
-#start .start-btn{background:none;border:2px solid #00e5ff;color:#00e5ff;padding:12px 32px;font-size:14px;font-family:monospace;cursor:pointer;border-radius:4px;transition:.2s}
-#start .start-btn:hover{background:rgba(0,229,255,.1);box-shadow:0 0 20px rgba(0,229,255,.2)}
+/* ═══ РЯД ИНДИКАТОРОВ ═══ */
+.indicator-strip{
+  display:flex;gap:2px;background:#1a1d23;border:1px solid #2a2d33;border-radius:2px;padding:2px 4px;
+  pointer-events:auto;align-items:center}
+.indicator-strip .ind{display:flex;flex-direction:column;align-items:center;gap:1px;padding:0 4px}
+.indicator-strip .ind-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,.15)}
+.indicator-strip .ind-label{font-size:6px;color:#666;text-transform:uppercase}
 
-/* ── FPS ── */
-#fps{position:fixed;top:36px;left:8px;font-size:10px;color:#5a6a7a;z-index:10;pointer-events:none}
+/* ═══ ВЕРХНЯЯ ПАНЕЛЬ ═══ */
+#top-panel{position:fixed;top:0;left:0;right:0;z-index:10;pointer-events:none;
+  background:linear-gradient(0deg,rgba(26,29,35,0) 0%,rgba(26,29,35,.95) 30%);
+  padding:8px 8px 30px;display:flex;justify-content:space-between;align-items:flex-start}
+
+.top-group{display:flex;gap:4px;pointer-events:auto}
+.top-badge{background:#22262e;border:1px solid #33373f;border-radius:2px;padding:2px 8px;font-size:9px;color:#888;display:flex;align-items:center;gap:4px}
+.top-title{background:#22262e;border:1px solid #33373f;border-radius:2px;padding:3px 10px;font-size:10px;color:#aaa;font-weight:700;letter-spacing:1px}
+.top-time{background:#22262e;border:1px solid #33373f;border-radius:2px;padding:3px 8px;font-size:10px;color:#666;font-variant-numeric:tabular-nums}
+
+/* ═══ МИНИКАРТА ═══ */
+#minimap{position:fixed;top:32px;left:8px;border:1px solid #33373f;border-radius:2px;z-index:10;pointer-events:none;opacity:.8}
+
+/* ═══ КРЕСТ ═══ */
+#crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;opacity:.3}
+#crosshair::before,#crosshair::after{content:'';position:absolute;background:#aaa}
+#crosshair::before{width:1px;height:12px;left:0;top:-6px}
+#crosshair::after{width:12px;height:1px;top:0;left:-6px}
+
+/* ═══ ПРОМПТ ═══ */
+#prompt{position:fixed;top:45%;left:50%;transform:translateX(-50%);z-index:10;pointer-events:none;
+  background:rgba(26,29,35,.9);border:1px solid #444;border-radius:3px;padding:4px 12px;
+  font-size:11px;color:#aaa;display:none;text-align:center}
+
+/* ═══ КОНСОЛЬ ═══ */
+#cons{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.8);pointer-events:auto}
+#cons.open{display:flex}
+#cons-box{background:#1e2128;border:2px solid #33373f;border-radius:4px;width:92%;max-width:520px;
+  max-height:75vh;overflow-y:auto;padding:12px;box-shadow:0 0 30px rgba(0,0,0,.5)}
+#cons-box::-webkit-scrollbar{width:4px}
+#cons-box::-webkit-scrollbar-thumb{background:#444;border-radius:2px}
+#cons-title{font-size:12px;color:#aaa;border-bottom:1px solid #333;padding-bottom:6px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+#cons-close{background:none;border:1px solid #555;color:#777;padding:2px 8px;border-radius:2px;cursor:pointer;font-family:monospace;font-size:10px}
+#cons-close:hover{border-color:#aaa;color:#aaa}
+
+.c-row{display:flex;justify-content:space-between;padding:3px 0;font-size:11px;border-bottom:1px solid rgba(50,55,63,.5)}
+.c-row .k{color:#666}.c-row .v{color:#aaa;text-align:right}
+.c-tag{display:inline-block;padding:1px 5px;border-radius:2px;font-size:9px;font-weight:600}
+.c-tag-run{background:rgba(76,175,80,.15);color:#4caf50;border:1px solid rgba(76,175,80,.3)}
+.c-tag-pend{background:rgba(255,152,0,.15);color:#ff9800;border:1px solid rgba(255,152,0,.3)}
+.c-tag-ok{background:rgba(76,175,80,.15);color:#4caf50;border:1px solid rgba(76,175,80,.3)}
+.c-tag-fail{background:rgba(244,67,54,.15);color:#f44336;border:1px solid rgba(244,67,54,.3)}
+.c-tag-can{background:rgba(100,100,100,.15);color:#888;border:1px solid rgba(100,100,100,.3)}
+
+/* ═══ СТАРТ ═══ */
+#start{position:fixed;inset:0;background:#1a1d23;z-index:200;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px}
+#start h1{color:#aaa;font-size:20px;letter-spacing:2px}
+#start p{color:#555;font-size:11px;text-align:center;max-width:360px;line-height:1.6}
+#start button{background:none;border:1px solid #555;color:#aaa;padding:10px 28px;font-size:12px;
+  font-family:monospace;cursor:pointer;border-radius:3px}
+#start button:hover{border-color:#aaa;color:#ccc}
+
+/* ═══ FPS ═══ */
+#fps{position:fixed;top:32px;right:8px;font-size:9px;color:#444;z-index:10;pointer-events:none}
+
+/* ═══ МОБИЛЬНЫЕ ═══ */
+#mobile-ui{position:fixed;bottom:90px;left:0;right:0;display:none;justify-content:space-between;
+  padding:0 12px;z-index:20;pointer-events:none}
+.joy{width:100px;height:100px;border:1px solid rgba(255,255,255,.1);border-radius:50%;
+  position:relative;pointer-events:auto;background:rgba(0,0,0,.2)}
+.joy-knob{width:34px;height:34px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.action-btns{display:flex;flex-direction:column;gap:6px;pointer-events:auto}
+.act-btn{width:48px;height:48px;border:1px solid rgba(255,255,255,.15);border-radius:50%;
+  background:rgba(0,0,0,.3);color:#888;font-size:11px;display:flex;align-items:center;justify-content:center;
+  font-family:monospace}
 </style>
 </head>
 <body>
 
-<!-- START SCREEN -->
+<!-- СТАРТ -->
 <div id="start">
-  <div style="font-size:48px;margin-bottom:-10px">⚛</div>
+  <div style="font-size:36px;color:#555">⌂</div>
   <h1>ЦУП terminal-rpm</h1>
-  <p>Контрольный центр системы автоматического обновления.<br>
-  Используйте WASD для движения, МЫШЬ для обзора.<br>
-  E — взаимодействовать с консолями.<br>
-  Мобильные: виртуальные джойстики.</p>
-  <button class="start-btn" onclick="startGame()">▶ ВОЙТИ В КОНТРОЛЬНЫЙ ЦЕНТР</button>
-  <p style="font-size:10px;color:#2a3a4e;margin-top:20px">COPR: arcticlore/terminal-rpm | 146 packages | 4 chroots</p>
+  <p>Контрольный центр системы сборки пакетов.<br>
+  WASD — движение | МЫШЬ — обзор | E — консоль<br>
+  R — бег | Мобильные: джойстики</p>
+  <button onclick="startGame()">▶ ВОЙТИ</button>
 </div>
 
-<!-- HUD -->
-<div id="topbar">
-  <div class="left"><div class="dot"></div><span>TERMINAL-RPM CONTROL ROOM</span></div>
-  <span id="clock"></span>
+<!-- ВЕРХНЯЯ ПАНЕЛЬ БЩУ -->
+<div id="top-panel">
+  <div class="top-group">
+    <div class="top-title">⌂ ЦУП terminal-rpm</div>
+    <div class="top-badge"><span class="led led-green"></span>COPR</div>
+    <div class="top-badge"><span class="led led-green"></span>GitHub</div>
+    <div class="top-badge"><span class="led led-green"></span>Bot</div>
+  </div>
+  <div class="top-time" id="clock">--:--:--</div>
 </div>
-<canvas id="minimap" width="120" height="120"></canvas>
+
+<!-- МИНИКАРТА -->
+<canvas id="minimap" width="80" height="80"></canvas>
 <div id="fps"></div>
 <div id="crosshair"></div>
-<div id="interact">[ E ] Взаимодействовать</div>
+<div id="prompt">[ E ]</div>
 
-<div id="hud">
-  <div class="hud-panel">
-    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">АКТИВНЫХ</div>
-    <div class="hud-val hud-green" id="h-active">0</div>
+<!-- НИЖНИЙ БЩУ — РЯДЫ ИНДИКАТОРОВ -->
+<div id="panel">
+  <!-- Ряд 1: Основные показатели -->
+  <div class="panel-row">
+    <div class="shield-block">
+      <div class="shield-label">Активные</div>
+      <div class="shield-value c-green" id="p-act">0</div>
+    </div>
+    <div class="shield-block">
+      <div class="shield-label">Очередь</div>
+      <div class="shield-value c-amber" id="p-pend">0</div>
+    </div>
+    <div class="shield-block">
+      <div class="shield-label">Ошибки</div>
+      <div class="shield-value c-red" id="p-fail">0</div>
+    </div>
+    <div class="shield-block">
+      <div class="shield-label">Успешно</div>
+      <div class="shield-value c-green" id="p-ok">0</div>
+    </div>
+    <div class="shield-block">
+      <div class="shield-label">Отменено</div>
+      <div class="shield-value" style="color:#666" id="p-can">0</div>
+    </div>
+    <div class="shield-block" style="min-width:90px">
+      <div class="shield-label">Пакетов</div>
+      <div class="shield-value c-cyan" id="p-pkg">0/0</div>
+    </div>
   </div>
-  <div class="hud-panel">
-    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">ОЧЕРЕДЬ</div>
-    <div class="hud-val hud-amber" id="h-pending">0</div>
+
+  <!-- Ряд 2: Индикаторы состояния -->
+  <div class="panel-row">
+    <div class="indicator-strip">
+      <div class="ind"><div class="ind-dot led led-green"></div><div class="ind-label">Сеть</div></div>
+      <div class="ind"><div class="ind-dot led led-green"></div><div class="ind-label">COPR</div></div>
+      <div class="ind"><div class="ind-dot led led-green"></div><div class="ind-label">API</div></div>
+      <div class="ind"><div class="ind-dot led" id="led-build"></div><div class="ind-label">Билды</div></div>
+      <div class="ind"><div class="ind-dot led" id="led-pend"></div><div class="ind-label">Очередь</div></div>
+      <div class="ind"><div class="ind-dot led" id="led-fail"></div><div class="ind-label">Ошибки</div></div>
+      <div class="ind"><div class="ind-dot led led-green"></div><div class="ind-label">Telegram</div></div>
+      <div class="ind"><div class="ind-dot led led-green"></div><div class="ind-label">Pages</div></div>
+    </div>
+    <div class="shield-block" style="min-width:100px">
+      <div class="shield-label">Проект</div>
+      <div class="shield-value c-cyan" style="font-size:10px">terminal-rpm</div>
+    </div>
   </div>
-  <div class="hud-panel">
-    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">ОШИБКИ</div>
-    <div class="hud-val hud-red" id="h-failed">0</div>
-  </div>
-  <div class="hud-panel">
-    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">УСПЕХ</div>
-    <div class="hud-val hud-green" id="h-ok">0</div>
-  </div>
-  <div class="hud-panel" style="flex:1;min-width:60px">
-    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">СИСТЕМА</div>
-    <div class="hud-val hud-blue" id="h-sys" style="font-size:11px">ONLINE</div>
+
+  <!-- Ряд 3: Подсказка -->
+  <div class="panel-row" id="hint-row" style="display:none">
+    <div class="shield-block" style="border-color:#555">
+      <div class="shield-value" style="font-size:10px;color:#888" id="hint-text">Подойдите к консоли и нажмите E</div>
+    </div>
   </div>
 </div>
 
-<!-- CONSOLE OVERLAY -->
-<div id="console-overlay">
-  <button id="console-close" onclick="closeConsole()">✕ [ESC]</button>
-  <div id="console-box"></div>
+<!-- КОНСОЛЬ -->
+<div id="cons">
+  <div id="cons-box"></div>
 </div>
 
-<!-- MOBILE CONTROLS -->
-<div id="mobile-controls">
-  <div class="joystick-area" id="move-stick">
-    <div class="joystick-knob" id="move-knob"></div>
+<!-- МОБИЛЬНЫЕ УПРАВЛЯЮЩИЕ -->
+<div id="mobile-ui">
+  <div class="joy" id="joy-move"><div class="joy-knob" id="knob-move"></div></div>
+  <div class="action-btns">
+    <div class="act-btn" id="btn-e">E</div>
+    <div class="act-btn" id="btn-run">⇧</div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:8px">
-    <div class="action-btn" id="btn-interact">E</div>
-    <div class="action-btn" id="btn-run">⇧</div>
-  </div>
-  <div class="joystick-area" id="look-stick">
-    <div class="joystick-knob" id="look-knob"></div>
-  </div>
+  <div class="joy" id="joy-look"><div class="joy-knob" id="knob-look"></div></div>
 </div>
 
 <canvas id="game"></canvas>
 
 <script>
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════
 // CONFIG
-// ═══════════════════════════════════════════════
-const FOV = Math.PI / 3;
-const MAP_SIZE = 20;
-const TILE = 1;
-const TEX_SIZE = 64;
-const MOVE_SPEED = 2.5;
-const TURN_SPEED = 2;
-const INTERACT_DIST = 1.5;
+// ══════════════════════════════════════
+const FOV=Math.PI/3, MAP_S=20, TEX=64, SPD=2.5, TSPD=2, IDIST=1.5;
 
-// ═══════════════════════════════════════════════
-// MAP — 0=floor, 1=wall, 2=console, 3=screen, 4=door
-// ═══════════════════════════════════════════════
-const MAP = [
+// ══════════════════════════════════════
+// КАРТА: 0=пол, 1=стена, 2=консоль, 3=экран, 4=дверь
+// ══════════════════════════════════════
+const MAP=[
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,1],
@@ -168,686 +250,416 @@ const MAP = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
-// ═══════════════════════════════════════════════
-// CONSOLE DATA SOURCES
-// ═══════════════════════════════════════════════
-const CONSOLES = {
-  // Position: [row,col] — map tile position
-  // Type determines what data is shown
-  '2,2':   {type:'overview', title:'ГЛАВНЫЙ ЩИТ'},
-  '2,15':  {type:'builds', title:'МОНИТОР БИЛДОВ'},
-  '8,2':   {type:'packages', title:'УПРАВЛЕНИЕ ПАКЕТАМИ'},
-  '8,8':   {type:'chroots', title:'СЕРВЕРЫ (CHROOTS)'},
-  '8,10':  {type:'network', title:'СЕТЬ И ДОПУСКИ'},
-  '8,16':  {type:'logs', title:'СИСТЕМНЫЕ ЛОГИ'},
-  '14,2':  {type:'workflows', title:'WORKFLOWS'},
-  '14,16': {type:'danger', title:'⚠ АВАРИЙНЫЙ ЩИТ'},
-  '4,4':   {type:'status_screen', title:'COPR STATUS'},
-  '4,13':  {type:'pkg_screen', title:'ПАКЕТЫ: ВКЛ/ВЫКЛ'},
-  '12,4':  {type:'wf_screen', title:'GITHUB ACTIONS'},
-  '12,15': {type:'health', title:'ЗДОРОВЬЕ СИСТЕМЫ'},
-  '16,8':  {type:'about', title:'О ПРОЕКТЕ'},
+// ══════════════════════════════════════
+// КОНСОЛИ (row,col) → тип данных
+// ══════════════════════════════════════
+const CON={
+  '2,2':{t:'overview',n:'ГЛАВНЫЙ ЩИТ'},
+  '2,15':{t:'builds',n:'БИЛДЫ'},
+  '8,2':{t:'packages',n:'ПАКЕТЫ'},
+  '8,8':{t:'chroots',n:'СЕРВЕРЫ'},
+  '8,10':{t:'net',n:'СЕТЬ'},
+  '8,16':{t:'logs',n:'ЛОГИ'},
+  '14,2':{t:'wf',n:'WORKFLOWS'},
+  '14,16':{t:'danger',n:'⚠ АВАРИЯ'},
+  '4,4':{t:'overview',n:'ТАБЛО'},
+  '4,13':{t:'packages',n:'ПАКЕТЫ'},
+  '12,4':{t:'wf',n:'CI/CD'},
+  '12,15':{t:'health',n:'ЗДОРОВЬЕ'},
+  '16,8':{t:'overview',n:'СИСТЕМА'},
 };
 
-// ═══════════════════════════════════════════════
-// GAME STATE
-// ═══════════════════════════════════════════════
-let player = {x: 9.5, y: 1.5, angle: Math.PI/2};
-let keys = {};
-let mouse = {dx:0, locked:false};
-let running = false;
-let gameStarted = false;
-let isMobile = false;
-let moveJoy = {active:false, dx:0, dy:0};
-let lookJoy = {active:false, dx:0};
-let coprData = {builds:[], counts:{}, pkgsJson:null};
-let lastFetch = 0;
-let consoleOpen = false;
+// ══════════════════════════════════════
+// СОСТОЯНИЕ
+// ══════════════════════════════════════
+let P={x:9.5,y:1.5,a:Math.PI/2};
+let K={};let MDX=0;let run=false;let started=false;let mob=false;
+let MJ={on:0,dx:0,dy:0};let LJ={on:0,dx:0};
+let D={b:[],c:{},p:null};let lastF=0;let cOpen=false;
 
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const minimapCanvas = document.getElementById('minimap');
-const minimapCtx = minimapCanvas.getContext('2d');
+const cv=document.getElementById('game');
+const cx=cv.getContext('2d');
+const mm=document.getElementById('minimap');
+const mx=mm.getContext('2d');
 
-// ═══════════════════════════════════════════════
-// TEXTURES (procedural)
-// ═══════════════════════════════════════════════
-const textures = {};
-
-function generateTextures() {
-  // Wall texture — dark concrete
-  textures[1] = createTexture((x,y) => {
-    const n = ((x*7+y*13+x*y*3)%20)/20;
-    const v = 20 + n*15;
-    return [v, v+2, v+5];
+// ══════════════════════════════════════
+// ТЕКСТУРЫ
+// ══════════════════════════════════════
+const TX={};
+function mkTex(fn){
+  const c=document.createElement('canvas');c.width=c.height=TEX;
+  const x=c.getContext('2d');const im=x.createImageData(TEX,TEX);
+  for(let y=0;y<TEX;y++)for(let x=0;x<TEX;x++){
+    const[r,g,b]=fn(x,y);const i=(y*TEX+x)*4;
+    im.data[i]=Math.max(0,Math.min(255,r));
+    im.data[i+1]=Math.max(0,Math.min(255,g));
+    im.data[i+2]=Math.max(0,Math.min(255,b));im.data[i+3]=255;
+  }
+  x.putImageData(im,0,0);return c;
+}
+function initTex(){
+  // Стена — тёмный бетон
+  TX[1]=mkTex((x,y)=>{const n=((x*7+y*13)%20)/20;const v=35+n*10;return[v,v+1,v+2]});
+  // Консоль — тёмный с зелёными полосами
+  TX[2]=mkTex((x,y)=>{
+    if(y%12<1&&x>4&&x<60)return[15,40,20];
+    if(y%6<1&&x>8&&x<56)return[10,25,15];
+    const n=((x*3+y*7)%17)/17;return[18+n*5,22+n*8,25+n*8];
   });
-
-  // Console texture — dark with green text lines
-  textures[2] = createTexture((x,y) => {
-    if (y%8 < 2 && x > 8 && x < 56) return [0, 40+Math.sin(x*.3)*20, 10];
-    if (y%16 < 1 && x > 4 && x < 60) return [0, 30, 8];
-    const n = ((x*3+y*7)%17)/17;
-    return [8+n*5, 12+n*8, 15+n*10];
+  // Экран — тёмно-синий с полосами сканирования
+  TX[3]=mkTex((x,y)=>{
+    const t=Date.now()/800;const s=Math.sin(y*.4+t)*8;
+    const g=((x%8<1)||(y%8<1))?10:0;
+    return[8+g,12+s+g,28+s*1.5+g];
   });
-
-  // Screen texture — animated blue display
-  textures[3] = createTexture((x,y) => {
-    const t = performance.now()/1000;
-    const scan = Math.sin(y*.5+t*2)*10;
-    const grid = ((x%8<1)||(y%8<1)) ? 15 : 0;
-    return [5+grid, 15+scan+grid, 40+scan*2+grid];
-  });
-
-  // Door texture
-  textures[4] = createTexture((x,y) => {
-    if (x > 20 && x < 44 && y > 10 && y < 54) {
-      const n = Math.sin(x*.2)*Math.sin(y*.2)*10;
-      return [30+n, 20+n, 10+n];
-    }
-    return [15, 12, 8];
+  // Дверь
+  TX[4]=mkTex((x,y)=>{
+    if(x>20&&x<44&&y>10&&y<54)return[45,38,28];
+    return[30,25,18];
   });
 }
 
-function createTexture(fn) {
-  const c = document.createElement('canvas');
-  c.width = c.height = TEX_SIZE;
-  const ctx = c.getContext('2d');
-  const img = ctx.createImageData(TEX_SIZE, TEX_SIZE);
-  for (let y = 0; y < TEX_SIZE; y++) {
-    for (let x = 0; x < TEX_SIZE; x++) {
-      const [r,g,b] = fn(x,y);
-      const i = (y*TEX_SIZE+x)*4;
-      img.data[i] = Math.max(0,Math.min(255,r));
-      img.data[i+1] = Math.max(0,Math.min(255,g));
-      img.data[i+2] = Math.max(0,Math.min(255,b));
-      img.data[i+3] = 255;
+// ══════════════════════════════════════
+// РЕЙКАСТИНГ
+// ══════════════════════════════════════
+function cast(a){
+  const s=Math.sin(a),c=Math.cos(a);let d=0;
+  while(d<20){d+=.02;const x=P.x+c*d,y=P.y+s*d;
+    const mx=Math.floor(x),my=Math.floor(y);
+    if(mx<0||my<0||mx>=MAP_S||my>=MAP_S)return{d:20,t:1,mx,my};
+    const cell=MAP[my][mx];
+    if(cell>0){const px=P.x+c*(d-.02),py=P.y+s*(d-.02);
+      const hx=x-Math.floor(x),hy=y-Math.floor(y);
+      return{d,t:cell,mx,my,tx:Math.abs(c)>Math.abs(s)?hy:hx};
     }
   }
-  ctx.putImageData(img, 0, 0);
-  return c;
+  return{d:20,t:0,mx:-1,my:-1};
 }
 
-// ═══════════════════════════════════════════════
-// RAYCASTING ENGINE
-// ═══════════════════════════════════════════════
-function castRay(angle) {
-  const sin = Math.sin(angle), cos = Math.cos(angle);
-  let dist = 0;
-  const step = 0.02;
+function render(){
+  const W=cv.width,H=cv.height;const im=cx.createImageData(W,H);const buf=im.data;
 
-  while (dist < 20) {
-    dist += step;
-    const x = player.x + cos * dist;
-    const y = player.y + sin * dist;
-    const mx = Math.floor(x), my = Math.floor(y);
-    if (mx < 0 || my < 0 || mx >= MAP_SIZE || my >= MAP_SIZE) return {dist:20, type:1, mx, my};
-    const cell = MAP[my][mx];
-    if (cell > 0) {
-      // Find exact wall hit for texture mapping
-      const prevX = player.x + cos * (dist - step);
-      const prevY = player.y + sin * (dist - step);
-      const hitX = x - Math.floor(x);
-      const hitY = y - Math.floor(y);
-      const texX = (Math.abs(cos) > Math.abs(sin)) ? hitY : hitX;
-      return {dist, type:cell, mx, my, texX};
+  // Потолок
+  for(let y=0;y<H/2;y++){
+    const v=Math.max(0,22-y*.2);
+    for(let x=0;x<W;x++){const i=(y*W+x)*4;
+      buf[i]=v*.4;buf[i+1]=v*.45;buf[i+2]=v*.55;buf[i+3]=255;}
+  }
+  // Пол
+  for(let y=Math.floor(H/2);y<H;y++){
+    const v=Math.max(0,(y-H/2)*.15);
+    for(let x=0;x<W;x++){const i=(y*W+x)*4;
+      buf[i]=v*.25;buf[i+1]=v*.28;buf[i+2]=v*.32;buf[i+3]=255;}
+  }
+
+  // Стены
+  for(let i=0;i<W;i++){
+    const ra=P.a-FOV/2+(i/W)*FOV;const h=cast(ra);
+    if(h.t===0)continue;
+    const cd=h.d*Math.cos(ra-P.a);const wh=Math.min(H*2,H/cd);
+    const wt=Math.floor((H-wh)/2);const tex=TX[h.t];if(!tex)continue;
+    const tc=tex.getContext('2d');const td=tc.getImageData(0,0,TEX,TEX).data;
+    const txI=Math.floor(h.tx*TEX)%TEX;const sh=Math.max(.12,1-cd/10);
+
+    for(let y=Math.max(0,wt);y<Math.min(H,wt+wh);y++){
+      const ty=Math.floor(((y-wt)/wh)*TEX)%TEX;const ti=(ty*TEX+txI)*4;const pi=(y*W+i)*4;
+      buf[pi]=td[ti]*sh;buf[pi+1]=td[ti+1]*sh;buf[pi+2]=td[ti+2]*sh;buf[pi+3]=255;
     }
   }
-  return {dist:20, type:0, mx:-1, my:-1};
+  cx.putImageData(im,0,0);
+
+  // Свечение консолей/экранов
+  for(let i=0;i<W;i++){
+    const ra=P.a-FOV/2+(i/W)*FOV;const h=cast(ra);
+    if(h.t!==2&&h.t!==3)continue;
+    const cd=h.d*Math.cos(ra-P.a);if(cd>5)continue;
+    const wh=Math.min(H*2,H/cd);const wt=Math.floor((H-wh)/2);
+    const a=Math.max(0,.2-cd*.04);
+    cx.fillStyle=h.t===2?`rgba(38,198,218,${a})`:`rgba(66,165,245,${a})`;
+    cx.fillRect(i,Math.max(0,wt),1,Math.min(wh,H));
+  }
 }
 
-function render() {
-  const W = canvas.width;
-  const H = canvas.height;
-  const imgData = ctx.createImageData(W, H);
-  const buf = imgData.data;
+// ══════════════════════════════════════
+// МИНИКАРТА
+// ══════════════════════════════════════
+function renderMM(){
+  mx.fillStyle='#1a1d23';mx.fillRect(0,0,80,80);
+  const s=4;
+  for(let y=0;y<MAP_S;y++)for(let x=0;x<MAP_S;x++){
+    const c=MAP[y][x];if(c===0)continue;
+    mx.fillStyle=c===1?'#2a2d33':c===2?'#1a3040':c===3?'#152535':'#2a2218';
+    mx.fillRect(x*s,y*s,s,s);
+  }
+  mx.fillStyle='#4caf50';mx.beginPath();mx.arc(P.x*s,P.y*s,1.5,0,Math.PI*2);mx.fill();
+  mx.strokeStyle='#4caf50';mx.lineWidth=.5;mx.beginPath();
+  mx.moveTo(P.x*s,P.y*s);mx.lineTo(P.x*s+Math.cos(P.a)*6,P.y*s+Math.sin(P.a)*6);mx.stroke();
+}
 
-  // Ceiling
-  for (let y = 0; y < H/2; y++) {
-    const v = Math.max(0, 15 - y * 0.15);
-    for (let x = 0; x < W; x++) {
-      const i = (y*W+x)*4;
-      buf[i] = v*0.5; buf[i+1] = v*0.6; buf[i+2] = v*1.2; buf[i+3] = 255;
+// ══════════════════════════════════════
+// ДВИЖЕНИЕ
+// ══════════════════════════════════════
+function wall(x,y){const mx=Math.floor(x),my=Math.floor(y);
+  if(mx<0||my<0||mx>=MAP_S||my>=MAP_S)return true;
+  return MAP[my][mx]===1||MAP[my][mx]===4;
+}
+function move(dt){
+  if(cOpen)return;
+  const s=(run?SPD*1.8:SPD)*dt;let dx=0,dy=0;
+  if(K.w||K.arrowup){dx+=Math.cos(P.a)*s;dy+=Math.sin(P.a)*s;}
+  if(K.s||K.arrowdown){dx-=Math.cos(P.a)*s;dy-=Math.sin(P.a)*s;}
+  if(K.a||K.arrowleft){dx+=Math.cos(P.a-Math.PI/2)*s;dy+=Math.sin(P.a-Math.PI/2)*s;}
+  if(K.d||K.arrowright){dx+=Math.cos(P.a+Math.PI/2)*s;dy+=Math.sin(P.a+Math.PI/2)*s;}
+  if(MJ.on){dx+=(Math.cos(P.a)*MJ.dy+Math.cos(P.a+Math.PI/2)*MJ.dx)*s;
+    dy+=(Math.sin(P.a)*MJ.dy+Math.sin(P.a+Math.PI/2)*MJ.dx)*s;}
+  if(K.q)P.a-=TSPD*dt;
+  P.a+=MDX*.002;MDX=0;
+  if(LJ.on)P.a+=LJ.dx*3*dt;
+  const m=.2,nx=P.x+dx,ny=P.y+dy;
+  if(!wall(nx+m*Math.sign(dx),P.y)&&!wall(nx-m*Math.sign(dx),P.y))P.x=nx;
+  if(!wall(P.x,ny+m*Math.sign(dy))&&!wall(P.x,ny-m*Math.sign(dy)))P.y=ny;
+}
+
+// ══════════════════════════════════════
+// ВЗАИМОДЕЙСТВИЕ
+// ══════════════════════════════════════
+function target(){
+  const d=1.5;const x=P.x+Math.cos(P.a)*d,y=P.y+Math.sin(P.a)*d;
+  return CON[`${Math.floor(y)},${Math.floor(x)}`]||null;
+}
+function updatePrompt(){
+  const t=target();const el=document.getElementById('prompt');
+  const hint=document.getElementById('hint-row');
+  if(t&&!cOpen){el.style.display='block';el.textContent=`[ E ] ${t.n}`;
+    hint.style.display='flex';document.getElementById('hint-text').textContent=t.n;}
+  else{el.style.display='none';hint.style.display='none';}
+}
+function openC(t){
+  cOpen=true;document.getElementById('cons').classList.add('open');
+  const b=document.getElementById('cons-box');
+  b.innerHTML=`<div id="cons-title"><span>${t.n}</span><button id="cons-close" onclick="closeC()">✕ ESC</button></div><div style="color:#555;font-size:11px">Загрузка...</div>`;
+  setTimeout(()=>fillC(t.t,b),100);
+}
+function closeC(){cOpen=false;document.getElementById('cons').classList.remove('open');}
+
+// ══════════════════════════════════════
+// СОДЕРЖИМОЕ КОНСОЛЕЙ
+// ══════════════════════════════════════
+function fillC(type,box){
+  const b=D.b,c=D.c,pk=D.p?.packages||[];
+  const en=pk.filter(p=>p.enabled!==false).length;
+  let h='';
+
+  if(type==='overview'){
+    h=`<div class="c-row"><span class="k">Активных билдов</span><span class="v c-green">${(c.running||0)+(c.starting||0)}</span></div>
+    <div class="c-row"><span class="k">Очередь</span><span class="v c-amber">${c.pending||0}</span></div>
+    <div class="c-row"><span class="k">Успешно</span><span class="v c-green">${c.succeeded||0}</span></div>
+    <div class="c-row"><span class="k">Ошибки</span><span class="v c-red">${c.failed||0}</span></div>
+    <div class="c-row"><span class="k">Отменено</span><span class="v" style="color:#666">${c.canceled||0}</span></div>
+    <div class="c-row"><span class="k">Всего</span><span class="v" style="color:#aaa">${b.length}</span></div>
+    <div style="border-top:1px solid #333;margin-top:6px;padding-top:6px">
+    <div class="c-row"><span class="k">Пакетов</span><span class="v c-cyan">${en}/${pk.length}</span></div>
+    <div class="c-row"><span class="k">Проект</span><span class="v" style="color:#26c6da;font-size:10px">arcticlore/terminal-rpm</span></div>
+    <div class="c-row"><span class="k">Chroots</span><span class="v">4 (f43/f44 ×86_64+aarch64)</span></div>
+    <div class="c-row"><span class="k">Обновление</span><span class="v">каждые 3ч</span></div>
+    </div>`;
+  }
+
+  else if(type==='builds'){
+    h=b.slice(0,40).map(x=>`<div class="c-row"><span class="k">#${x.id} ${x.source_package.name}</span><span class="v"><span class="c-tag c-tag-${x.state==='running'||x.state==='starting'?'run':x.state==='pending'?'pend':x.state==='succeeded'?'ok':x.state==='failed'?'fail':'can'}">${x.state}</span></span></div>`).join('');
+    if(!b.length)h='<div style="color:#555;text-align:center;padding:20px">Нет билдов</div>';
+  }
+
+  else if(type==='packages'){
+    h=pk.map(p=>`<div class="c-row"><span class="k">${p.name}</span><span class="v" style="color:${p.enabled!==false?'#4caf50':'#f44336'};font-size:10px">${p.enabled!==false?'●':'○'}</span></div>`).join('');
+  }
+
+  else if(type==='chroots'){
+    h=['fedora-44-x86_64','fedora-44-aarch64','fedora-43-x86_64','fedora-43-aarch64']
+      .map(c=>`<div class="c-row"><span class="k">${c}</span><span class="v c-green">●</span></div>`).join('');
+    h+=`<div style="border-top:1px solid #333;margin-top:6px;padding-top:6px;color:#555;font-size:10px">
+      Удалены: rawhide, ppc64le, s390x, i386, riscv64</div>`;
+  }
+
+  else if(type==='net'){
+    h=`<div class="c-row"><span class="k">COPR API</span><span class="v c-green">● OK</span></div>
+    <div class="c-row"><span class="k">GitHub API</span><span class="v c-amber">DNS workaround</span></div>
+    <div class="c-row"><span class="k">Telegram Bot</span><span class="v c-green">● Активен</span></div>
+    <div class="c-row"><span class="k">Tailscale</span><span class="v c-red">● Заблокирован</span></div>
+    <div class="c-row"><span class="k">WireGuard</span><span class="v c-red">● Заблокирован</span></div>
+    <div class="c-row"><span class="k">Сеть для билдов</span><span class="v c-green">● Включена</span></div>`;
+  }
+
+  else if(type==='logs'){
+    h=`<div style="font-size:10px;color:#555;line-height:1.8;font-family:monospace">
+      <div>[sys] COPR connected → arcticlore/terminal-rpm</div>
+      <div>[sys] GitHub Actions: 5 workflows active</div>
+      <div>[sch] update.yml → каждые 3ч (smart submit)</div>
+      <div>[sch] telegram.yml → каждые 5мин (polling)</div>
+      <div>[sch] monitor.yml → каждые 30мин</div>
+      <div style="color:#ff9800">[wrn] Old project candy: 200+ stuck builds (net off)</div>
+      <div style="color:#4caf50">[ok] New project terminal-rpm: clean start</div>
+      <div>[sys] Auto-triage: enabled</div>
+      <div>[sys] Auto-issue: enabled</div>
+      <div>[sys] SRPM cache: enabled</div>
+    </div>`;
+  }
+
+  else if(type==='wf'){
+    h=[
+      {n:'update.yml',s:'3ч',d:'Автосборка + smart submit'},
+      {n:'telegram.yml',s:'5мин',d:'Telegram-бот polling'},
+      {n:'monitor.yml',s:'30мин',d:'Мониторинг COPR'},
+      {n:'logrotate.yml',s:'день',d:'Очистка логов'},
+      {n:'digest.yml',s:'неделя',d:'Дайджест'},
+    ].map(w=>`<div class="c-row"><span class="k">${w.n}</span><span class="v" style="font-size:9px">${w.s} — ${w.d}</span></div>`).join('');
+  }
+
+  else if(type==='danger'){
+    h=`<div style="border:1px solid rgba(244,67,54,.3);border-radius:3px;padding:8px;margin-bottom:8px;background:rgba(244,67,54,.05)">
+      <div style="color:#f44336;font-size:11px;font-weight:700">⚠ АВАРИЙНЫЙ РЕЖИМ</div>
+      <div style="color:#555;font-size:10px;margin-top:4px">Старый проект arcticlore/candy заморожен (net off).<br>Новый terminal-rpm активен.</div>
+    </div>
+    <div class="c-row"><span class="k">Отменить все</span><span class="v c-amber">copr-cli cancel ID</span></div>
+    <div class="c-row"><span class="k">Удалить проект</span><span class="v c-red">copr-cli delete</span></div>
+    <div class="c-row"><span class="k">Отключить сеть</span><span class="v c-amber">--enable-net off</span></div>`;
+  }
+
+  else if(type==='health'){
+    const ok=(c.succeeded||0),fail=(c.failed||0),rate=ok+fail>0?Math.round(ok/(ok+fail)*100):0;
+    h=`<div class="c-row"><span class="k">Успешность</span><span class="v c-green">${rate}%</span></div>
+    <div class="c-row"><span class="k">Собрано</span><span class="v c-green">${ok}</span></div>
+    <div class="c-row"><span class="k">Ошибки</span><span class="v c-red">${fail}</span></div>
+    <div class="c-row"><span class="k">Очередь</span><span class="v c-amber">${c.pending||0}</span></div>
+    <div class="c-row"><span class="k">Активных</span><span class="v c-green">${(c.running||0)+(c.starting||0)}</span></div>
+    <div style="border-top:1px solid #333;margin-top:6px;padding-top:6px">
+    <div class="c-row"><span class="k">SRPM кэш</span><span class="v c-green">●</span></div>
+    <div class="c-row"><span class="k">Auto-triage</span><span class="v c-green">●</span></div>
+    <div class="c-row"><span class="k">Auto-issue</span><span class="v c-green">●</span></div>
+    </div>`;
+  }
+
+  box.innerHTML=`<div id="cons-title"><span>${box.querySelector('#cons-title span')?.textContent||type}</span><button id="cons-close" onclick="closeC()">✕ ESC</button></div>${h}`;
+}
+
+// ══════════════════════════════════════
+// ДАННЫЕ
+// ══════════════════════════════════════
+async function fetchData(){
+  if(Date.now()-lastF<30000)return;lastF=Date.now();
+  try{
+    let all=[],off=0;
+    while(true){
+      const r=await fetch(`https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200&offset=${off}`);
+      if(!r.ok)break;const d=await r.json();
+      if(!d.items||!d.items.length)break;all.push(...d.items);
+      if(d.items.length<200)break;off+=200;
     }
-  }
+    D.b=all;D.c={};
+    all.forEach(b=>{D.c[b.state]=(D.c[b.state]||0)+1;});
 
-  // Floor
-  for (let y = Math.floor(H/2); y < H; y++) {
-    const v = Math.max(0, (y - H/2) * 0.12);
-    for (let x = 0; x < W; x++) {
-      const i = (y*W+x)*4;
-      buf[i] = v*0.3; buf[i+1] = v*0.35; buf[i+2] = v*0.4; buf[i+3] = 255;
-    }
-  }
+    if(!D.p){const r=await fetch('https://raw.githubusercontent.com/arcticlore/candy-rpm/master/pkgs.json');
+      if(r.ok)D.p=await r.json();}
 
-  // Walls
-  const numRays = W;
-  for (let i = 0; i < numRays; i++) {
-    const rayAngle = player.angle - FOV/2 + (i/numRays) * FOV;
-    const hit = castRay(rayAngle);
-    if (hit.type === 0) continue;
+    // HUD
+    document.getElementById('p-act').textContent=(D.c.running||0)+(D.c.starting||0);
+    document.getElementById('p-pend').textContent=D.c.pending||0;
+    document.getElementById('p-fail').textContent=D.c.failed||0;
+    document.getElementById('p-ok').textContent=D.c.succeeded||0;
+    document.getElementById('p-can').textContent=D.c.canceled||0;
+    const pk=D.p?.packages||[];
+    document.getElementById('p-pkg').textContent=`${pk.filter(p=>p.enabled!==false).length}/${pk.length}`;
 
-    const correctedDist = hit.dist * Math.cos(rayAngle - player.angle);
-    const wallHeight = Math.min(H * 2, H / correctedDist);
-    const wallTop = Math.floor((H - wallHeight) / 2);
-
-    const tex = textures[hit.type];
-    if (!tex) continue;
-    const texCtx = tex.getContext('2d');
-    const texData = texCtx.getImageData(0, 0, TEX_SIZE, TEX_SIZE).data;
-    const texX = Math.floor(hit.texX * TEX_SIZE) % TEX_SIZE;
-
-    // Distance shading
-    const shade = Math.max(0.15, 1 - correctedDist / 12);
-
-    for (let y = Math.max(0, wallTop); y < Math.min(H, wallTop + wallHeight); y++) {
-      const texY = Math.floor(((y - wallTop) / wallHeight) * TEX_SIZE) % TEX_SIZE;
-      const ti = (texY * TEX_SIZE + texX) * 4;
-      const pi = (y * W + i) * 4;
-      buf[pi] = texData[ti] * shade;
-      buf[pi+1] = texData[ti+1] * shade;
-      buf[pi+2] = texData[ti+2] * shade;
-      buf[pi+3] = 255;
-    }
-  }
-
-  ctx.putImageData(imgData, 0, 0);
-
-  // Overlay glow on console/screen tiles
-  renderOverlays();
+    // LEDs
+    const hasRun=(D.c.running||0)+(D.c.starting||0)>0;
+    const hasPend=(D.c.pending||0)>0;
+    const hasFail=(D.c.failed||0)>0;
+    setLed('led-build',hasRun?'green':hasPend?'amber':'off');
+    setLed('led-pend',hasPend?'amber':'off');
+    setLed('led-fail',hasFail?'red':'off');
+  }catch(e){console.error(e);}
+}
+function setLed(id,state){
+  const el=document.getElementById(id);
+  el.className='ind-dot led'+(state==='off'?' led-off':state==='green'?' led-green':state==='amber'?' led-amber':' led-red');
 }
 
-function renderOverlays() {
-  const W = canvas.width;
-  const H = canvas.height;
-  const numRays = W;
-
-  for (let i = 0; i < numRays; i++) {
-    const rayAngle = player.angle - FOV/2 + (i/numRays) * FOV;
-    const hit = castRay(rayAngle);
-    if (hit.type !== 2 && hit.type !== 3) continue;
-
-    const correctedDist = hit.dist * Math.cos(rayAngle - player.angle);
-    if (correctedDist > 4) continue;
-
-    const wallHeight = Math.min(H * 2, H / correctedDist);
-    const wallTop = Math.floor((H - wallHeight) / 2);
-    const glowAlpha = Math.max(0, 0.3 - correctedDist * 0.06);
-
-    const color = hit.type === 2 ? '0,229,255' : '68,138,255';
-    ctx.fillStyle = `rgba(${color},${glowAlpha})`;
-    ctx.fillRect(i, Math.max(0, wallTop), 1, Math.min(wallHeight, H));
-  }
+// ══════════════════════════════════════
+// ГЕЙМ-ЦИКЛ
+// ══════════════════════════════════════
+let lt=0,fc=0,ft=0;
+function loop(t){
+  if(!started){requestAnimationFrame(loop);return;}
+  const dt=Math.min(.05,(t-lt)/1000);lt=t;
+  fc++;if(t-ft>1000){document.getElementById('fps').textContent=fc+' fps';fc=0;ft=t;}
+  move(dt);render();renderMM();updatePrompt();
+  if(Math.floor(t/30000)!==Math.floor((t-16)/30000))fetchData();
+  requestAnimationFrame(loop);
 }
 
-// ═══════════════════════════════════════════════
-// MINIMAP
-// ═══════════════════════════════════════════════
-function renderMinimap() {
-  const mc = minimapCtx;
-  const s = 6; // tile size
-  mc.fillStyle = '#0a0e14';
-  mc.fillRect(0, 0, 120, 120);
-
-  for (let y = 0; y < MAP_SIZE; y++) {
-    for (let x = 0; x < MAP_SIZE; x++) {
-      const cell = MAP[y][x];
-      if (cell === 0) continue;
-      mc.fillStyle = cell === 1 ? '#1e2a38' : cell === 2 ? '#004d5a' : cell === 3 ? '#132d4d' : '#2a1a0a';
-      mc.fillRect(x*s, y*s, s, s);
-    }
-  }
-
-  // Player
-  mc.fillStyle = '#00e676';
-  mc.beginPath();
-  mc.arc(player.x*s, player.y*s, 2, 0, Math.PI*2);
-  mc.fill();
-
-  // Direction
-  mc.strokeStyle = '#00e676';
-  mc.lineWidth = 1;
-  mc.beginPath();
-  mc.moveTo(player.x*s, player.y*s);
-  mc.lineTo(player.x*s + Math.cos(player.angle)*8, player.y*s + Math.sin(player.angle)*8);
-  mc.stroke();
-}
-
-// ═══════════════════════════════════════════════
-// MOVEMENT & COLLISION
-// ═══════════════════════════════════════════════
-function isWall(x, y) {
-  const mx = Math.floor(x), my = Math.floor(y);
-  if (mx < 0 || my < 0 || mx >= MAP_SIZE || my >= MAP_SIZE) return true;
-  return MAP[my][mx] === 1 || MAP[my][mx] === 4; // doors are solid for now
-}
-
-function move(dt) {
-  if (consoleOpen) return;
-
-  const spd = (running ? MOVE_SPEED * 1.8 : MOVE_SPEED) * dt;
-  let dx = 0, dy = 0;
-
-  // Keyboard
-  if (keys['w'] || keys['arrowup']) { dx += Math.cos(player.angle)*spd; dy += Math.sin(player.angle)*spd; }
-  if (keys['s'] || keys['arrowdown']) { dx -= Math.cos(player.angle)*spd; dy -= Math.sin(player.angle)*spd; }
-  if (keys['a'] || keys['arrowleft']) { dx += Math.cos(player.angle-Math.PI/2)*spd; dy += Math.sin(player.angle-Math.PI/2)*spd; }
-  if (keys['d'] || keys['arrowright']) { dx += Math.cos(player.angle+Math.PI/2)*spd; dy += Math.sin(player.angle+Math.PI/2)*spd; }
-
-  // Mobile joystick
-  if (moveJoy.active) {
-    dx += (Math.cos(player.angle)*moveJoy.dy + Math.cos(player.angle+Math.PI/2)*moveJoy.dx) * spd;
-    dy += (Math.sin(player.angle)*moveJoy.dy + Math.sin(player.angle+Math.PI/2)*moveJoy.dx) * spd;
-  }
-
-  // Turn
-  if (keys['q']) player.angle -= TURN_SPEED * dt;
-  if (keys['e'] && !keys['w'] && !keys['s']) {} // E is interact, not turn (except when not moving)
-  if (keys['arrowleft'] && !keys['a']) player.angle -= TURN_SPEED * dt;
-
-  // Mouse
-  player.angle += mouse.dx * 0.002;
-  mouse.dx = 0;
-
-  // Mobile look
-  if (lookJoy.active) {
-    player.angle += lookJoy.dx * 3 * dt;
-  }
-
-  // Collision detection with sliding
-  const margin = 0.2;
-  const newX = player.x + dx;
-  const newY = player.y + dy;
-
-  if (!isWall(newX + margin*Math.sign(dx), player.y) && !isWall(newX - margin*Math.sign(dx), player.y)) {
-    player.x = newX;
-  }
-  if (!isWall(player.x, newY + margin*Math.sign(dy)) && !isWall(player.x, newY - margin*Math.sign(dy))) {
-    player.y = newY;
-  }
-}
-
-// ═══════════════════════════════════════════════
-// INTERACTION
-// ═══════════════════════════════════════════════
-function getInteractTarget() {
-  const checkDist = 1.8;
-  const x = player.x + Math.cos(player.angle) * checkDist;
-  const y = player.y + Math.sin(player.angle) * checkDist;
-  const mx = Math.floor(x), my = Math.floor(y);
-  const key = `${my},${mx}`;
-  return CONSOLES[key] || null;
-}
-
-function updateInteractPrompt() {
-  const target = getInteractTarget();
-  const el = document.getElementById('interact');
-  if (target && !consoleOpen) {
-    el.style.display = 'block';
-    el.textContent = `[ E ] ${target.title}`;
-  } else {
-    el.style.display = 'none';
-  }
-}
-
-function openConsole(target) {
-  consoleOpen = true;
-  const overlay = document.getElementById('console-overlay');
-  const box = document.getElementById('console-box');
-  overlay.classList.add('open');
-  box.innerHTML = `<h2>${target.title}</h2><div style="color:#5a6a7a;font-size:12px">Загрузка данных...</div>`;
-  renderConsoleContent(target.type, box);
-}
-
-function closeConsole() {
-  consoleOpen = false;
-  document.getElementById('console-overlay').classList.remove('open');
-}
-
-function renderConsoleContent(type, box) {
-  const b = coprData.builds;
-  const c = coprData.counts;
-  const pkgs = coprData.pkgsJson?.packages || [];
-  const enabled = pkgs.filter(p => p.enabled !== false).length;
-
-  let html = '';
-
-  switch(type) {
-    case 'overview':
-      html = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="row"><span class="k">Активных</span><span class="v hud-green">${(c.running||0)+(c.starting||0)}</span></div>
-          <div class="row"><span class="k">Очередь</span><span class="v hud-amber">${c.pending||0}</span></div>
-          <div class="row"><span class="k">Успешно</span><span class="v hud-green">${c.succeeded||0}</span></div>
-          <div class="row"><span class="k">Ошибки</span><span class="v hud-red">${c.failed||0}</span></div>
-          <div class="row"><span class="k">Отменено</span><span class="v" style="color:#5a6a7a">${c.canceled||0}</span></div>
-          <div class="row"><span class="k">Всего билдов</span><span class="v" style="color:#c5d0e0">${b.length}</span></div>
-        </div>
-        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #1e2a38">
-          <div class="row"><span class="k">Пакетов</span><span class="v" style="color:#c5d0e0">${enabled}/${pkgs.length}</span></div>
-          <div class="row"><span class="k">Проект</span><span class="v" style="color:#00e5ff">arcticlore/terminal-rpm</span></div>
-          <div class="row"><span class="k">Chroots</span><span class="v" style="color:#c5d0e0">4 (f43/f44 x86_64+aarch64)</span></div>
-        </div>`;
-      break;
-
-    case 'builds':
-      html = b.slice(0,30).map(x => `
-        <div class="row">
-          <span class="k">#${x.id} ${x.source_package.name}</span>
-          <span class="v"><span class="tag tag-${x.state==='running'||x.state==='starting'?'run':x.state==='pending'?'pend':x.state==='succeeded'?'ok':x.state==='failed'?'fail':'can'}">${x.state}</span></span>
-        </div>
-      `).join('');
-      break;
-
-    case 'packages':
-      html = pkgs.map(p => `
-        <div class="row">
-          <span class="k">${p.name}</span>
-          <span class="v" style="color:${p.enabled!==false?'#00e676':'#ff1744'}">${p.enabled!==false?'● ВКЛ':'○ ВЫКЛ'}</span>
-        </div>
-      `).join('');
-      break;
-
-    case 'chroots':
-      const chroots = ['fedora-44-x86_64','fedora-44-aarch64','fedora-43-x86_64','fedora-43-aarch64'];
-      html = chroots.map(c => `
-        <div class="row"><span class="k">${c}</span><span class="v" style="color:#00e676">● АКТИВЕН</span></div>
-      `).join('') + `
-        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #1e2a38;font-size:11px;color:#5a6a7a">
-          Удалены: rawhide, ppc64le, s390x, i386, riscv64
-        </div>`;
-      break;
-
-    case 'network':
-      html = `
-        <div class="row"><span class="k">Сеть</span><span class="v" style="color:#00e676">● ВКЛ</span></div>
-        <div class="row"><span class="k">COPR API</span><span class="v" style="color:#00e5ff">Доступен</span></div>
-        <div class="row"><span class="k">GitHub API</span><span class="v" style="color:#ffc107">Через DNS workaround</span></div>
-        <div class="row"><span class="k">Telegram Bot</span><span class="v" style="color:#00e676">● АКТИВЕН</span></div>
-        <div class="row"><span class="k">Tailscale</span><span class="v" style="color:#ff1744">● ЗАБЛОКИРОВАН (RF)</span></div>
-        <div class="row"><span class="k">WireGuard</span><span class="v" style="color:#ff1744">● ЗАБЛОКИРОВАН (RF)</span></div>`;
-      break;
-
-    case 'logs':
-      html = `<div style="font-family:monospace;font-size:11px;color:#5a6a7a;line-height:1.8">
-        <div>[系统] COPR API connected</div>
-        <div>[系统] GitHub Actions: 5 workflows active</div>
-        <div>[调度] update.yml: every 3h</div>
-        <div>[调度] telegram.yml: every 5min</div>
-        <div>[调度] monitor.yml: every 30min</div>
-        <div style="color:#ffc107">[告警] Old project arcticlore/candy: 200+ stuck builds</div>
-        <div style="color:#00e676">[系统] New project arcticlore/terminal-rpm: clean start</div>
-        <div>[系统] Smart submit: max 5 concurrent builds</div>
-        <div>[系统] Auto-triage: enabled</div>
-        <div>[系统] Auto-issue: enabled</div>
-      </div>`;
-      break;
-
-    case 'workflows':
-      const wf = [
-        {n:'update.yml',s:'every 3h',d:'Автосборка и отправка'},
-        {n:'telegram.yml',s:'every 5min',d:'Telegram-бот polling'},
-        {n:'monitor.yml',s:'every 30min',d:'Мониторинг статуса'},
-        {n:'logrotate.yml',s:'daily',d:'Очистка логов'},
-        {n:'digest.yml',s:'weekly',d:'Еженедельный дайджест'},
-      ];
-      html = wf.map(w => `
-        <div class="row"><span class="k">${w.n}</span><span class="v" style="font-size:10px">${w.s}</span></div>
-      `).join('');
-      break;
-
-    case 'danger':
-      html = `
-        <div style="border:1px solid #ff1744;border-radius:4px;padding:12px;margin-bottom:12px;background:rgba(255,23,68,.05)">
-          <div style="color:#ff1744;font-size:12px;font-weight:700;margin-bottom:4px">⚠ АВАРИЙНЫЙ РЕЖИМ</div>
-          <div style="color:#5a6a7a;font-size:11px">Старый проект arcticlore/candy заморожен.</div>
-          <div style="color:#5a6a7a;font-size:11px">Новый проект arcticlore/terminal-rpm активен.</div>
-        </div>
-        <div class="row"><span class="k">Удалить проект</span><span class="v" style="color:#ff1744">copr-cli delete</span></div>
-        <div class="row"><span class="k">Отключить сеть</span><span class="v" style="color:#ffc107">copr-cli modify --enable-net off</span></div>
-        <div class="row"><span class="k">Отменить все</span><span class="v" style="color:#ffc107">copr-cli cancel ID</span></div>`;
-      break;
-
-    case 'status_screen':
-    case 'pkg_screen':
-    case 'wf_screen':
-    case 'health':
-    case 'about':
-      // These are the screens on walls — show condensed info
-      const t = type === 'about' ? 'overview' : type.replace('_screen','');
-      renderConsoleContent(t === 'health' ? 'overview' : t, box);
-      return;
-  }
-
-  box.innerHTML = `<h2>${box.querySelector('h2')?.textContent || type}</h2>${html}`;
-}
-
-// ═══════════════════════════════════════════════
-// DATA FETCHING
-// ═══════════════════════════════════════════════
-async function fetchCoprData() {
-  if (Date.now() - lastFetch < 30000) return; // 30s cache
-  lastFetch = Date.now();
-
-  try {
-    // Fetch builds
-    let all = [], offset = 0;
-    while (true) {
-      const r = await fetch(`https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200&offset=${offset}`);
-      if (!r.ok) break;
-      const d = await r.json();
-      if (!d.items || d.items.length === 0) break;
-      all.push(...d.items);
-      if (d.items.length < 200) break;
-      offset += 200;
-    }
-    coprData.builds = all;
-
-    // Count states
-    coprData.counts = {};
-    all.forEach(b => { coprData.counts[b.state] = (coprData.counts[b.state]||0)+1; });
-
-    // Fetch pkgs.json
-    if (!coprData.pkgsJson) {
-      const r = await fetch('https://raw.githubusercontent.com/arcticlore/candy-rpm/master/pkgs.json');
-      if (r.ok) coprData.pkgsJson = await r.json();
-    }
-
-    // Update HUD
-    document.getElementById('h-active').textContent = (coprData.counts.running||0)+(coprData.counts.starting||0);
-    document.getElementById('h-pending').textContent = coprData.counts.pending||0;
-    document.getElementById('h-failed').textContent = coprData.counts.failed||0;
-    document.getElementById('h-ok').textContent = coprData.counts.succeeded||0;
-  } catch(e) {
-    console.error('Fetch error:', e);
-  }
-}
-
-// ═══════════════════════════════════════════════
-// GAME LOOP
-// ═══════════════════════════════════════════════
-let lastTime = 0;
-let frameCount = 0;
-let fpsTime = 0;
-
-function gameLoop(time) {
-  if (!gameStarted) { requestAnimationFrame(gameLoop); return; }
-
-  const dt = Math.min(0.05, (time - lastTime) / 1000);
-  lastTime = time;
-
-  // FPS counter
-  frameCount++;
-  if (time - fpsTime > 1000) {
-    document.getElementById('fps').textContent = `${frameCount} FPS`;
-    frameCount = 0;
-    fpsTime = time;
-  }
-
-  move(dt);
-  render();
-  renderMinimap();
-  updateInteractPrompt();
-
-  // Auto-fetch data periodically
-  if (Math.floor(time/30000) !== Math.floor((time-16)/30000)) {
-    fetchCoprData();
-  }
-
-  requestAnimationFrame(gameLoop);
-}
-
-// ═══════════════════════════════════════════════
-// INPUT
-// ═══════════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  keys[e.key.toLowerCase()] = true;
-  if (e.key.toLowerCase() === 'r') running = true;
-  if (e.key.toLowerCase() === 'e' && !consoleOpen) {
-    const target = getInteractTarget();
-    if (target) openConsole(target);
-  }
-  if (e.key === 'Escape') closeConsole();
+// ══════════════════════════════════════
+// ВВОД
+// ══════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  K[e.key.toLowerCase()]=true;
+  if(e.key.toLowerCase()==='r')run=true;
+  if(e.key.toLowerCase()==='e'&&!cOpen){const t=target();if(t)openC(t);}
+  if(e.key==='Escape')closeC();
 });
+document.addEventListener('keyup',e=>{K[e.key.toLowerCase()]=false;if(e.key.toLowerCase()==='r')run=false;});
+cv.addEventListener('click',()=>{if(!mob)cv.requestPointerLock();});
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement===cv)MDX+=e.movementX;});
 
-document.addEventListener('keyup', e => {
-  keys[e.key.toLowerCase()] = false;
-  if (e.key.toLowerCase() === 'r') running = false;
-});
-
-// Mouse look
-canvas.addEventListener('click', () => {
-  if (!isMobile) canvas.requestPointerLock();
-});
-document.addEventListener('mousemove', e => {
-  if (document.pointerLockElement === canvas) {
-    mouse.dx += e.movementX;
-  }
-});
-
-// ═══════════════════════════════════════════════
-// MOBILE CONTROLS
-// ═══════════════════════════════════════════════
-function initMobile() {
-  isMobile = true;
-  document.getElementById('mobile-controls').style.display = 'flex';
-
-  setupJoystick('move-stick', 'move-knob', (dx,dy) => {
-    moveJoy.active = dx!==0||dy!==0;
-    moveJoy.dx = dx; moveJoy.dy = -dy; // invert Y
-  });
-
-  setupJoystick('look-stick', 'look-knob', (dx) => {
-    lookJoy.active = dx !== 0;
-    lookJoy.dx = dx;
-  }, true);
-
-  document.getElementById('btn-interact').addEventListener('touchstart', e => {
-    e.preventDefault();
-    if (!consoleOpen) {
-      const target = getInteractTarget();
-      if (target) openConsole(target);
-    } else {
-      closeConsole();
-    }
-  });
-
-  document.getElementById('btn-run').addEventListener('touchstart', e => { e.preventDefault(); running = true; });
-  document.getElementById('btn-run').addEventListener('touchend', e => { e.preventDefault(); running = false; });
+// ══════════════════════════════════════
+// МОБИЛЬНЫЕ
+// ══════════════════════════════════════
+function initMob(){
+  mob=true;document.getElementById('mobile-ui').style.display='flex';
+  jStick('joy-move','knob-move',(dx,dy)=>{MJ.on=dx||dy;MJ.dx=dx;MJ.dy=-dy;});
+  jStick('joy-look','knob-look',(dx)=>{LJ.on=!!dx;LJ.dx=dx;},true);
+  document.getElementById('btn-e').addEventListener('touchstart',e=>{
+    e.preventDefault();if(!cOpen){const t=target();if(t)openC(t);}else closeC();});
+  document.getElementById('btn-run').addEventListener('touchstart',e=>{e.preventDefault();run=true;});
+  document.getElementById('btn-run').addEventListener('touchend',e=>{e.preventDefault();run=false;});
 }
-
-function setupJoystick(areaId, knobId, callback, horizontalOnly=false) {
-  const area = document.getElementById(areaId);
-  const knob = document.getElementById(knobId);
-  const rect = () => area.getBoundingClientRect();
-
-  let touching = false;
-
-  area.addEventListener('touchstart', e => {
-    e.preventDefault();
-    touching = true;
-    update(e.touches[0]);
-  });
-
-  area.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (touching) update(e.touches[0]);
-  });
-
-  area.addEventListener('touchend', e => {
-    touching = false;
-    knob.style.transform = 'translate(-50%,-50%)';
-    callback(0, 0);
-  });
-
-  function update(touch) {
-    const r = rect();
-    const cx = r.left + r.width/2;
-    const cy = r.top + r.height/2;
-    let dx = (touch.clientX - cx) / (r.width/2);
-    let dy = (touch.clientY - cy) / (r.height/2);
-
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist > 1) { dx /= dist; dy /= dist; }
-
-    if (horizontalOnly) dy = 0;
-
-    knob.style.transform = `translate(calc(-50% + ${dx*35}px), calc(-50% + ${dy*35}px))`;
-    callback(dx, horizontalOnly ? 0 : dy);
+function jStick(aid,kid,cb,ho=false){
+  const a=document.getElementById(aid),k=document.getElementById(kid);
+  let touching=false;
+  a.addEventListener('touchstart',e=>{e.preventDefault();touching=true;up(e.touches[0]);});
+  a.addEventListener('touchmove',e=>{e.preventDefault();if(touching)up(e.touches[0]);});
+  a.addEventListener('touchend',e=>{touching=false;k.style.transform='translate(-50%,-50%)';cb(0,0);});
+  function up(t){
+    const r=a.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
+    let dx=(t.clientX-cx)/(r.width/2),dy=(t.clientY-cy)/(r.height/2);
+    const d=Math.sqrt(dx*dx+dy*dy);if(d>1){dx/=d;dy/=d;}
+    if(ho)dy=0;
+    k.style.transform=`translate(calc(-50%+${dx*30}px),calc(-50%+${dy*30}px))`;
+    cb(dx,ho?0:dy);
   }
 }
 
-// ═══════════════════════════════════════════════
-// RESIZE
-// ═══════════════════════════════════════════════
-function resize() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  // Lower resolution for performance
-  const scale = window.innerWidth < 600 ? 0.3 : 0.5;
-  canvas.width = Math.floor(window.innerWidth * scale);
-  canvas.height = Math.floor(window.innerHeight * scale);
-  canvas.style.width = '100%';
-  canvas.style.height = '100%';
+// ══════════════════════════════════════
+// РЕСАЙЗ
+// ══════════════════════════════════════
+function resize(){
+  const sc=window.innerWidth<600?.3:.5;
+  cv.width=Math.floor(window.innerWidth*sc);cv.height=Math.floor(window.innerHeight*sc);
 }
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('ru-RU',{hour12:false});}
+setInterval(updateClock,1000);
 
-// ═══════════════════════════════════════════════
-// CLOCK
-// ═══════════════════════════════════════════════
-function updateClock() {
-  const now = new Date();
-  const ts = now.toLocaleTimeString('ru-RU',{hour12:false});
-  document.getElementById('clock').textContent = ts;
+// ══════════════════════════════════════
+// СТАРТ
+// ══════════════════════════════════════
+function startGame(){
+  document.getElementById('start').style.display='none';started=true;
+  resize();initTex();fetchData();setInterval(fetchData,60000);
+  if('ontouchstart' in window||navigator.maxTouchPoints>0)initMob();
+  else cv.requestPointerLock();
 }
-setInterval(updateClock, 1000);
-
-// ═══════════════════════════════════════════════
-// START
-// ═══════════════════════════════════════════════
-function startGame() {
-  document.getElementById('start').style.display = 'none';
-  gameStarted = true;
-  resize();
-  generateTextures();
-  fetchCoprData();
-  setInterval(fetchCoprData, 60000);
-
-  // Detect mobile
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    initMobile();
-  } else {
-    canvas.requestPointerLock();
-  }
-}
-
-window.addEventListener('resize', resize);
-window.addEventListener('load', () => {
-  resize();
-  requestAnimationFrame(gameLoop);
-});
-
-// Handle console close on mobile tap outside
-document.getElementById('console-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('console-overlay')) closeConsole();
-});
+window.addEventListener('resize',resize);
+window.addEventListener('load',()=>{resize();requestAnimationFrame(loop);});
+document.getElementById('cons').addEventListener('click',e=>{if(e.target.id==='cons')closeC();});
 </script>
 </body>
 </html>
