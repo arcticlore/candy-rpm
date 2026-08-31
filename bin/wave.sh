@@ -6,7 +6,7 @@ cd "$ROOT"
 N="${1:-3}"
 
 for i in $(seq 0 $((N-1))); do
-    ARGS=(env CANDY_PROJ="${CANDY_PROJ:-arcticlore/candy}"
+    ARGS=(env CANDY_PROJ="${CANDY_PROJ:-arcticlore/terminal-rpm}"
           CANDY_WORKERS="$N" CANDY_SHARD_ID="$i" \
           CANDY_SHARD_LOCK=".shard-$i.lock")
     [ -n "${CANDY_SKIP_ECO:-}" ] && ARGS+=("CANDY_SKIP_ECO=${CANDY_SKIP_ECO}")

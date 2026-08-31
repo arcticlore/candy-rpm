@@ -1,5 +1,5 @@
 Name:           snowmachine
-Version:        0
+Version:        2.0.2
 Release:        1%{?dist}
 Summary:        Snow in your terminal
 
@@ -18,16 +18,16 @@ BuildRequires:  pyproject-rpm-macros
 %description
 Snow in your terminal
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n snowmachine-2.0.2
 
 %build
 %pyproject_wheel
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/snowmachine
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sun Aug 30 2026 candy-bot <candy@localhost> - 2.0.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -20,12 +20,12 @@ BuildRequires:  cargo-rpm-macros
 %description
 Красивый TUI клиент MPD
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
@@ -37,7 +37,6 @@ Don't throw tomatoes - file issues instead.
 
 %install
 %cargo_install
-# бинарные крейты не поставляют registry (иначе политика rust-* роняет сборку)
 rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
@@ -48,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/rmpc
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sun Aug 30 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -62,7 +62,7 @@ if mode=="bradd":
 ## Major Issues (Should Fix)
 
 ### 5. `update-check.sh:67` — O(N*M) вызов copr-cli в цикле
-- **Current**: `copr-cli list-builds arcticlore/candy` вызывается для КАЖДОГО пакета
+- **Current**: `copr-cli list-builds arcticlore/terminal-rpm` вызывается для КАЖДОГО пакета
 - **Suggested**: Вызвать ОДИН раз до цикла, закешировать в ассоциативный массив
 - **Impact**: 129 пакетов × 1 запрос = 129 HTTP-запросов к COPR API. Замедляет каждый прогон на ~3-5 минут
 
@@ -71,7 +71,7 @@ if mode=="bradd":
 declare -A BUILD_STATES
 while read -r name state; do
     BUILD_STATES["$name"]="$state"
-done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '{print $2, $NF}')
+done < <(copr-cli list-builds arcticlore/terminal-rpm 2>/dev/null | awk '{print $2, $NF}')
 # Then in loop: LASTSTATE=${BUILD_STATES[$N]:-""}
 ```
 

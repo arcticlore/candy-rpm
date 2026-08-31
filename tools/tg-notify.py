@@ -83,7 +83,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "👋 Бот проекта terminal-rpm\n"
             "Terminal eye-candy для Fedora\n\n"
             "🐙 GitHub: github.com/arcticlore/terminal-rpm\n"
-            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/candy/\n\n"
+            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/\n\n"
             "Выбери язык и пользуйся кнопками ниже."
         ),
         "langset": "🌐 Язык: русский",
@@ -102,7 +102,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "👋 terminal-rpm bot\n"
             "Terminal eye-candy for Fedora\n\n"
             "🐙 GitHub: github.com/arcticlore/terminal-rpm\n"
-            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/candy/\n\n"
+            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/\n\n"
             "Pick a language and use the buttons below."
         ),
         "langset": "🌐 Language: English",

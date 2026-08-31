@@ -104,5 +104,5 @@ GitHub Actions → COPR → dnf install
 | Тестов | 112 (unit + integration + security + edge cases) |
 | Языков | 3 (Bash, Python, Go) |
 | Telegram бот | [@tct_fedorabot](https://t.me/tct_fedorabot) |
-| COPR | [arcticlore/candy](https://copr.fedorainfracloud.org/coprs/arcticlore/candy/) |
-| GitHub | [arcticlore/candy-rpm](https://github.com/arcticlore/candy-rpm) |
+| COPR | [arcticlore/terminal-rpm](https://copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/) |
+| GitHub | [arcticlore/terminal-rpm-rpm](https://github.com/arcticlore/terminal-rpm-rpm) |

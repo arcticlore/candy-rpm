@@ -1,5 +1,5 @@
 Name:           pure
-Version:        0
+Version:        1.28.3
 Release:        1%{?dist}
 Summary:        Pretty, minimal and fast ZSH prompt
 
@@ -17,19 +17,16 @@ Requires:       zsh
 %description
 Pretty, minimal and fast ZSH prompt
 
-Официальный способ установки от апстрима / Upstream official install method:
-  npm install -g pure-prompt или git clone + symlink в fpath
-
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -a1 -n %{name}-%{version}
+%autosetup -p1 -a1 -n pure-1.28.3
 
 %build
 # bundled node_modules, сборка не требуется
@@ -49,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pure
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sun Aug 30 2026 candy-bot <candy@localhost> - 1.28.3-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

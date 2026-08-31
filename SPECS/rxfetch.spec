@@ -1,5 +1,5 @@
 Name:           rxfetch
-Version:        20260829.5eb3582
+Version:        0
 Release:        1%{?dist}
 Summary:        Custom system fetching tool written in bash
 
@@ -15,19 +15,16 @@ Requires:       bash
 %description
 Custom system fetching tool written in bash
 
-Официальный способ установки от апстрима / Upstream official install method:
-  git clone https://github.com/Mangeshrex/rxfetch && sudo ./install.sh
-
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n rxfetch-5eb3582d90a688c8330d1a72c6ac4c1b1ccd3872
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # чистый скрипт, сборка не требуется
@@ -46,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/rxfetch
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 20260829.5eb3582-1
+* Sun Aug 30 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           pywal
-Version:        0
+Version:        3.8.15
 Release:        1%{?dist}
 Summary:        Generate and change color-schemes on the fly
 
@@ -18,19 +18,16 @@ BuildRequires:  pyproject-rpm-macros
 %description
 Generate and change color-schemes on the fly
 
-Официальный способ установки от апстрима / Upstream official install method:
-  pip install --user pywal
-
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n pywal-3.8.15
 
 %build
 %pyproject_wheel
@@ -46,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_prefix}/man/man1/wal.1*
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sun Aug 30 2026 candy-bot <candy@localhost> - 3.8.15-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

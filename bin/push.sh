@@ -9,7 +9,7 @@ CLEAN=$(echo "$ORIG" | sed 's|https://[^@]*@|https://|')
 restore(){ git remote set-url origin "$CLEAN" 2>/dev/null; }
 trap restore EXIT INT TERM
 for i in 1 2 3; do
-    git remote set-url origin "https://arcticlore:${TOKEN}@github.com/arcticlore/candy-rpm.git"
+    git remote set-url origin "https://arcticlore:${TOKEN}@github.com/arcticlore/terminal-rpm-rpm.git"
     echo "[$(date '+%F %T')] попытка $i" >> "$LOG"
     if git push origin master >>"$LOG" 2>&1; then
         echo "[$(date '+%F %T')] PUSH OK" | tee -a "$LOG"; exit 0

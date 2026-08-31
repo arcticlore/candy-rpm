@@ -12,7 +12,7 @@ BW=26
 STATE="/tmp/candy-dashboard.$$"          # финальный файл после mv — атомарно
 STATEDIR=${TMPDIR:-/tmp}
 
-builds() { copr-cli list-builds arcticlore/candy 2>/dev/null; }
+builds() { copr-cli list-builds arcticlore/terminal-rpm 2>/dev/null; }
 
 bar() {
     local cur=${1:-0} tot=${2:-0} w=$BW n f pct
@@ -86,7 +86,7 @@ collect() {   # собирает свежие данные и атомарно �
     local T; T=$(grep -o 'ghp_[A-Za-z0-9]*' ~/.config/candy/push-token 2>/dev/null | head -1)
     if [ -n "$T" ]; then
         curl -s --max-time 15 -H "Authorization: Bearer $T" \
-          "https://api.github.com/repos/arcticlore/candy-rpm/actions/runs?per_page=3" \
+          "https://api.github.com/repos/arcticlore/terminal-rpm-rpm/actions/runs?per_page=3" \
           | jq -r '.workflow_runs[]? | "║   \(.created_at[5:16])UTC  \(.status) \(.conclusion // "⏳")"' 2>/dev/null
     fi
 

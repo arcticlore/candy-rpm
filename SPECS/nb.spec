@@ -1,5 +1,5 @@
 Name:           nb
-Version:        0
+Version:        7.25.5
 Release:        1%{?dist}
 Summary:        Заметки/закладки/блокноты — всё в CLI (один bash-файл)
 
@@ -16,16 +16,16 @@ Requires:       git
 %description
 Заметки/закладки/блокноты — всё в CLI (один bash-файл)
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n nb-7.25.5
 
 %build
 # чистый скрипт, сборка не требуется
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/nb
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sun Aug 30 2026 candy-bot <candy@localhost> - 7.25.5-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

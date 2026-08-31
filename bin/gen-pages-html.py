@@ -173,8 +173,8 @@ th:hover{{color:#fff}}
 </style></head><body><div class="wrap">
 <div class="banner"><div class="inner"><h1>🧊 terminal-rpm · панель конвейера</h1>
 <span class="dim">автообновление 5 мин · {now} ·
-<a href="https://github.com/arcticlore/candy-rpm">GitHub</a> ·
-<a href="https://copr.fedorainfracloud.org/coprs/arcticlore/candy/">COPR</a></span></div></div>
+<a href="https://github.com/arcticlore/terminal-rpm-rpm">GitHub</a> ·
+<a href="https://copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/">COPR</a></span></div></div>
 
 <h2>📊 Прогресс</h2>
 {progress_bar(ok, total, "зелёные пакеты", "#4ade80")}
@@ -188,7 +188,7 @@ th:hover{{color:#fff}}
 <table><tr><th onclick="sortTable(0)">пакет ↕</th><th onclick="sortTable(1)">статус ↕</th><th onclick="sortTable(2)">билд ↕</th></tr>
 <tbody id="tbody">{pkg_rows}</tbody></table>
 
-<p class="dim"><code>sudo dnf copr enable arcticlore/candy</code></p>
+<p class="dim"><code>sudo dnf copr enable arcticlore/terminal-rpm</code></p>
 </div>
 <script>
 let activeFilter=null;

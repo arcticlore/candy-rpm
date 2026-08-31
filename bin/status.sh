@@ -17,12 +17,12 @@ SKIPPED=$(grep -c "\[SKIP\]" $L 2>/dev/null || echo 0)
 echo "=== ЛОКАЛЬНО ==="
 echo "воркеров: $W | нянька: $B | взято: $TAKEN | SRPM: $OKSRPM | в COPR ушло: $UPLOADED | fail: $FAILED | skip: $SKIPPED"
 
-echo "=== COPR (arcticlore/candy) ==="
+echo "=== COPR (arcticlore/terminal-rpm) ==="
 if command -v copr-cli >/dev/null; then
-    copr-cli list-builds arcticlore/candy 2>/dev/null | awk '{print $NF}' | sort | uniq -c | sort -rn |
+    copr-cli list-builds arcticlore/terminal-rpm 2>/dev/null | awk '{print $NF}' | sort | uniq -c | sort -rn |
         while read -r n s; do printf "%-12s %s\n" "$s" "$n"; done
     echo "--- последние 5 ---"
-    copr-cli list-builds arcticlore/candy 2>/dev/null | head -5
+    copr-cli list-builds arcticlore/terminal-rpm 2>/dev/null | head -5
 else
     echo "copr-cli недоступен"
 fi

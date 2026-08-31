@@ -1,4 +1,4 @@
-# Chat History — arcticlore/candy-rpm
+# Chat History — arcticlore/terminal-rpm-rpm
 
 ## 2026-08-28 Night Session (Tonight)
 
