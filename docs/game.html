@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>ЦУП terminal-rpm — CONTROL ROOM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+
+/* ── HUD ── */
+#hud{position:fixed;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,rgba(0,0,0,.9));display:flex;align-items:flex-end;padding:0 12px 8px;gap:8px;z-index:10;pointer-events:none}
+.hud-panel{background:rgba(10,14,20,.85);border:1px solid #1e2a38;border-radius:4px;padding:6px 10px;font-size:10px;color:#8b9bb4;min-width:0;flex-shrink:0}
+.hud-val{font-size:16px;font-weight:700;line-height:1}
+.hud-green{color:#00e676}.hud-amber{color:#ffc107}.hud-red{color:#ff1744}.hud-blue{color:#448aff}
+
+/* ── TOP BAR ── */
+#topbar{position:fixed;top:0;left:0;right:0;height:28px;background:rgba(0,0,0,.8);border-bottom:1px solid #1e2a38;display:flex;align-items:center;padding:0 10px;font-size:10px;color:#5a6a7a;z-index:10;pointer-events:none;justify-content:space-between}
+#topbar .left{display:flex;align-items:center;gap:8px}
+#topbar .dot{width:6px;height:6px;border-radius:50%;background:#00e676;box-shadow:0 0 6px #00e676}
+
+/* ── CROSSHAIR ── */
+#crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;pointer-events:none;opacity:.4}
+#crosshair::before,#crosshair::after{content:'';position:absolute;background:#00e5ff}
+#crosshair::before{width:2px;height:16px;left:-1px;top:-8px}
+#crosshair::after{width:16px;height:2px;top:-1px;left:-8px}
+
+/* ── INTERACT PROMPT ── */
+#interact{position:fixed;top:55%;left:50%;transform:translateX(-50%);background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:#00e5ff;padding:6px 16px;border-radius:4px;font-size:12px;z-index:10;display:none;pointer-events:none;text-align:center}
+
+/* ── CONSOLE OVERLAY ── */
+#console-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#console-overlay.open{display:flex}
+#console-box{background:#0a0e14;border:2px solid #00e5ff;border-radius:8px;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding:16px;box-shadow:0 0 40px rgba(0,229,255,.15)}
+#console-box h2{color:#00e5ff;font-size:14px;margin-bottom:12px;border-bottom:1px solid #1e2a38;padding-bottom:8px}
+#console-box .row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(30,42,56,.5)}
+#console-box .row .k{color:#5a6a7a}.row .v{color:#c5d0e0;text-align:right}
+#console-box .tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;margin:1px}
+.tag-run{background:#004d26;color:#00e676}.tag-pend{background:#4d3800;color:#ffc107}.tag-fail{background:#4d0713;color:#ff1744}.tag-ok{background:#004d26;color:#00e676}.tag-can{background:#1e2a38;color:#5a6a7a}
+#console-close{position:fixed;top:16px;right:16px;background:none;border:1px solid #5a6a7a;color:#5a6a7a;padding:6px 12px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;z-index:101}
+#console-close:hover{border-color:#00e5ff;color:#00e5ff}
+
+/* ── MOBILE CONTROLS ── */
+#mobile-controls{position:fixed;bottom:90px;left:0;right:0;display:none;justify-content:space-between;padding:0 16px;z-index:20;pointer-events:none}
+.joystick-area{width:120px;height:120px;border:2px solid rgba(0,229,255,.2);border-radius:50%;position:relative;pointer-events:auto}
+.joystick-knob{width:40px;height:40px;background:rgba(0,229,255,.3);border:2px solid rgba(0,229,255,.5);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:none}
+.action-btn{width:60px;height:60px;border:2px solid rgba(0,229,255,.3);border-radius:50%;background:rgba(0,229,255,.1);color:#00e5ff;font-size:10px;display:flex;align-items:center;justify-content:center;pointer-events:auto;font-family:monospace}
+
+/* ── MINIMAP ── */
+#minimap{position:fixed;top:36px;right:8px;border:1px solid #1e2a38;border-radius:4px;z-index:10;pointer-events:none;opacity:.7}
+
+/* ── START SCREEN ── */
+#start{position:fixed;inset:0;background:#000;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#start h1{color:#00e5ff;font-size:24px;text-shadow:0 0 20px rgba(0,229,255,.5)}
+#start p{color:#5a6a7a;font-size:12px;text-align:center;max-width:400px;line-height:1.6}
+#start .start-btn{background:none;border:2px solid #00e5ff;color:#00e5ff;padding:12px 32px;font-size:14px;font-family:monospace;cursor:pointer;border-radius:4px;transition:.2s}
+#start .start-btn:hover{background:rgba(0,229,255,.1);box-shadow:0 0 20px rgba(0,229,255,.2)}
+
+/* ── FPS ── */
+#fps{position:fixed;top:36px;left:8px;font-size:10px;color:#5a6a7a;z-index:10;pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="start">
+  <div style="font-size:48px;margin-bottom:-10px">⚛</div>
+  <h1>ЦУП terminal-rpm</h1>
+  <p>Контрольный центр системы автоматического обновления.<br>
+  Используйте WASD для движения, МЫШЬ для обзора.<br>
+  E — взаимодействовать с консолями.<br>
+  Мобильные: виртуальные джойстики.</p>
+  <button class="start-btn" onclick="startGame()">▶ ВОЙТИ В КОНТРОЛЬНЫЙ ЦЕНТР</button>
+  <p style="font-size:10px;color:#2a3a4e;margin-top:20px">COPR: arcticlore/terminal-rpm | 146 packages | 4 chroots</p>
+</div>
+
+<!-- HUD -->
+<div id="topbar">
+  <div class="left"><div class="dot"></div><span>TERMINAL-RPM CONTROL ROOM</span></div>
+  <span id="clock"></span>
+</div>
+<canvas id="minimap" width="120" height="120"></canvas>
+<div id="fps"></div>
+<div id="crosshair"></div>
+<div id="interact">[ E ] Взаимодействовать</div>
+
+<div id="hud">
+  <div class="hud-panel">
+    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">АКТИВНЫХ</div>
+    <div class="hud-val hud-green" id="h-active">0</div>
+  </div>
+  <div class="hud-panel">
+    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">ОЧЕРЕДЬ</div>
+    <div class="hud-val hud-amber" id="h-pending">0</div>
+  </div>
+  <div class="hud-panel">
+    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">ОШИБКИ</div>
+    <div class="hud-val hud-red" id="h-failed">0</div>
+  </div>
+  <div class="hud-panel">
+    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">УСПЕХ</div>
+    <div class="hud-val hud-green" id="h-ok">0</div>
+  </div>
+  <div class="hud-panel" style="flex:1;min-width:60px">
+    <div style="font-size:9px;color:#5a6a7a;margin-bottom:2px">СИСТЕМА</div>
+    <div class="hud-val hud-blue" id="h-sys" style="font-size:11px">ONLINE</div>
+  </div>
+</div>
+
+<!-- CONSOLE OVERLAY -->
+<div id="console-overlay">
+  <button id="console-close" onclick="closeConsole()">✕ [ESC]</button>
+  <div id="console-box"></div>
+</div>
+
+<!-- MOBILE CONTROLS -->
+<div id="mobile-controls">
+  <div class="joystick-area" id="move-stick">
+    <div class="joystick-knob" id="move-knob"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="action-btn" id="btn-interact">E</div>
+    <div class="action-btn" id="btn-run">⇧</div>
+  </div>
+  <div class="joystick-area" id="look-stick">
+    <div class="joystick-knob" id="look-knob"></div>
+  </div>
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const FOV = Math.PI / 3;
+const MAP_SIZE = 20;
+const TILE = 1;
+const TEX_SIZE = 64;
+const MOVE_SPEED = 2.5;
+const TURN_SPEED = 2;
+const INTERACT_DIST = 1.5;
+
+// ═══════════════════════════════════════════════
+// MAP — 0=floor, 1=wall, 2=console, 3=screen, 4=door
+// ═══════════════════════════════════════════════
+const MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,3,0,0,0,0,0,0,0,0,3,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,1,1,1,4,1,1,1,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+  [1,0,2,0,0,0,1,0,2,0,2,0,1,0,0,0,3,0,0,1],
+  [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,1,0,2,0,2,0,1,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1],
+  [1,0,0,0,3,0,1,1,1,4,1,1,1,0,0,3,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+];
+
+// ═══════════════════════════════════════════════
+// CONSOLE DATA SOURCES
+// ═══════════════════════════════════════════════
+const CONSOLES = {
+  // Position: [row,col] — map tile position
+  // Type determines what data is shown
+  '2,2':   {type:'overview', title:'ГЛАВНЫЙ ЩИТ'},
+  '2,15':  {type:'builds', title:'МОНИТОР БИЛДОВ'},
+  '8,2':   {type:'packages', title:'УПРАВЛЕНИЕ ПАКЕТАМИ'},
+  '8,8':   {type:'chroots', title:'СЕРВЕРЫ (CHROOTS)'},
+  '8,10':  {type:'network', title:'СЕТЬ И ДОПУСКИ'},
+  '8,16':  {type:'logs', title:'СИСТЕМНЫЕ ЛОГИ'},
+  '14,2':  {type:'workflows', title:'WORKFLOWS'},
+  '14,16': {type:'danger', title:'⚠ АВАРИЙНЫЙ ЩИТ'},
+  '4,4':   {type:'status_screen', title:'COPR STATUS'},
+  '4,13':  {type:'pkg_screen', title:'ПАКЕТЫ: ВКЛ/ВЫКЛ'},
+  '12,4':  {type:'wf_screen', title:'GITHUB ACTIONS'},
+  '12,15': {type:'health', title:'ЗДОРОВЬЕ СИСТЕМЫ'},
+  '16,8':  {type:'about', title:'О ПРОЕКТЕ'},
+};
+
+// ═══════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════
+let player = {x: 9.5, y: 1.5, angle: Math.PI/2};
+let keys = {};
+let mouse = {dx:0, locked:false};
+let running = false;
+let gameStarted = false;
+let isMobile = false;
+let moveJoy = {active:false, dx:0, dy:0};
+let lookJoy = {active:false, dx:0};
+let coprData = {builds:[], counts:{}, pkgsJson:null};
+let lastFetch = 0;
+let consoleOpen = false;
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const minimapCanvas = document.getElementById('minimap');
+const minimapCtx = minimapCanvas.getContext('2d');
+
+// ═══════════════════════════════════════════════
+// TEXTURES (procedural)
+// ═══════════════════════════════════════════════
+const textures = {};
+
+function generateTextures() {
+  // Wall texture — dark concrete
+  textures[1] = createTexture((x,y) => {
+    const n = ((x*7+y*13+x*y*3)%20)/20;
+    const v = 20 + n*15;
+    return [v, v+2, v+5];
+  });
+
+  // Console texture — dark with green text lines
+  textures[2] = createTexture((x,y) => {
+    if (y%8 < 2 && x > 8 && x < 56) return [0, 40+Math.sin(x*.3)*20, 10];
+    if (y%16 < 1 && x > 4 && x < 60) return [0, 30, 8];
+    const n = ((x*3+y*7)%17)/17;
+    return [8+n*5, 12+n*8, 15+n*10];
+  });
+
+  // Screen texture — animated blue display
+  textures[3] = createTexture((x,y) => {
+    const t = performance.now()/1000;
+    const scan = Math.sin(y*.5+t*2)*10;
+    const grid = ((x%8<1)||(y%8<1)) ? 15 : 0;
+    return [5+grid, 15+scan+grid, 40+scan*2+grid];
+  });
+
+  // Door texture
+  textures[4] = createTexture((x,y) => {
+    if (x > 20 && x < 44 && y > 10 && y < 54) {
+      const n = Math.sin(x*.2)*Math.sin(y*.2)*10;
+      return [30+n, 20+n, 10+n];
+    }
+    return [15, 12, 8];
+  });
+}
+
+function createTexture(fn) {
+  const c = document.createElement('canvas');
+  c.width = c.height = TEX_SIZE;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(TEX_SIZE, TEX_SIZE);
+  for (let y = 0; y < TEX_SIZE; y++) {
+    for (let x = 0; x < TEX_SIZE; x++) {
+      const [r,g,b] = fn(x,y);
+      const i = (y*TEX_SIZE+x)*4;
+      img.data[i] = Math.max(0,Math.min(255,r));
+      img.data[i+1] = Math.max(0,Math.min(255,g));
+      img.data[i+2] = Math.max(0,Math.min(255,b));
+      img.data[i+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return c;
+}
+
+// ═══════════════════════════════════════════════
+// RAYCASTING ENGINE
+// ═══════════════════════════════════════════════
+function castRay(angle) {
+  const sin = Math.sin(angle), cos = Math.cos(angle);
+  let dist = 0;
+  const step = 0.02;
+
+  while (dist < 20) {
+    dist += step;
+    const x = player.x + cos * dist;
+    const y = player.y + sin * dist;
+    const mx = Math.floor(x), my = Math.floor(y);
+    if (mx < 0 || my < 0 || mx >= MAP_SIZE || my >= MAP_SIZE) return {dist:20, type:1, mx, my};
+    const cell = MAP[my][mx];
+    if (cell > 0) {
+      // Find exact wall hit for texture mapping
+      const prevX = player.x + cos * (dist - step);
+      const prevY = player.y + sin * (dist - step);
+      const hitX = x - Math.floor(x);
+      const hitY = y - Math.floor(y);
+      const texX = (Math.abs(cos) > Math.abs(sin)) ? hitY : hitX;
+      return {dist, type:cell, mx, my, texX};
+    }
+  }
+  return {dist:20, type:0, mx:-1, my:-1};
+}
+
+function render() {
+  const W = canvas.width;
+  const H = canvas.height;
+  const imgData = ctx.createImageData(W, H);
+  const buf = imgData.data;
+
+  // Ceiling
+  for (let y = 0; y < H/2; y++) {
+    const v = Math.max(0, 15 - y * 0.15);
+    for (let x = 0; x < W; x++) {
+      const i = (y*W+x)*4;
+      buf[i] = v*0.5; buf[i+1] = v*0.6; buf[i+2] = v*1.2; buf[i+3] = 255;
+    }
+  }
+
+  // Floor
+  for (let y = Math.floor(H/2); y < H; y++) {
+    const v = Math.max(0, (y - H/2) * 0.12);
+    for (let x = 0; x < W; x++) {
+      const i = (y*W+x)*4;
+      buf[i] = v*0.3; buf[i+1] = v*0.35; buf[i+2] = v*0.4; buf[i+3] = 255;
+    }
+  }
+
+  // Walls
+  const numRays = W;
+  for (let i = 0; i < numRays; i++) {
+    const rayAngle = player.angle - FOV/2 + (i/numRays) * FOV;
+    const hit = castRay(rayAngle);
+    if (hit.type === 0) continue;
+
+    const correctedDist = hit.dist * Math.cos(rayAngle - player.angle);
+    const wallHeight = Math.min(H * 2, H / correctedDist);
+    const wallTop = Math.floor((H - wallHeight) / 2);
+
+    const tex = textures[hit.type];
+    if (!tex) continue;
+    const texCtx = tex.getContext('2d');
+    const texData = texCtx.getImageData(0, 0, TEX_SIZE, TEX_SIZE).data;
+    const texX = Math.floor(hit.texX * TEX_SIZE) % TEX_SIZE;
+
+    // Distance shading
+    const shade = Math.max(0.15, 1 - correctedDist / 12);
+
+    for (let y = Math.max(0, wallTop); y < Math.min(H, wallTop + wallHeight); y++) {
+      const texY = Math.floor(((y - wallTop) / wallHeight) * TEX_SIZE) % TEX_SIZE;
+      const ti = (texY * TEX_SIZE + texX) * 4;
+      const pi = (y * W + i) * 4;
+      buf[pi] = texData[ti] * shade;
+      buf[pi+1] = texData[ti+1] * shade;
+      buf[pi+2] = texData[ti+2] * shade;
+      buf[pi+3] = 255;
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+
+  // Overlay glow on console/screen tiles
+  renderOverlays();
+}
+
+function renderOverlays() {
+  const W = canvas.width;
+  const H = canvas.height;
+  const numRays = W;
+
+  for (let i = 0; i < numRays; i++) {
+    const rayAngle = player.angle - FOV/2 + (i/numRays) * FOV;
+    const hit = castRay(rayAngle);
+    if (hit.type !== 2 && hit.type !== 3) continue;
+
+    const correctedDist = hit.dist * Math.cos(rayAngle - player.angle);
+    if (correctedDist > 4) continue;
+
+    const wallHeight = Math.min(H * 2, H / correctedDist);
+    const wallTop = Math.floor((H - wallHeight) / 2);
+    const glowAlpha = Math.max(0, 0.3 - correctedDist * 0.06);
+
+    const color = hit.type === 2 ? '0,229,255' : '68,138,255';
+    ctx.fillStyle = `rgba(${color},${glowAlpha})`;
+    ctx.fillRect(i, Math.max(0, wallTop), 1, Math.min(wallHeight, H));
+  }
+}
+
+// ═══════════════════════════════════════════════
+// MINIMAP
+// ═══════════════════════════════════════════════
+function renderMinimap() {
+  const mc = minimapCtx;
+  const s = 6; // tile size
+  mc.fillStyle = '#0a0e14';
+  mc.fillRect(0, 0, 120, 120);
+
+  for (let y = 0; y < MAP_SIZE; y++) {
+    for (let x = 0; x < MAP_SIZE; x++) {
+      const cell = MAP[y][x];
+      if (cell === 0) continue;
+      mc.fillStyle = cell === 1 ? '#1e2a38' : cell === 2 ? '#004d5a' : cell === 3 ? '#132d4d' : '#2a1a0a';
+      mc.fillRect(x*s, y*s, s, s);
+    }
+  }
+
+  // Player
+  mc.fillStyle = '#00e676';
+  mc.beginPath();
+  mc.arc(player.x*s, player.y*s, 2, 0, Math.PI*2);
+  mc.fill();
+
+  // Direction
+  mc.strokeStyle = '#00e676';
+  mc.lineWidth = 1;
+  mc.beginPath();
+  mc.moveTo(player.x*s, player.y*s);
+  mc.lineTo(player.x*s + Math.cos(player.angle)*8, player.y*s + Math.sin(player.angle)*8);
+  mc.stroke();
+}
+
+// ═══════════════════════════════════════════════
+// MOVEMENT & COLLISION
+// ═══════════════════════════════════════════════
+function isWall(x, y) {
+  const mx = Math.floor(x), my = Math.floor(y);
+  if (mx < 0 || my < 0 || mx >= MAP_SIZE || my >= MAP_SIZE) return true;
+  return MAP[my][mx] === 1 || MAP[my][mx] === 4; // doors are solid for now
+}
+
+function move(dt) {
+  if (consoleOpen) return;
+
+  const spd = (running ? MOVE_SPEED * 1.8 : MOVE_SPEED) * dt;
+  let dx = 0, dy = 0;
+
+  // Keyboard
+  if (keys['w'] || keys['arrowup']) { dx += Math.cos(player.angle)*spd; dy += Math.sin(player.angle)*spd; }
+  if (keys['s'] || keys['arrowdown']) { dx -= Math.cos(player.angle)*spd; dy -= Math.sin(player.angle)*spd; }
+  if (keys['a'] || keys['arrowleft']) { dx += Math.cos(player.angle-Math.PI/2)*spd; dy += Math.sin(player.angle-Math.PI/2)*spd; }
+  if (keys['d'] || keys['arrowright']) { dx += Math.cos(player.angle+Math.PI/2)*spd; dy += Math.sin(player.angle+Math.PI/2)*spd; }
+
+  // Mobile joystick
+  if (moveJoy.active) {
+    dx += (Math.cos(player.angle)*moveJoy.dy + Math.cos(player.angle+Math.PI/2)*moveJoy.dx) * spd;
+    dy += (Math.sin(player.angle)*moveJoy.dy + Math.sin(player.angle+Math.PI/2)*moveJoy.dx) * spd;
+  }
+
+  // Turn
+  if (keys['q']) player.angle -= TURN_SPEED * dt;
+  if (keys['e'] && !keys['w'] && !keys['s']) {} // E is interact, not turn (except when not moving)
+  if (keys['arrowleft'] && !keys['a']) player.angle -= TURN_SPEED * dt;
+
+  // Mouse
+  player.angle += mouse.dx * 0.002;
+  mouse.dx = 0;
+
+  // Mobile look
+  if (lookJoy.active) {
+    player.angle += lookJoy.dx * 3 * dt;
+  }
+
+  // Collision detection with sliding
+  const margin = 0.2;
+  const newX = player.x + dx;
+  const newY = player.y + dy;
+
+  if (!isWall(newX + margin*Math.sign(dx), player.y) && !isWall(newX - margin*Math.sign(dx), player.y)) {
+    player.x = newX;
+  }
+  if (!isWall(player.x, newY + margin*Math.sign(dy)) && !isWall(player.x, newY - margin*Math.sign(dy))) {
+    player.y = newY;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════════
+function getInteractTarget() {
+  const checkDist = 1.8;
+  const x = player.x + Math.cos(player.angle) * checkDist;
+  const y = player.y + Math.sin(player.angle) * checkDist;
+  const mx = Math.floor(x), my = Math.floor(y);
+  const key = `${my},${mx}`;
+  return CONSOLES[key] || null;
+}
+
+function updateInteractPrompt() {
+  const target = getInteractTarget();
+  const el = document.getElementById('interact');
+  if (target && !consoleOpen) {
+    el.style.display = 'block';
+    el.textContent = `[ E ] ${target.title}`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function openConsole(target) {
+  consoleOpen = true;
+  const overlay = document.getElementById('console-overlay');
+  const box = document.getElementById('console-box');
+  overlay.classList.add('open');
+  box.innerHTML = `<h2>${target.title}</h2><div style="color:#5a6a7a;font-size:12px">Загрузка данных...</div>`;
+  renderConsoleContent(target.type, box);
+}
+
+function closeConsole() {
+  consoleOpen = false;
+  document.getElementById('console-overlay').classList.remove('open');
+}
+
+function renderConsoleContent(type, box) {
+  const b = coprData.builds;
+  const c = coprData.counts;
+  const pkgs = coprData.pkgsJson?.packages || [];
+  const enabled = pkgs.filter(p => p.enabled !== false).length;
+
+  let html = '';
+
+  switch(type) {
+    case 'overview':
+      html = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="row"><span class="k">Активных</span><span class="v hud-green">${(c.running||0)+(c.starting||0)}</span></div>
+          <div class="row"><span class="k">Очередь</span><span class="v hud-amber">${c.pending||0}</span></div>
+          <div class="row"><span class="k">Успешно</span><span class="v hud-green">${c.succeeded||0}</span></div>
+          <div class="row"><span class="k">Ошибки</span><span class="v hud-red">${c.failed||0}</span></div>
+          <div class="row"><span class="k">Отменено</span><span class="v" style="color:#5a6a7a">${c.canceled||0}</span></div>
+          <div class="row"><span class="k">Всего билдов</span><span class="v" style="color:#c5d0e0">${b.length}</span></div>
+        </div>
+        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #1e2a38">
+          <div class="row"><span class="k">Пакетов</span><span class="v" style="color:#c5d0e0">${enabled}/${pkgs.length}</span></div>
+          <div class="row"><span class="k">Проект</span><span class="v" style="color:#00e5ff">arcticlore/terminal-rpm</span></div>
+          <div class="row"><span class="k">Chroots</span><span class="v" style="color:#c5d0e0">4 (f43/f44 x86_64+aarch64)</span></div>
+        </div>`;
+      break;
+
+    case 'builds':
+      html = b.slice(0,30).map(x => `
+        <div class="row">
+          <span class="k">#${x.id} ${x.source_package.name}</span>
+          <span class="v"><span class="tag tag-${x.state==='running'||x.state==='starting'?'run':x.state==='pending'?'pend':x.state==='succeeded'?'ok':x.state==='failed'?'fail':'can'}">${x.state}</span></span>
+        </div>
+      `).join('');
+      break;
+
+    case 'packages':
+      html = pkgs.map(p => `
+        <div class="row">
+          <span class="k">${p.name}</span>
+          <span class="v" style="color:${p.enabled!==false?'#00e676':'#ff1744'}">${p.enabled!==false?'● ВКЛ':'○ ВЫКЛ'}</span>
+        </div>
+      `).join('');
+      break;
+
+    case 'chroots':
+      const chroots = ['fedora-44-x86_64','fedora-44-aarch64','fedora-43-x86_64','fedora-43-aarch64'];
+      html = chroots.map(c => `
+        <div class="row"><span class="k">${c}</span><span class="v" style="color:#00e676">● АКТИВЕН</span></div>
+      `).join('') + `
+        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #1e2a38;font-size:11px;color:#5a6a7a">
+          Удалены: rawhide, ppc64le, s390x, i386, riscv64
+        </div>`;
+      break;
+
+    case 'network':
+      html = `
+        <div class="row"><span class="k">Сеть</span><span class="v" style="color:#00e676">● ВКЛ</span></div>
+        <div class="row"><span class="k">COPR API</span><span class="v" style="color:#00e5ff">Доступен</span></div>
+        <div class="row"><span class="k">GitHub API</span><span class="v" style="color:#ffc107">Через DNS workaround</span></div>
+        <div class="row"><span class="k">Telegram Bot</span><span class="v" style="color:#00e676">● АКТИВЕН</span></div>
+        <div class="row"><span class="k">Tailscale</span><span class="v" style="color:#ff1744">● ЗАБЛОКИРОВАН (RF)</span></div>
+        <div class="row"><span class="k">WireGuard</span><span class="v" style="color:#ff1744">● ЗАБЛОКИРОВАН (RF)</span></div>`;
+      break;
+
+    case 'logs':
+      html = `<div style="font-family:monospace;font-size:11px;color:#5a6a7a;line-height:1.8">
+        <div>[系统] COPR API connected</div>
+        <div>[系统] GitHub Actions: 5 workflows active</div>
+        <div>[调度] update.yml: every 3h</div>
+        <div>[调度] telegram.yml: every 5min</div>
+        <div>[调度] monitor.yml: every 30min</div>
+        <div style="color:#ffc107">[告警] Old project arcticlore/candy: 200+ stuck builds</div>
+        <div style="color:#00e676">[系统] New project arcticlore/terminal-rpm: clean start</div>
+        <div>[系统] Smart submit: max 5 concurrent builds</div>
+        <div>[系统] Auto-triage: enabled</div>
+        <div>[系统] Auto-issue: enabled</div>
+      </div>`;
+      break;
+
+    case 'workflows':
+      const wf = [
+        {n:'update.yml',s:'every 3h',d:'Автосборка и отправка'},
+        {n:'telegram.yml',s:'every 5min',d:'Telegram-бот polling'},
+        {n:'monitor.yml',s:'every 30min',d:'Мониторинг статуса'},
+        {n:'logrotate.yml',s:'daily',d:'Очистка логов'},
+        {n:'digest.yml',s:'weekly',d:'Еженедельный дайджест'},
+      ];
+      html = wf.map(w => `
+        <div class="row"><span class="k">${w.n}</span><span class="v" style="font-size:10px">${w.s}</span></div>
+      `).join('');
+      break;
+
+    case 'danger':
+      html = `
+        <div style="border:1px solid #ff1744;border-radius:4px;padding:12px;margin-bottom:12px;background:rgba(255,23,68,.05)">
+          <div style="color:#ff1744;font-size:12px;font-weight:700;margin-bottom:4px">⚠ АВАРИЙНЫЙ РЕЖИМ</div>
+          <div style="color:#5a6a7a;font-size:11px">Старый проект arcticlore/candy заморожен.</div>
+          <div style="color:#5a6a7a;font-size:11px">Новый проект arcticlore/terminal-rpm активен.</div>
+        </div>
+        <div class="row"><span class="k">Удалить проект</span><span class="v" style="color:#ff1744">copr-cli delete</span></div>
+        <div class="row"><span class="k">Отключить сеть</span><span class="v" style="color:#ffc107">copr-cli modify --enable-net off</span></div>
+        <div class="row"><span class="k">Отменить все</span><span class="v" style="color:#ffc107">copr-cli cancel ID</span></div>`;
+      break;
+
+    case 'status_screen':
+    case 'pkg_screen':
+    case 'wf_screen':
+    case 'health':
+    case 'about':
+      // These are the screens on walls — show condensed info
+      const t = type === 'about' ? 'overview' : type.replace('_screen','');
+      renderConsoleContent(t === 'health' ? 'overview' : t, box);
+      return;
+  }
+
+  box.innerHTML = `<h2>${box.querySelector('h2')?.textContent || type}</h2>${html}`;
+}
+
+// ═══════════════════════════════════════════════
+// DATA FETCHING
+// ═══════════════════════════════════════════════
+async function fetchCoprData() {
+  if (Date.now() - lastFetch < 30000) return; // 30s cache
+  lastFetch = Date.now();
+
+  try {
+    // Fetch builds
+    let all = [], offset = 0;
+    while (true) {
+      const r = await fetch(`https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200&offset=${offset}`);
+      if (!r.ok) break;
+      const d = await r.json();
+      if (!d.items || d.items.length === 0) break;
+      all.push(...d.items);
+      if (d.items.length < 200) break;
+      offset += 200;
+    }
+    coprData.builds = all;
+
+    // Count states
+    coprData.counts = {};
+    all.forEach(b => { coprData.counts[b.state] = (coprData.counts[b.state]||0)+1; });
+
+    // Fetch pkgs.json
+    if (!coprData.pkgsJson) {
+      const r = await fetch('https://raw.githubusercontent.com/arcticlore/candy-rpm/master/pkgs.json');
+      if (r.ok) coprData.pkgsJson = await r.json();
+    }
+
+    // Update HUD
+    document.getElementById('h-active').textContent = (coprData.counts.running||0)+(coprData.counts.starting||0);
+    document.getElementById('h-pending').textContent = coprData.counts.pending||0;
+    document.getElementById('h-failed').textContent = coprData.counts.failed||0;
+    document.getElementById('h-ok').textContent = coprData.counts.succeeded||0;
+  } catch(e) {
+    console.error('Fetch error:', e);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// GAME LOOP
+// ═══════════════════════════════════════════════
+let lastTime = 0;
+let frameCount = 0;
+let fpsTime = 0;
+
+function gameLoop(time) {
+  if (!gameStarted) { requestAnimationFrame(gameLoop); return; }
+
+  const dt = Math.min(0.05, (time - lastTime) / 1000);
+  lastTime = time;
+
+  // FPS counter
+  frameCount++;
+  if (time - fpsTime > 1000) {
+    document.getElementById('fps').textContent = `${frameCount} FPS`;
+    frameCount = 0;
+    fpsTime = time;
+  }
+
+  move(dt);
+  render();
+  renderMinimap();
+  updateInteractPrompt();
+
+  // Auto-fetch data periodically
+  if (Math.floor(time/30000) !== Math.floor((time-16)/30000)) {
+    fetchCoprData();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ═══════════════════════════════════════════════
+// INPUT
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if (e.key.toLowerCase() === 'r') running = true;
+  if (e.key.toLowerCase() === 'e' && !consoleOpen) {
+    const target = getInteractTarget();
+    if (target) openConsole(target);
+  }
+  if (e.key === 'Escape') closeConsole();
+});
+
+document.addEventListener('keyup', e => {
+  keys[e.key.toLowerCase()] = false;
+  if (e.key.toLowerCase() === 'r') running = false;
+});
+
+// Mouse look
+canvas.addEventListener('click', () => {
+  if (!isMobile) canvas.requestPointerLock();
+});
+document.addEventListener('mousemove', e => {
+  if (document.pointerLockElement === canvas) {
+    mouse.dx += e.movementX;
+  }
+});
+
+// ═══════════════════════════════════════════════
+// MOBILE CONTROLS
+// ═══════════════════════════════════════════════
+function initMobile() {
+  isMobile = true;
+  document.getElementById('mobile-controls').style.display = 'flex';
+
+  setupJoystick('move-stick', 'move-knob', (dx,dy) => {
+    moveJoy.active = dx!==0||dy!==0;
+    moveJoy.dx = dx; moveJoy.dy = -dy; // invert Y
+  });
+
+  setupJoystick('look-stick', 'look-knob', (dx) => {
+    lookJoy.active = dx !== 0;
+    lookJoy.dx = dx;
+  }, true);
+
+  document.getElementById('btn-interact').addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (!consoleOpen) {
+      const target = getInteractTarget();
+      if (target) openConsole(target);
+    } else {
+      closeConsole();
+    }
+  });
+
+  document.getElementById('btn-run').addEventListener('touchstart', e => { e.preventDefault(); running = true; });
+  document.getElementById('btn-run').addEventListener('touchend', e => { e.preventDefault(); running = false; });
+}
+
+function setupJoystick(areaId, knobId, callback, horizontalOnly=false) {
+  const area = document.getElementById(areaId);
+  const knob = document.getElementById(knobId);
+  const rect = () => area.getBoundingClientRect();
+
+  let touching = false;
+
+  area.addEventListener('touchstart', e => {
+    e.preventDefault();
+    touching = true;
+    update(e.touches[0]);
+  });
+
+  area.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (touching) update(e.touches[0]);
+  });
+
+  area.addEventListener('touchend', e => {
+    touching = false;
+    knob.style.transform = 'translate(-50%,-50%)';
+    callback(0, 0);
+  });
+
+  function update(touch) {
+    const r = rect();
+    const cx = r.left + r.width/2;
+    const cy = r.top + r.height/2;
+    let dx = (touch.clientX - cx) / (r.width/2);
+    let dy = (touch.clientY - cy) / (r.height/2);
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist > 1) { dx /= dist; dy /= dist; }
+
+    if (horizontalOnly) dy = 0;
+
+    knob.style.transform = `translate(calc(-50% + ${dx*35}px), calc(-50% + ${dy*35}px))`;
+    callback(dx, horizontalOnly ? 0 : dy);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// RESIZE
+// ═══════════════════════════════════════════════
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // Lower resolution for performance
+  const scale = window.innerWidth < 600 ? 0.3 : 0.5;
+  canvas.width = Math.floor(window.innerWidth * scale);
+  canvas.height = Math.floor(window.innerHeight * scale);
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+}
+
+// ═══════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const ts = now.toLocaleTimeString('ru-RU',{hour12:false});
+  document.getElementById('clock').textContent = ts;
+}
+setInterval(updateClock, 1000);
+
+// ═══════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════
+function startGame() {
+  document.getElementById('start').style.display = 'none';
+  gameStarted = true;
+  resize();
+  generateTextures();
+  fetchCoprData();
+  setInterval(fetchCoprData, 60000);
+
+  // Detect mobile
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    initMobile();
+  } else {
+    canvas.requestPointerLock();
+  }
+}
+
+window.addEventListener('resize', resize);
+window.addEventListener('load', () => {
+  resize();
+  requestAnimationFrame(gameLoop);
+});
+
+// Handle console close on mobile tap outside
+document.getElementById('console-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('console-overlay')) closeConsole();
+});
+</script>
+</body>
+</html>
