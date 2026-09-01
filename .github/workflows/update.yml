@@ -10,7 +10,7 @@ permissions:
 jobs:
   submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60
     container: fedora:44
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
 
           MAX_BUILDS = 5
           POLL_INTERVAL = 60  # seconds between checks
-          MAX_WAIT = 7200     # 2 hours max total wait
+          MAX_WAIT = 1800     # 30 minutes max total wait
 
           # Read COPR credentials
           c = configparser.ConfigParser()
@@ -247,7 +247,7 @@ jobs:
           BOT_TOKEN="${BOT_TOKEN:-${{ secrets.TG_BOT_TOKEN }}}"
           if [ -n "$CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
             STATUS="${{ job.status }}"
-            MSG="🤖 <b>candy submit</b>: ${STATUS}"
+            MSG="🤖 <b>terminal-rpm submit</b>: ${STATUS}"
             curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
               -d chat_id="$CHAT_ID" -d parse_mode=HTML -d text="$MSG" >/dev/null 2>&1 || true
           fi
