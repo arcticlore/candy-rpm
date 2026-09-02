@@ -129,8 +129,8 @@ jobs:
           def submit_build(srpm_path):
               """Submit a single SRPM to COPR via copr-cli."""
               r = subprocess.run(
-                  ['copr-cli', 'build', 'arcticlore/candy', srpm_path],
-                  capture_output=True, text=True, timeout=90
+                  ['copr-cli', 'build', '--nowait', 'arcticlore/candy', srpm_path],
+                  capture_output=True, text=True, timeout=120
               )
               if r.returncode != 0:
                   print(f"  [ERROR] copr-cli: {r.stderr[:200]}")
