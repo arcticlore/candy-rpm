@@ -15,12 +15,12 @@ Requires:       python3
 %description
 Aquarium right in your terminal
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep

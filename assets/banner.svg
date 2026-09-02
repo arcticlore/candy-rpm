@@ -11,7 +11,7 @@
   <rect x="24" y="24" width="832" height="34" rx="8" fill="#334155"/>
   <circle cx="44" cy="41" r="6" fill="#ff5f57"/><circle cx="62" cy="41" r="6" fill="#febc2e"/><circle cx="80" cy="41" r="6" fill="#28c840"/>
   <text x="40" y="130" font-family="monospace" font-size="52" font-weight="bold" fill="url(#g)">~/candy-rpm</text>
-  <text x="40" y="170" font-family="monospace" font-size="20" fill="#94a3b8">$ dnf copr enable arcticlore/terminal-rpm &amp;&amp; sudo dnf install eye-candy</text>
-  <text x="40" y="205" font-family="monospace" font-size="15" fill="#64748b">79 packages · nightly builds · F43/F44 · 4 arches · auto-triage</text>
+  <text x="40" y="170" font-family="monospace" font-size="20" fill="#94a3b8">$ dnf copr enable arcticlore/candy &amp;&amp; sudo dnf install eye-candy</text>
+  <text x="40" y="205" font-family="monospace" font-size="15" fill="#64748b">129 packages · nightly builds · F43/F44 · 4 arches · auto-triage</text>
   <text x="700" y="205" font-family="monospace" font-size="15" fill="#ff6ec7">▓▓░ candy</text>
 </svg>

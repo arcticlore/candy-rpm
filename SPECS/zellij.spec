@@ -22,12 +22,12 @@ BuildRequires:  perl
 %description
 Terminal workspace with panels, plugins and layouts
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
@@ -49,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/zellij
 
 %changelog
-* Sun Aug 30 2026 candy-bot <candy@localhost> - 0-1
+* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

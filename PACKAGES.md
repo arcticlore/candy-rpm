@@ -105,7 +105,6 @@
 | **ponysay** | cowsay reimplemention for ponies, 256-color | `ponysay 'Привет!' или ponysay -l список пони` | github.com/erkin/ponysay |
 | **pscircle** | Visualize processes as a circular tree wallpaper | `pscircle --output=pscircle.png — процессы кругом` | gitlab.com/mildlyparallel/pscircle |
 | **ricksay** | Rick and Morty quotes of the day (cowsay clone) | `ricksay — цитата Рика и Морти` | github.com/kochie/ricksay |
-| **tetris** | Тетрис в терминале | `tetris — стрелки и пробел` | github.com/samtay/tetris |
 | **tulizu** | Tool to customize ASCII art in /etc/issue | `tulizu --help — арт для /etc/issue` | github.com/loh-tar/tulizu |
 | **viu** | View images right from the terminal | `viu photo.jpg — картинка прямо в терминале` | github.com/atanunq/viu |
 | **yosay** | Tell Yeoman what to say, ANSI-art speech bubbles | `yosay 'Привет!'` | github.com/yeoman/yosay |
@@ -133,7 +132,6 @@
 | **peaclock** | Часы/секундомер/таймер с цветными цифрами | `peaclock` | github.com/octobanana/peaclock |
 | **pokete** | Покемоны в терминале (полноценная игра) | `pokete.py` | github.com/lxgr-linux/pokete |
 | **zellij** | Terminal workspace with panels, plugins and layouts | `zellij — мультиплексор, Ctrl+p для помощи` | github.com/zellij-org/zellij |
-| **diagon** | Interactive ASCII diagram generator (math/tree/table/flow) | `diagon math — интерактивные ASCII-диаграммы` | github.com/ArthurSonzogni/Diagon |
 | **hollywood** | Fill your console with Hollywood melodrama technobabble | `hollywood — консоль хакера из кино (нужен byobu)` | github.com/dustinkirkland/hollywood |
 | **Rio** | Hardware-accelerated terminal emulator focused on typography | `—` | github.com/raphamorim/rio |
 
@@ -148,6 +146,7 @@
 - ~~termdvd~~ — Апстрим недоступен (404) / пакет удалён из registry
 - ~~fireworks~~ — Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети
 - ~~bb~~ — Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети
+- ~~diagon~~ — cmake FetchContent требует сеть при сборке — отключён до vendored релиза
 - ~~cli-visualizer~~ — Апстрим недоступен (404) / пакет удалён из registry
 - ~~chucknorris~~ — Апстрим-слаг не найден, пакет отключён до уточнения
 - ~~hack~~ — Апстрим-слаг не найден, пакет отключён до уточнения
@@ -155,3 +154,4 @@
 - ~~Ghostty~~ — Требуется zig, которого нет в Fedora; собирать вручную или из COPR pgdev
 - ~~eDEX-UI~~ — Electron, огромная сборка; проще flathub
 - ~~taskwarrior-tui~~ — Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого
+- ~~tetris~~ — Апстрим на Haskell (Setup.hs) — в COPR не собрать без GHC

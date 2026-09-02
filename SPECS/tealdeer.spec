@@ -1,5 +1,5 @@
 Name:           tealdeer
-Version:        1.9.0
+Version:        0
 Release:        1%{?dist}
 Summary:        Быстрый tldr-client: примеры команд вместо man
 
@@ -20,16 +20,16 @@ BuildRequires:  gzip
 %description
 Быстрый tldr-client: примеры команд вместо man
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n tealdeer-1.9.0
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/tldr
 
 %changelog
-* Sun Aug 30 2026 candy-bot <candy@localhost> - 1.9.0-1
+* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

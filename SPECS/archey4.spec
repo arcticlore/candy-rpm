@@ -1,5 +1,5 @@
 Name:           archey4
-Version:        4.15.0.0
+Version:        0
 Release:        1%{?dist}
 Summary:        Arch Linux system information tool (maintained fork)
 
@@ -22,16 +22,16 @@ BuildRequires:  python3-setproctitle
 %description
 Arch Linux system information tool (maintained fork)
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n archey4-4.15.0.0
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %pyproject_wheel
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_docdir}/archey4
 
 %changelog
-* Sun Aug 30 2026 candy-bot <candy@localhost> - 4.15.0.0-1
+* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

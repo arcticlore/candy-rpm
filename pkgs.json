@@ -1244,7 +1244,7 @@
       "exp": true,
       "prio": 9,
       "use": "diagon math — интерактивные ASCII-диаграммы",
-      "enabled": "false",
+      "enabled": false,
       "note": "cmake FetchContent требует сеть при сборке — отключён до vendored релиза"
     },
     {

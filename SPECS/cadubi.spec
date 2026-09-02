@@ -1,5 +1,5 @@
 Name:           cadubi
-Version:        1.3.3
+Version:        0
 Release:        1%{?dist}
 Summary:        Creative ASCII drawing utility
 
@@ -15,16 +15,16 @@ Requires:       perl
 %description
 Creative ASCII drawing utility
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/terminal-rpm.
+ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
 Помидорами не кидайтесь, лучше заводите issue.
 
 WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/terminal-rpm). Work-in-progress: expect breakage and sudden changes.
+(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n cadubi-1.3.3
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # чистый скрипт, сборка не требуется
@@ -40,5 +40,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/cadubi
 
 %changelog
-* Sun Aug 30 2026 candy-bot <candy@localhost> - 1.3.3-1
+* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
