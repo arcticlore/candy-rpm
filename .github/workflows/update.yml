@@ -41,7 +41,7 @@ jobs:
         run: |
           # Get list of not-yet-succeeded packages
           NOT_OK=$(curl -4 -s --connect-timeout 10 \
-            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200" \
+            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
             | python3 -c "
           import json,sys
           d=json.load(sys.stdin)
@@ -91,7 +91,7 @@ jobs:
               try:
                   r = subprocess.run(
                       ['curl', '-4', '-s', '--connect-timeout', '10',
-                       'https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200'],
+                       'https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200'],
                       capture_output=True, text=True, timeout=15
                   )
                   data = json.loads(r.stdout)
@@ -126,7 +126,7 @@ jobs:
           def submit_build(srpm_path):
               """Submit a single SRPM to COPR via copr-cli."""
               r = subprocess.run(
-                  ['copr-cli', 'build', 'arcticlore/terminal-rpm', srpm_path],
+                  ['copr-cli', 'build', 'arcticlore/candy', srpm_path],
                   capture_output=True, text=True, timeout=90
               )
               if r.returncode != 0:
@@ -249,7 +249,7 @@ jobs:
           BOT_TOKEN="${BOT_TOKEN:-${{ secrets.TG_BOT_TOKEN }}}"
           if [ -n "$CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
             STATUS="${{ job.status }}"
-            MSG="🤖 <b>terminal-rpm submit</b>: ${STATUS}"
+            MSG="🤖 <b>candy submit</b>: ${STATUS}"
             curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
               -d chat_id="$CHAT_ID" -d parse_mode=HTML -d text="$MSG" >/dev/null 2>&1 || true
           fi

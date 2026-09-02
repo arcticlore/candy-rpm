@@ -10,12 +10,12 @@ mkdir -p logs
 log(){ echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 
 RUN=$(curl -s --max-time 20 -H "Authorization: Bearer $TOKEN" \
-  "https://api.github.com/repos/arcticlore/terminal-rpm-rpm/actions/runs?per_page=10" \
+  "https://api.github.com/repos/arcticlore/candy-rpm/actions/runs?per_page=10" \
   | jq -r '.workflow_runs[] | select(.conclusion=="success") | .id' | head -1)
 [ -z "$RUN" ] && { log "[SKIP] нет успешных ранов"; exit 0; }
 
 ART=$(curl -s --max-time 20 -H "Authorization: Bearer $TOKEN" \
-  "https://api.github.com/repos/arcticlore/terminal-rpm-rpm/actions/runs/$RUN/artifacts" \
+  "https://api.github.com/repos/arcticlore/candy-rpm/actions/runs/$RUN/artifacts" \
   | jq -r '.artifacts[] | select(.name=="update-logs") | "\(.id) \(.archive_download_url)"' | head -1)
 [ -z "$ART" ] && { log "[SKIP] ран $RUN без артефакта"; exit 0; }
 AID=${ART%% *}; URL=${ART#* }

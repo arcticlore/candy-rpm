@@ -18,10 +18,10 @@ import json, os, sys, time, subprocess, urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE = "https://download.copr.fedorainfracloud.org/results/arcticlore/terminal-rpm"
+BASE = "https://download.copr.fedorainfracloud.org/results/arcticlore/candy"
 LOCKF = os.path.join(ROOT, "state", "chroot-lock.json")
 STUCK_HOURS = float(os.environ.get("STUCK_HOURS", "6"))
-PROJECT = os.environ.get("CANDY_PROJ", "arcticlore/terminal-rpm")
+PROJECT = os.environ.get("CANDY_PROJ", "arcticlore/candy")
 
 def jload(p, d):
     try: return json.load(open(p))
@@ -51,7 +51,7 @@ def copr_failed_latest():
         import subprocess
         out = subprocess.run(
             ["curl", "-s", "--connect-timeout", "5", "--ipv4",
-             f"https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200"],
+             f"https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200"],
             capture_output=True, text=True, timeout=30
         ).stdout
     except Exception:

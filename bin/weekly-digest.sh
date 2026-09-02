@@ -4,7 +4,7 @@
 set -u
 cd "$(dirname "$0")/.."
 TOKEN="${GITHUB_TOKEN:-$(grep -o 'ghp_[A-Za-z0-9]*' ~/.config/candy/push-token 2>/dev/null | head -1)}"
-REPO="arcticlore/terminal-rpm-rpm"
+REPO="arcticlore/candy-rpm"
 API="https://api.github.com/repos/$REPO"
 LOG=logs/update.log
 SINCE=$(date -d "7 days ago" '+%Y-%m-%d')

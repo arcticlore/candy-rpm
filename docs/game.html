@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>ЦУП terminal-rpm</title>
+<title>ЦУП candy</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#1a1d23;font-family:'Courier New',monospace;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -121,7 +121,7 @@ canvas#game{display:block;position:absolute;top:0;left:0;width:100%;height:100%;
 <!-- СТАРТ -->
 <div id="start">
   <div style="font-size:36px;color:#555">⌂</div>
-  <h1>ЦУП terminal-rpm</h1>
+  <h1>ЦУП candy</h1>
   <p>Контрольный центр системы сборки пакетов.<br>
   WASD — движение | МЫШЬ — обзор | E — консоль<br>
   R — бег | Мобильные: джойстики</p>
@@ -131,7 +131,7 @@ canvas#game{display:block;position:absolute;top:0;left:0;width:100%;height:100%;
 <!-- ВЕРХНЯЯ ПАНЕЛЬ БЩУ -->
 <div id="top-panel">
   <div class="top-group">
-    <div class="top-title">⌂ ЦУП terminal-rpm</div>
+    <div class="top-title">⌂ ЦУП candy</div>
     <div class="top-badge"><span class="led led-green"></span>COPR</div>
     <div class="top-badge"><span class="led led-green"></span>GitHub</div>
     <div class="top-badge"><span class="led led-green"></span>Bot</div>
@@ -189,7 +189,7 @@ canvas#game{display:block;position:absolute;top:0;left:0;width:100%;height:100%;
     </div>
     <div class="shield-block" style="min-width:100px">
       <div class="shield-label">Проект</div>
-      <div class="shield-value c-cyan" style="font-size:10px">terminal-rpm</div>
+      <div class="shield-value c-cyan" style="font-size:10px">candy</div>
     </div>
   </div>
 
@@ -459,7 +459,7 @@ function fillC(type,box){
     <div class="c-row"><span class="k">Всего</span><span class="v" style="color:#aaa">${b.length}</span></div>
     <div style="border-top:1px solid #333;margin-top:6px;padding-top:6px">
     <div class="c-row"><span class="k">Пакетов</span><span class="v c-cyan">${en}/${pk.length}</span></div>
-    <div class="c-row"><span class="k">Проект</span><span class="v" style="color:#26c6da;font-size:10px">arcticlore/terminal-rpm</span></div>
+    <div class="c-row"><span class="k">Проект</span><span class="v" style="color:#26c6da;font-size:10px">arcticlore/candy</span></div>
     <div class="c-row"><span class="k">Chroots</span><span class="v">4 (f43/f44 ×86_64+aarch64)</span></div>
     <div class="c-row"><span class="k">Обновление</span><span class="v">каждые 3ч</span></div>
     </div>`;
@@ -492,13 +492,12 @@ function fillC(type,box){
 
   else if(type==='logs'){
     h=`<div style="font-size:10px;color:#555;line-height:1.8;font-family:monospace">
-      <div>[sys] COPR connected → arcticlore/terminal-rpm</div>
+      <div>[sys] COPR connected → arcticlore/candy</div>
       <div>[sys] GitHub Actions: 5 workflows active</div>
       <div>[sch] update.yml → каждые 3ч (smart submit)</div>
       <div>[sch] telegram.yml → каждые 5мин (polling)</div>
       <div>[sch] monitor.yml → каждые 30мин</div>
-      <div style="color:#ff9800">[wrn] Old project candy: 200+ stuck builds (net off)</div>
-      <div style="color:#4caf50">[ok] New project terminal-rpm: clean start</div>
+      <div style="color:#4caf50">[ok] Project arcticlore/candy: active</div>
       <div>[sys] Auto-triage: enabled</div>
       <div>[sys] Auto-issue: enabled</div>
       <div>[sys] SRPM cache: enabled</div>
@@ -518,7 +517,7 @@ function fillC(type,box){
   else if(type==='danger'){
     h=`<div style="border:1px solid rgba(244,67,54,.3);border-radius:3px;padding:8px;margin-bottom:8px;background:rgba(244,67,54,.05)">
       <div style="color:#f44336;font-size:11px;font-weight:700">⚠ АВАРИЙНЫЙ РЕЖИМ</div>
-      <div style="color:#555;font-size:10px;margin-top:4px">Старый проект arcticlore/candy заморожен (net off).<br>Новый terminal-rpm активен.</div>
+      <div style="color:#555;font-size:10px;margin-top:4px">Проект arcticlore/candy активен.</div>
     </div>
     <div class="c-row"><span class="k">Отменить все</span><span class="v c-amber">copr-cli cancel ID</span></div>
     <div class="c-row"><span class="k">Удалить проект</span><span class="v c-red">copr-cli delete</span></div>
@@ -550,7 +549,7 @@ async function fetchData(){
   try{
     let all=[],off=0;
     while(true){
-      const r=await fetch(`https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200&offset=${off}`);
+      const r=await fetch(`https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200&offset=${off}`);
       if(!r.ok)break;const d=await r.json();
       if(!d.items||!d.items.length)break;all.push(...d.items);
       if(d.items.length<200)break;off+=200;

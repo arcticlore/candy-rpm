@@ -1,6 +1,6 @@
-# 📦 Пакеты репозитория arcticlore/terminal-rpm
+# 📦 Пакеты репозитория arcticlore/candy
 
-Установка: `sudo dnf install dnf-plugins-core && sudo dnf copr enable arcticlore/terminal-rpm`
+Установка: `sudo dnf install dnf-plugins-core && sudo dnf copr enable arcticlore/candy`
 
 ## Каталог
 

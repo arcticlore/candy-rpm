@@ -188,7 +188,7 @@ while read -r id name; do
     DOWNLOADED=0
     for chroot in fedora-44-x86_64 fedora-43-x86_64 fedora-rawhide-x86_64 fedora-44-aarch64; do
         curl -sL --max-time 60 -o "$D.log.gz" \
-          "https://download.copr.fedorainfracloud.org/results/arcticlore/terminal-rpm/${chroot}/${id}-${name}/builder-live.log.gz" 2>/dev/null \
+          "https://download.copr.fedorainfracloud.org/results/arcticlore/candy/${chroot}/${id}-${name}/builder-live.log.gz" 2>/dev/null \
           && DOWNLOADED=1 && break
     done
     [ "$DOWNLOADED" = 0 ] && { log "[WARN] $id/$name: лог недоступен ни в одном chroot"; echo "$id" >> "$TRI"; continue; }
@@ -201,7 +201,7 @@ while read -r id name; do
         apply_fix "$name" "" "$L"
     fi
     echo "$id" >> "$TRI"
-done < <(copr-cli list-builds arcticlore/terminal-rpm 2>/dev/null | awk '$NF=="failed"{print $1,$2}')
+done < <(copr-cli list-builds arcticlore/candy 2>/dev/null | awk '$NF=="failed"{print $1,$2}')
 
 # перезаказ исправленных
 if [ "$changed_meta" = 1 ]; then

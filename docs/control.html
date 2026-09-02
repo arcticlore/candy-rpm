@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ЦУП — terminal-rpm</title>
+<title>ЦУП — candy</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -162,7 +162,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <header class="header">
   <div class="logo">
     <div class="reactor">⚛</div>
-    <span>ЦУП <span style="color:var(--text);font-weight:400">terminal-rpm</span></span>
+    <span>ЦУП <span style="color:var(--text);font-weight:400">candy</span></span>
   </div>
   <div class="header-status">
     <div class="status-chip"><div class="dot dot-green" id="dot-copr"></div><span>COPR</span></div>
@@ -209,7 +209,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 // ══════════════════════════════════════
 const COPR_API = 'https://copr.fedorainfracloud.org/api_3';
 const COPR_OWNER = 'arcticlore';
-const COPR_PROJECT = 'terminal-rpm';
+const COPR_PROJECT = 'candy';
 const GH_REPO = 'arcticlore/candy-rpm';
 const CHROOTS = ['fedora-44-x86_64','fedora-44-aarch64','fedora-43-x86_64','fedora-43-aarch64'];
 
@@ -452,7 +452,7 @@ function renderChroots() {
         <div class="panel-title">⊞ Управление чрутами</div>
       </div>
       <div class="panel-body">
-        <p style="font-size:12px;margin-bottom:12px;color:var(--text)">Активные chroots проекта <code style="color:var(--cyan)">arcticlore/terminal-rpm</code></p>
+        <p style="font-size:12px;margin-bottom:12px;color:var(--text)">Активные chroots проекта <code style="color:var(--cyan)">arcticlore/candy</code></p>
         <div class="chroot-grid">
           ${CHROOTS.map(c => `
             <div class="chroot-card active">
@@ -461,11 +461,11 @@ function renderChroots() {
             </div>
           `).join('')}
         </div>
-        <div style="margin-top:16px;padding:12px;border:1px dashed var(--border);border-radius:4px;font-size:11px;color:var(--text)">
-          <strong style="color:var(--amber)">⚠ Удалённые chroots (из старого проекта):</strong><br>
-          fedora-rawhide-*, fedora-*-ppc64le, fedora-*-s390x, fedora-*-i386, fedora-*-riscv64<br>
-          <span style="opacity:.6">Старый проект arcticlore/candy заморожен с 200+ stuck билдами.</span>
-        </div>
+         <div style="margin-top:16px;padding:12px;border:1px dashed var(--border);border-radius:4px;font-size:11px;color:var(--text)">
+           <strong style="color:var(--amber)">⚠ Неиспользуемые chroots:</strong><br>
+           fedora-rawhide-*, fedora-*-ppc64le, fedora-*-s390x, fedora-*-i386, fedora-*-riscv64<br>
+           <span style="opacity:.6">Собираются только fedora-{43,44}-{x86_64,aarch64}</span>
+         </div>
       </div>
     </div>
   `;
@@ -523,7 +523,7 @@ function renderSettings() {
       <div class="panel-body" style="display:flex;flex-direction:column;gap:16px">
         <div>
           <label style="font-size:11px;color:var(--text);display:block;margin-bottom:4px">COPR Project</label>
-          <div style="font-size:14px;color:var(--cyan)">${p.copr_name||'arcticlore/terminal-rpm'}</div>
+          <div style="font-size:14px;color:var(--cyan)">${p.copr_name||'arcticlore/candy'}</div>
         </div>
         <div>
           <label style="font-size:11px;color:var(--text);display:block;margin-bottom:4px">Описание</label>
@@ -569,7 +569,7 @@ function renderDanger() {
         </div>
         <div style="padding:12px;border:1px solid var(--red);border-radius:4px;background:var(--red-glow)">
           <h4 style="color:var(--red);font-size:13px;margin-bottom:8px">Удалить проект из COPR</h4>
-          <p style="font-size:11px;color:var(--text);margin-bottom:8px">Удалит проект arcticlore/terminal-rpm со всеми билдами. Необратимо!</p>
+          <p style="font-size:11px;color:var(--text);margin-bottom:8px">Удалит проект arcticlore/candy со всеми билдами. Необратимо!</p>
           <button class="btn btn-danger" onclick="deleteProject()">✕ Удалить проект</button>
         </div>
         <div style="padding:12px;border:1px solid var(--amber);border-radius:4px;background:var(--amber-glow)">
@@ -664,7 +664,7 @@ async function toggleNet(enable) {
 async function deleteProject() {
   if (!confirm('ВЫ УВЕРЕНЫ? Это удалит ВСЕ билды и настройки проекта!')) return;
   if (!confirm('ПОСЛЕДНЕЕ ПРЕДУПРЕЖДЕНИЕ. Проект будет удалён навсегда.')) return;
-  alert('Удаление проекта требует copr-cli на сервере.\nИспользуйте: copr-cli delete arcticlore/terminal-rpm');
+  alert('Удаление проекта требует copr-cli на сервере.\nИспользуйте: copr-cli delete arcticlore/candy');
 }
 
 function refreshLogs() {

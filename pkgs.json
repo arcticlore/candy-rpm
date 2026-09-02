@@ -1,6 +1,6 @@
 {
   "project": {
-    "copr_name": "arcticlore/terminal-rpm",
+    "copr_name": "arcticlore/candy",
     "chroots": [
       "fedora-44-x86_64",
       "fedora-44-aarch64",

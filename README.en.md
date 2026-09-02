@@ -2,14 +2,14 @@
 
 [Русский](README.md) | [English](README.en.md)
 
-![terminal-rpm](assets/banner.svg)
+![candy](assets/banner.svg)
 
-![build](https://github.com/arcticlore/terminal-rpm-rpm/actions/workflows/update.yml/badge.svg)
+![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg)
 ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue)
 ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044-294172?logo=fedora)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-# 🧊 terminal-rpm
+# 🧊 candy
 
 **Nightly-updated COPR repository of terminal eye-candy for Fedora**
 
@@ -23,7 +23,7 @@
 
 ```bash
 sudo dnf install dnf-plugins-core
-sudo dnf copr enable arcticlore/terminal-rpm
+sudo dnf copr enable arcticlore/candy
 ```
 
 > ⚠️ Unofficial third-party repository. Expect breakage.
@@ -33,8 +33,8 @@ sudo dnf copr enable arcticlore/terminal-rpm
 
 | | |
 |---|---|
-| 🐙 **GitHub** | [arcticlore/terminal-rpm](https://github.com/arcticlore/terminal-rpm-rpm) |
-| 📦 **COPR** | [arcticlore/terminal-rpm](https://copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/) |
+| 🐙 **GitHub** | [arcticlore/candy](https://github.com/arcticlore/candy-rpm) |
+| 📦 **COPR** | [arcticlore/candy](https://copr.fedorainfracloud.org/coprs/arcticlore/candy/) |
 | 🤖 **Telegram Bot** | [@tct_fedorabot](https://t.me/tct_fedorabot) — message me, owner will reply |
 | 📄 **Package catalog** | [PACKAGES.md](PACKAGES.md) |
 
@@ -73,9 +73,9 @@ Unknown failures are tagged `[HUMAN]` in `logs/auto-triage.log`.
 
 ## 🤝 Contact
 
-- 🐛 Bugs / package requests — [Issues](https://github.com/arcticlore/terminal-rpm-rpm/issues)
+- 🐛 Bugs / package requests — [Issues](https://github.com/arcticlore/candy-rpm/issues)
 - 📮 Telegram bot — [@tct_fedorabot](https://t.me/tct_fedorabot)
-- 💬 Discussions — [Discussions](https://github.com/arcticlore/terminal-rpm-rpm/discussions)
+- 💬 Discussions — [Discussions](https://github.com/arcticlore/candy-rpm/discussions)
 
 ## ➕ Adding a package
 

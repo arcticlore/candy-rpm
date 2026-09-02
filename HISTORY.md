@@ -1,9 +1,9 @@
-# terminal-rpm — полная история проекта
+# candy — полная история проекта
 
 **79 коммитов · 25.08.2026 → 30.08.2026**
 
 ```
-terminal-rpm — COPR-репозиторий terminal eye-candy для Fedora
+candy — COPR-репозиторий terminal eye-candy для Fedora
 Автоматическая сборка 129 пакетов через 12 экосистем
 GitHub Actions → COPR → dnf install
 ```
@@ -16,7 +16,7 @@ GitHub Actions → COPR → dnf install
 |------|--------|----------|
 | 2026-08-30 | `2af8928` | **fix:** replace copr-cli with curl --ipv4 for build submission |
 | 2026-08-30 | `6544794` | **ci:** add opencode github agent workflow |
-| 2026-08-30 | `3ef2aca` | **rebrand:** candy-rpm → terminal-rpm |
+| 2026-08-30 | `3ef2aca` | **rebrand:** candy-rpm → candy |
 | 2026-08-30 | `7759f39` | **test:** comprehensive test suite with 112 tests, all passing |
 | 2026-08-30 | `28e38f5` | **refactor:** Python Pro rewrite with type hints, dataclasses, pathlib |
 | 2026-08-30 | `52709ef` | **feat:** Go rewrites for chroot-engine and update-check |
@@ -104,5 +104,5 @@ GitHub Actions → COPR → dnf install
 | Тестов | 112 (unit + integration + security + edge cases) |
 | Языков | 3 (Bash, Python, Go) |
 | Telegram бот | [@tct_fedorabot](https://t.me/tct_fedorabot) |
-| COPR | [arcticlore/terminal-rpm](https://copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/) |
-| GitHub | [arcticlore/terminal-rpm-rpm](https://github.com/arcticlore/terminal-rpm-rpm) |
+| COPR | [arcticlore/candy](https://copr.fedorainfracloud.org/coprs/arcticlore/candy/) |
+| GitHub | [arcticlore/candy-rpm](https://github.com/arcticlore/candy-rpm) |

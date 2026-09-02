@@ -1,4 +1,4 @@
-# TODO — arcticlore/terminal-rpm-rpm
+# TODO — arcticlore/candy-rpm
 
 ## Immediate (Today)
 - [ ] Fix remaining failed builds (bottom, zellij, ricksay, unimatrix, snakes, ascii-rain, rxfetch, pokemon-icat, ghfetch)

@@ -50,7 +50,7 @@ declare -A BUILD_STATES
 while read -r _name _state; do
     BUILD_STATES["$_name"]="$_state"
 done < <(curl -s --connect-timeout 5 --ipv4 \
-    "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=terminal-rpm&limit=200" 2>/dev/null \
+    "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" 2>/dev/null \
     | python3 -c "
 import sys,json
 d=json.load(sys.stdin)

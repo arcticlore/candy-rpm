@@ -77,13 +77,13 @@ def normalize(s: str) -> str:
 TRANSLATIONS: dict[str, dict[str, str]] = {
     "ru": {
         "choose_lang": "🌐 Выбери язык:",
-        "menu": "🧊 terminal-rpm — главное меню:",
+        "menu": "🧊 candy — главное меню:",
         "unknown": "Не знаю команду — жми кнопки ниже 🙂",
         "hello": (
-            "👋 Бот проекта terminal-rpm\n"
+            "👋 Бот проекта candy\n"
             "Terminal eye-candy для Fedora\n\n"
-            "🐙 GitHub: github.com/arcticlore/terminal-rpm\n"
-            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/\n\n"
+            "🐙 GitHub: github.com/arcticlore/candy-rpm\n"
+            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/candy/\n\n"
             "Выбери язык и пользуйся кнопками ниже."
         ),
         "langset": "🌐 Язык: русский",
@@ -96,13 +96,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "en": {
         "choose_lang": "🌐 Pick your language:",
-        "menu": "🧊 terminal-rpm — main menu:",
+        "menu": "🧊 candy — main menu:",
         "unknown": "Unknown command — use the buttons below 🙂",
         "hello": (
-            "👋 terminal-rpm bot\n"
+            "👋 candy bot\n"
             "Terminal eye-candy for Fedora\n\n"
-            "🐙 GitHub: github.com/arcticlore/terminal-rpm\n"
-            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/terminal-rpm/\n\n"
+            "🐙 GitHub: github.com/arcticlore/candy-rpm\n"
+            "📦 COPR: copr.fedorainfracloud.org/coprs/arcticlore/candy/\n\n"
             "Pick a language and use the buttons below."
         ),
         "langset": "🌐 Language: English",
