@@ -39,8 +39,8 @@ jobs:
 
       - name: Build SRPMs for packages needing submission
         run: |
-          # Get list of not-yet-succeeded packages
-          NOT_OK=$(curl -4 -s --connect-timeout 10 \
+          MAX_BUILDS=30
+          NOT_OK=$(curl -4 -s --connect-timeout 10 --max-time 30 \
             "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
             | python3 -c "
           import json,sys
@@ -50,7 +50,6 @@ jobs:
               n=b.get('source_package',{}).get('name','')
               s=b.get('state','')
               if n and s=='succeeded': ok.add(n)
-          import os
           enabled=set()
           with open('pkgs.json') as f:
               for p in json.load(f).get('packages',[]):
@@ -61,8 +60,9 @@ jobs:
 
           BUILT=0
           SKIPPED=0
+          FAILED=0
           for name in $NOT_OK; do
-            # Skip if SRPM already cached
+            [ $BUILT -ge $MAX_BUILDS ] && echo "Build cap reached: $MAX_BUILDS" && break
             if ls SRPMS/"$name"-*.src.rpm >/dev/null 2>&1; then
               SKIPPED=$((SKIPPED+1))
               continue
@@ -70,10 +70,13 @@ jobs:
             if [ ! -f "SPECS/$name.spec" ]; then
               python3 bin/gen_specs.py "$name" 2>/dev/null || continue
             fi
-            bin/make-srpm.sh "$name" 2>/dev/null || continue
-            BUILT=$((BUILT+1))
+            if bin/make-srpm.sh "$name" 2>/dev/null; then
+              BUILT=$((BUILT+1))
+            else
+              FAILED=$((FAILED+1))
+            fi
           done
-          echo "SRPMs built: $BUILT, cached: $SKIPPED"
+          echo "SRPMs built: $BUILT, cached: $SKIPPED, failed: $FAILED"
 
       - name: Smart submit with slot management
         run: |
