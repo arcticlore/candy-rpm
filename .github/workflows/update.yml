@@ -17,7 +17,7 @@ jobs:
 
       - name: Install toolchain
         run: |
-          dnf install -y jq git rpm-build rpmdevtools python3 golang cargo rust 2>&1 | tail -5
+          dnf install -y jq git rpm-build rpmdevtools python3 golang cargo rust copr-cli 2>&1 | tail -5
 
       - name: Configure COPR
         run: |
@@ -78,17 +78,13 @@ jobs:
       - name: Smart submit with slot management
         run: |
           python3 << 'PYEOF'
-          import json, subprocess, time, configparser, os, glob
+          import json, subprocess, time, os, glob
 
           MAX_BUILDS = 5
           POLL_INTERVAL = 60  # seconds between checks
           MAX_WAIT = 1800     # 30 minutes max total wait
 
-          # Read COPR credentials
-          c = configparser.ConfigParser()
-          c.read(os.path.expanduser('~/.config/copr'))
-          COPR_USER = c.get('copr-cli', 'login', fallback='')
-          COPR_TOKEN = c.get('copr-cli', 'token', fallback='')
+          # copr-cli reads ~/.config/copr automatically
 
           def get_copr_status():
               """Get current build statuses from COPR."""
@@ -128,29 +124,21 @@ jobs:
               return result
 
           def submit_build(srpm_path):
-              """Submit a single SRPM to COPR."""
+              """Submit a single SRPM to COPR via copr-cli."""
               r = subprocess.run(
-                  ['curl', '-4', '-s', '--connect-timeout', '10', '-m', '60',
-                   '-u', f'{COPR_USER}:{COPR_TOKEN}',
-                   '-F', f'srpm=@{srpm_path}',
-                   '-F', 'nowait=1',
-                   'https://copr.fedorainfracloud.org/api_3/build/create/upload'],
-                  capture_output=True, text=True, timeout=70
+                  ['copr-cli', 'build', 'arcticlore/terminal-rpm', srpm_path],
+                  capture_output=True, text=True, timeout=90
               )
               if r.returncode != 0:
-                  print(f"  [ERROR] curl failed: {r.stderr[:200]}")
+                  print(f"  [ERROR] copr-cli: {r.stderr[:200]}")
                   return False
-              try:
-                  resp = json.loads(r.stdout)
-                  if 'error' in resp:
-                      print(f"  [ERROR] COPR: {resp['error']}")
-                      return False
-                  if 'id' in resp:
-                      print(f"  [OK] Build #{resp['id']}")
-                      return True
-              except:
-                  pass
-              print(f"  [WARN] Unexpected response: {r.stdout[:200]}")
+              if 'Build was added' in r.stdout:
+                  for line in r.stdout.splitlines():
+                      if 'https://' in line:
+                          print(f"  [OK] {line.strip()}")
+                          break
+                  return True
+              print(f"  [WARN] {r.stdout[:200]}")
               return False
 
           # Main loop
