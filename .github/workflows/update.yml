@@ -87,7 +87,7 @@ jobs:
           # Read COPR credentials
           c = configparser.ConfigParser()
           c.read(os.path.expanduser('~/.config/copr'))
-          COPR_USER = c.get('copr-cli', 'username', fallback='')
+          COPR_USER = c.get('copr-cli', 'login', fallback='')
           COPR_TOKEN = c.get('copr-cli', 'token', fallback='')
 
           def get_copr_status():
@@ -134,10 +134,24 @@ jobs:
                    '-u', f'{COPR_USER}:{COPR_TOKEN}',
                    '-F', f'srpm=@{srpm_path}',
                    '-F', 'nowait=1',
-                   'https://copr.fedorainfracloud.org/api_3/new_build'],
+                   'https://copr.fedorainfracloud.org/api_3/build/create/upload'],
                   capture_output=True, text=True, timeout=70
               )
-              return r.returncode == 0
+              if r.returncode != 0:
+                  print(f"  [ERROR] curl failed: {r.stderr[:200]}")
+                  return False
+              try:
+                  resp = json.loads(r.stdout)
+                  if 'error' in resp:
+                      print(f"  [ERROR] COPR: {resp['error']}")
+                      return False
+                  if 'id' in resp:
+                      print(f"  [OK] Build #{resp['id']}")
+                      return True
+              except:
+                  pass
+              print(f"  [WARN] Unexpected response: {r.stdout[:200]}")
+              return False
 
           # Main loop
           enabled = get_enabled_packages()
