@@ -44,7 +44,6 @@ jobs:
           " 2>&1
 
       - name: Dashboard
-        run: python3 bin/gen-pages-html.py || true
 
       - name: Telegram alert on failures
         run: |

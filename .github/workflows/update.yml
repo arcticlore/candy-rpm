@@ -227,7 +227,6 @@ jobs:
 
       - name: Dashboard
         if: always()
-        run: python3 bin/gen-pages-html.py || true
 
       - name: Commit state
         if: always()
