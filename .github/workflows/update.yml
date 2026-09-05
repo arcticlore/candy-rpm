@@ -39,7 +39,9 @@ jobs:
 
       - name: Build SRPMs for packages needing submission
         run: |
+          set -x
           MAX_BUILDS=30
+          echo "=== Querying COPR for succeeded packages ==="
           NOT_OK=$(curl -4 -s --connect-timeout 10 --max-time 30 \
             "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
             | python3 -c "
@@ -57,6 +59,7 @@ jobs:
           for n in sorted(enabled - ok):
               print(n)
           " 2>/dev/null)
+          echo "Packages needing SRPM rebuild: $(echo "$NOT_OK" | wc -l)"
 
           BUILT=0
           SKIPPED=0
@@ -64,24 +67,29 @@ jobs:
           for name in $NOT_OK; do
             [ $BUILT -ge $MAX_BUILDS ] && echo "Build cap reached: $MAX_BUILDS" && break
             if ls SRPMS/"$name"-*.src.rpm >/dev/null 2>&1; then
+              echo "  [CACHED] $name"
               SKIPPED=$((SKIPPED+1))
               continue
             fi
+            echo "  [BUILD] $name"
             if [ ! -f "SPECS/$name.spec" ]; then
               python3 bin/gen_specs.py "$name" 2>/dev/null || continue
             fi
-            if bin/make-srpm.sh "$name" 2>/dev/null; then
+            if bin/make-srpm.sh "$name" 2>&1; then
+              echo "  [OK] $name"
               BUILT=$((BUILT+1))
             else
+              echo "  [FAIL] $name"
               FAILED=$((FAILED+1))
             fi
           done
-          echo "SRPMs built: $BUILT, cached: $SKIPPED, failed: $FAILED"
+          echo "=== SRPMs built: $BUILT, cached: $SKIPPED, failed: $FAILED ==="
 
       - name: Smart submit with slot management
         run: |
+          echo "=== Smart submit starting ==="
           python3 << 'PYEOF'
-          import json, subprocess, time, os, glob
+          import json, subprocess, time, os, glob, sys
 
           MAX_BUILDS = 5
           POLL_INTERVAL = 60  # seconds between checks
@@ -213,6 +221,22 @@ jobs:
               time.sleep(10)
 
           print(f"\nTotal submitted this run: {len(submitted)}")
+
+          # Final summary
+          states = get_copr_status()
+          succeeded_all = {n for n, s in states.items() if s == 'succeeded'}
+          failed_all = {n for n, s in states.items() if s == 'failed'}
+          running_all = {n for n, s in states.items() if s in ('running', 'starting', 'pending', 'importing')}
+          print(f"\n=== FINAL SUMMARY ===")
+          print(f"Total enabled: {len(enabled)}")
+          print(f"Succeeded on COPR: {len(succeeded_all)}")
+          print(f"Failed on COPR: {len(failed_all)}")
+          print(f"Still building: {len(running_all)}")
+          print(f"Never submitted: {len(enabled - set(states.keys()))}")
+          if failed_all:
+              print(f"\nFailed packages: {', '.join(sorted(failed_all))}")
+          if running_all:
+              print(f"Building now: {', '.join(sorted(running_all))}")
           PYEOF
 
       - name: Auto-triage (fix known failures)
@@ -232,13 +256,20 @@ jobs:
       - name: Commit state
         if: always()
         run: |
+          echo "=== Commit state step ==="
           git config user.name  "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git add state/state.json pkgs.json SPECS/ docs/index.html || true
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git add state/state.json pkgs.json SPECS/ docs/index.html 2>&1 || true
+          echo "Files staged:"
+          git diff --cached --stat || true
           if ! git diff --cached --quiet; then
-            git commit -qm "submit sync [skip ci]"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
+            git commit -qm "submit sync [skip ci]" || echo "Commit failed"
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master 2>&1 || echo "Push failed (non-critical)"
+          else
+            echo "No changes to commit"
           fi
+          echo "=== Commit state done ==="
 
       - name: Telegram notification
         if: always()
