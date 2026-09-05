@@ -1,5 +1,5 @@
 Name:           cadubi
-Version:        0
+Version:        1.3.3
 Release:        1%{?dist}
 Summary:        Creative ASCII drawing utility
 
@@ -40,5 +40,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/cadubi
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 1.3.3-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           diagram
-Version:        0
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        ASCII-диаграммы из текста
 
@@ -24,14 +24,14 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n diagram-1.1.0
 
 %build
 export GOFLAGS='-mod=vendor'
 export CGO_ENABLED=0
 export GOPATH=$(mktemp -d)
 export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o diagram ./cmd/diagram
+go build -trimpath -ldflags '-s -w' -o diagram .
 
 %install
 install -Dpm0755 diagram %{buildroot}%{_bindir}/diagram
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/diagram
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 1.1.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

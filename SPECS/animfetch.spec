@@ -1,5 +1,5 @@
 Name:           animfetch
-Version:        0
+Version:        0.1.5
 Release:        1%{?dist}
 Summary:        Animated system fetch pinned above your shell
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/animfetch
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 0.1.5-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

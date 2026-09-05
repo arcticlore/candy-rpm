@@ -1,2503 +1,2511 @@
 {
-  "project": {
-    "copr_name": "arcticlore/candy",
-    "chroots": [
-      "fedora-44-x86_64",
-      "fedora-44-aarch64",
-      "fedora-43-x86_64",
-      "fedora-43-aarch64"
-    ],
-    "description": "Terminal eye candy (fetch tools, ASCII animations, modern CLI replacements) for Fedora 44. Auto-updated from upstream releases. Maintainer: arcticlore",
-    "workers": 8
+ "project": {
+  "copr_name": "arcticlore/candy",
+  "chroots": [
+   "fedora-44-x86_64",
+   "fedora-44-aarch64",
+   "fedora-43-x86_64",
+   "fedora-43-aarch64"
+  ],
+  "description": "Terminal eye candy (fetch tools, ASCII animations, modern CLI replacements) for Fedora 44. Auto-updated from upstream releases. Maintainer: arcticlore",
+  "workers": 8
+ },
+ "packages": [
+  {
+   "name": "starship",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "starship/starship",
+   "tagp": "v",
+   "summary": "Minimal, blazing-fast, infinitely customizable cross-shell prompt",
+   "license": "ISC",
+   "bins": [
+    "starship"
+   ],
+   "prio": 1,
+   "use": "eval \"$(starship init bash)\" — добавь в ~/.bashrc",
+   "alt": "curl -sS https://starship.rs/install.sh | sh"
   },
-  "packages": [
-    {
-      "name": "starship",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "starship/starship",
-      "tagp": "v",
-      "summary": "Minimal, blazing-fast, infinitely customizable cross-shell prompt",
-      "license": "ISC",
-      "bins": [
-        "starship"
-      ],
-      "prio": 1,
-      "use": "eval \"$(starship init bash)\" — добавь в ~/.bashrc",
-      "alt": "curl -sS https://starship.rs/install.sh | sh"
-    },
-    {
-      "name": "lazygit",
-      "eco": "go",
-      "host": "github",
-      "slug": "jesseduffield/lazygit",
-      "tagp": "v",
-      "summary": "Simple terminal UI for git commands",
-      "license": "MIT",
-      "bins": [
-        "lazygit"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "use": "запусти lazygit внутри git-репозитория",
-      "alt": "бинарник со страницы Releases или COPR: dnf copr enable atim/lazygit"
-    },
-    {
-      "name": "lazydocker",
-      "eco": "go",
-      "host": "github",
-      "slug": "jesseduffield/lazydocker",
-      "tagp": "v",
-      "summary": "Lazier way to manage everything docker",
-      "license": "MIT",
-      "bins": [
-        "lazydocker"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "use": "запусти lazydocker при работающем docker"
-    },
-    {
-      "name": "bottom",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "ClementTsang/bottom",
-      "tagp": "v",
-      "summary": "Cross-platform graphical process/system monitor",
-      "license": "Apache-2.0",
-      "bins": [
-        "btm"
-      ],
-      "prio": 1,
-      "use": "btm — монитор процессов с графиками",
-      "alt": "dnf copr enable atim/bottom или cargo install bottom"
-    },
-    {
-      "name": "yazi",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "sxyazi/yazi",
-      "tagp": "v",
-      "summary": "Blazing fast terminal file manager written in Rust",
-      "license": "MIT",
-      "bins": [
-        "yazi",
-        "ya"
-      ],
-      "prio": 1,
-      "use": "yazi — файловый менеджер; выход Q",
-      "br": [
-        "cargo-rpm-macros",
-        "git-core"
-      ],
-      "build_env": [
-        "VERGEN_GIT_SHA=\"copr-build\""
-      ],
-      "alt": "cargo install yazi-cli или бинарники Releases",
-      "cdir": "yazi-build"
-    },
-    {
-      "name": "lf",
-      "eco": "go",
-      "host": "github",
-      "slug": "gokcehan/lf",
-      "tagp": "",
-      "summary": "Terminal file manager",
-      "license": "MIT",
-      "bins": [
-        "lf"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "use": "lf — файловый менеджер"
-    },
-    {
-      "name": "sd",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "chmln/sd",
-      "tagp": "v",
-      "summary": "Intuitive find & replace CLI (sed alternative)",
-      "license": "MIT",
-      "bins": [
-        "sd"
-      ],
-      "prio": 1,
-      "use": "sd 'старый текст' 'новый текст' file.txt",
-      "alt": "cargo install sd",
-      "cdir": "sd-cli"
-    },
-    {
-      "name": "xh",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "ducaale/xh",
-      "tagp": "v",
-      "summary": "Friendly and fast tool for sending HTTP requests",
-      "license": "MIT",
-      "bins": [
-        "xh"
-      ],
-      "prio": 1,
-      "br": [
-        "openssl-devel"
-      ],
-      "use": "xh GET https://api.github.com",
-      "alt": "cargo install xh или бинарники Releases"
-    },
-    {
-      "name": "curlie",
-      "eco": "go",
-      "host": "github",
-      "slug": "rs/curlie",
-      "tagp": "v",
-      "summary": "The power of curl, the ease of use of httpie",
-      "license": "MIT",
-      "bins": [
-        "curlie"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "use": "curlie https://api.github.com"
-    },
-    {
-      "name": "viddy",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "sachaos/viddy",
-      "tagp": "v",
-      "summary": "Modern watch command (with key bindings and diffs)",
-      "license": "MIT",
-      "bins": [
-        "viddy"
-      ],
-      "prio": 1,
-      "use": "viddy 'df -h' — watch с подсветкой diff",
-      "alt": "go install github.com/sachaos/viddy@latest"
-    },
-    {
-      "name": "gping",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "orf/gping",
-      "tagp": "gping-v",
-      "summary": "Ping, but with a graph",
-      "license": "GPL-3.0-only",
-      "bins": [
-        "gping"
-      ],
-      "gpkg": "gping",
-      "prio": 1,
-      "use": "gping 1.1.1.1 — ping с графиком",
-      "cdir": "gping",
-      "br": [
-        "cargo-rpm-macros"
-      ],
-      "alt": "cargo install gping"
-    },
-    {
-      "name": "doggo",
-      "eco": "go",
-      "host": "github",
-      "slug": "mr-karan/doggo",
-      "tagp": "v",
-      "summary": "Fast command-line DNS client for humans",
-      "license": "GPL-3.0-only",
-      "bins": [
-        "doggo"
-      ],
-      "gpkg": "./cmd/doggo",
-      "prio": 1,
-      "use": "doggo example.com MX",
-      "alt": "go install github.com/mr-karan/doggo/cmd/doggo@latest"
-    },
-    {
-      "name": "fx",
-      "eco": "go",
-      "host": "github",
-      "slug": "antonmedv/fx",
-      "tagp": "",
-      "summary": "Terminal JSON viewer and processor",
-      "license": "MIT",
-      "bins": [
-        "fx"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "use": "cat data.json | fx — интерактивный JSON"
-    },
-    {
-      "name": "zellij",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "zellij-org/zellij",
-      "tagp": "v",
-      "summary": "Terminal workspace with panels, plugins and layouts",
-      "license": "MIT",
-      "bins": [
-        "zellij"
-      ],
-      "exp": true,
-      "prio": 8,
-      "use": "zellij — мультиплексор, Ctrl+p для помощи",
-      "br": [
-        "openssl-devel",
-        "perl"
-      ],
-      "alt": "curl -sSfL https://get.zellij.dev | sh (или cargo install zellij)"
-    },
-    {
-      "name": "macchina",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Macchina-CLI/macchina",
-      "tagp": "v",
-      "summary": "System information fetcher with an emphasis on performance",
-      "license": "MIT",
-      "bins": [
-        "macchina"
-      ],
-      "prio": 2,
-      "use": "macchina — инфа о системе",
-      "alt": "cargo install macchina-cli (или .rpm со страницы релизов)"
-    },
-    {
-      "name": "neofetch",
-      "eco": "script",
-      "host": "github",
-      "slug": "dylanaraps/neofetch",
-      "tagp": "v",
-      "summary": "Command-line system information tool",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "neofetch"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "prio": 2,
-      "use": "neofetch",
-      "alt": "git clone https://github.com/dylanaraps/neofetch && sudo make install"
-    },
-    {
-      "name": "ghfetch",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "SafarSoFar/ghfetch",
-      "tagp": "v",
-      "summary": "Neofetch-like utility to fetch GitHub info in the terminal",
-      "license": "MIT",
-      "bins": [
-        "ghfetch"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "ghfetch <логин-github>",
-      "fallback": "commit"
-    },
-    {
-      "name": "gitfetch",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "FabricSoul/gitfetch",
-      "tagp": "v",
-      "summary": "GitHub contribution visualization tool inspired by neofetch",
-      "license": "MIT",
-      "bins": [
-        "gitfetch"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "gitfetch <логин-github>"
-    },
-    {
-      "name": "bunnyfetch",
-      "eco": "go",
-      "host": "github",
-      "slug": "Rosettea/bunnyfetch",
-      "tagp": "v",
-      "summary": "Tiny system info fetch utility",
-      "license": "MIT",
-      "bins": [
-        "bunnyfetch"
-      ],
-      "gpkg": ".",
-      "verify": true,
-      "prio": 2,
-      "use": "bunnyfetch"
-    },
-    {
-      "name": "catnap",
-      "eco": "nim",
-      "host": "github",
-      "slug": "iinsertNameHere/catnap",
-      "tagp": "v",
-      "summary": "Playful simple system information tool",
-      "license": "MIT",
-      "build_cmd": "nim c -d:release --out:catnap src/catnap.nim",
-      "verify": true,
-      "prio": 2,
-      "enabled": false,
-      "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
-    },
-    {
-      "name": "nitch",
-      "eco": "nim",
-      "host": "github",
-      "slug": "ssleert/nitch",
-      "tagp": "v",
-      "summary": "Incredibly fast system fetch written in Nim",
-      "license": "MIT",
-      "build_cmd": "nim c -d:release --out:nitch src/nitch.nim",
-      "verify": true,
-      "prio": 2,
-      "enabled": false,
-      "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
-    },
-    {
-      "name": "rxfetch",
-      "eco": "script",
-      "host": "github",
-      "slug": "mngshm/rxfetch",
-      "tagp": "v",
-      "summary": "Custom system fetching tool written in bash",
-      "license": "MIT",
-      "files": [
-        "rxfetch"
-      ],
-      "share": {
-        "src": "custom",
-        "dst": "/usr/share/rxfetch"
-      },
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 2,
-      "use": "rxfetch",
-      "alt": "git clone https://github.com/Mangeshrex/rxfetch && sudo ./install.sh",
-      "fallback": "commit"
-    },
-    {
-      "name": "nerdfetch",
-      "eco": "script",
-      "host": "codeberg",
-      "slug": "thatonecalculator/NerdFetch",
-      "tagp": "v",
-      "summary": "POSIX nix fetch script using Nerdfonts",
-      "license": "MIT",
-      "files": [
-        "nerdfetch"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "sh",
-      "verify": true,
-      "prio": 2,
-      "use": "nerdfetch (нужен Nerd Font)"
-    },
-    {
-      "name": "disfetch",
-      "eco": "script",
-      "host": "github",
-      "slug": "q60/disfetch",
-      "tagp": "v",
-      "summary": "Yet another *nix distro fetching program, less complex",
-      "license": "WTFPL",
-      "files": [
-        "disfetch"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "sh",
-      "verify": true,
-      "prio": 2,
-      "use": "disfetch"
-    },
-    {
-      "name": "ufetch",
-      "eco": "script",
-      "host": "gitlab",
-      "slug": "jschx/ufetch",
-      "tagp": "v",
-      "summary": "Tiny system info for Unix-like operating systems",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "ufetch-alpine"
-      ],
-      "req": [
-        "sh"
-      ],
-      "interp": "sh",
-      "verify": true,
-      "prio": 2,
-      "use": "ufetch",
-      "fallback": "commit"
-    },
-    {
-      "name": "albafetch",
-      "eco": "meson",
-      "host": "github",
-      "slug": "alba4k/albafetch",
-      "tagp": "v",
-      "summary": "Faster neofetch alternative written in C",
-      "license": "GPL-3.0-or-later",
-      "verify": true,
-      "prio": 2,
-      "br": [
-        "ncurses-devel",
-        "pkgconf-pkg-config",
-        "sqlite3-devel"
-      ],
-      "use": "albafetch"
-    },
-    {
-      "name": "CrabFetch",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "LivacoNew/CrabFetch",
-      "tagp": "v",
-      "summary": "Extremely fast and featureful command-line fetcher",
-      "license": "MIT",
-      "bins": [
-        "crabfetch"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "crabfetch"
-    },
-    {
-      "name": "animfetch",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Andrew-Velox/animfetch",
-      "tagp": "v",
-      "summary": "Animated system fetch pinned above your shell",
-      "license": "MIT",
-      "bins": [
-        "animfetch"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "animfetch — анимированный fetch",
-      "br": [
-        "cargo-rpm-macros"
-      ]
-    },
-    {
-      "name": "archey4",
-      "eco": "python-pkg",
-      "host": "github",
-      "slug": "HorlogeSkynet/archey4",
-      "tagp": "v",
-      "summary": "Arch Linux system information tool (maintained fork)",
-      "license": "GPL-3.0-or-later",
-      "br": [
-        "python3-dbus",
-        "python3-distro",
-        "python3-netifaces",
-        "python3-setproctitle"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "archey",
-      "alt": "pip install archey4",
-      "extra_files": [
-        "%{_bindir}/archey",
-        "%{_docdir}/archey4"
-      ]
-    },
-    {
-      "name": "pokemon-icat",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "aflaag/pokemon-icat",
-      "tagp": "v",
-      "summary": "Show any Pokemon sprite in your terminal",
-      "license": "MIT",
-      "moddir": "src",
-      "bins": [
-        "pokemon-icat"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "pokemon-icat pikachu — спрайт покемона",
-      "fallback": "commit"
-    },
-    {
-      "name": "pridefetch",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "cartoon-raccoon/pridefetch",
-      "tagp": "v",
-      "summary": "Neofetch, but gay",
-      "license": "GPL-3.0-or-later",
-      "bins": [
-        "pridefetch"
-      ],
-      "verify": true,
-      "prio": 2,
-      "use": "pridefetch",
-      "fallback": "commit"
-    },
-    {
-      "name": "winfetch",
-      "eco": "script",
-      "host": "github",
-      "slug": "lptstr/winfetch",
-      "tagp": "v",
-      "summary": "Command-line system information utility for Windows/PowerShell",
-      "license": "MIT",
-      "files": [
-        "winfetch.ps1"
-      ],
-      "bins": [
-        "winfetch.ps1"
-      ],
-      "req": [],
-      "interp": "pwsh",
-      "verify": true,
-      "prio": 9,
-      "use": "winfetch (требуется PowerShell/pwsh)",
-      "enabled": false,
-      "note": "Апстрим Windows-only ('Only supported on Windows'). На Linux используйте fastfetch/macchina"
-    },
-    {
-      "name": "pipes.sh",
-      "eco": "script",
-      "host": "github",
-      "slug": "pipeseroni/pipes.sh",
-      "tagp": "v",
-      "summary": "Animated pipes terminal screensaver",
-      "license": "MIT",
-      "files": [
-        "pipes.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "prio": 3,
-      "use": "pipes.sh — трубы-скринсейвер, Esc для выхода"
-    },
-    {
-      "name": "pipesX",
-      "eco": "script",
-      "host": "github",
-      "slug": "pipeseroni/pipesX.sh",
-      "tagp": "v",
-      "summary": "Animated pipes screensaver, extended edition",
-      "license": "MIT",
-      "files": [
-        "pipesX.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "use": "pipesX.sh"
-    },
-    {
-      "name": "lavat",
-      "eco": "c-make",
-      "host": "github",
-      "slug": "AngelJumbo/lavat",
-      "tagp": "v",
-      "summary": "Lava lamp in the terminal",
-      "license": "MIT",
-      "br": [
-        "ncurses-devel"
-      ],
-      "install_cmd": "install -Dpm0755 lavat %{buildroot}%{_bindir}/lavat",
-      "verify": true,
-      "prio": 3,
-      "use": "lavat — лава-лампа; клавиши +/- меняют скорость",
-      "noman": true
-    },
-    {
-      "name": "ascii-rain",
-      "eco": "c-make",
-      "host": "github",
-      "slug": "nkleemann/ascii-rain",
-      "tagp": "v",
-      "summary": "Comfy rain for your console",
-      "license": "GPL-2.0-only",
-      "br": [
-        "ncurses-devel"
-      ],
-      "install_cmd": "install -Dpm0755 rain %{buildroot}%{_bindir}/ascii-rain",
-      "verify": true,
-      "prio": 3,
-      "use": "ascii-rain — дождь, Ctrl+C выход",
-      "fallback": "commit"
-    },
-    {
-      "name": "tty-clock",
-      "eco": "c-make",
-      "host": "github",
-      "slug": "xorg62/tty-clock",
-      "tagp": "v",
-      "summary": "Digital clock in ncurses",
-      "license": "BSD-2-Clause",
-      "br": [
-        "ncurses-devel"
-      ],
-      "install_cmd": "%make_install PREFIX=%{_prefix}",
-      "verify": true,
-      "prio": 3,
-      "use": "tty-clock -c -C 4 — часы по центру, цвет 4",
-      "alt": "git clone + make install"
-    },
-    {
-      "name": "ctree",
-      "eco": "go",
-      "host": "github",
-      "slug": "gleich/ctree",
-      "tagp": "v",
-      "summary": "A Christmas tree right from your terminal",
-      "license": "MIT",
-      "bins": [
-        "ctree"
-      ],
-      "gpkg": ".",
-      "verify": true,
-      "prio": 3,
-      "use": "ctree — новогодняя ёлка"
-    },
-    {
-      "name": "terminal-parrot",
-      "eco": "go",
-      "host": "github",
-      "slug": "jmhobbs/terminal-parrot",
-      "tagp": "",
-      "summary": "Party parrot time, in your terminal",
-      "license": "MIT",
-      "bins": [
-        "terminal-parrot"
-      ],
-      "gpkg": ".",
-      "prio": 3,
-      "fallback": "commit",
-      "use": "terminal-parrot — танцующий попугай"
-    },
-    {
-      "name": "snowmachine",
-      "eco": "python-pkg",
-      "host": "pypi",
-      "pkg": "snowmachine",
-      "summary": "Snow in your terminal",
-      "license": "MIT",
-      "prio": 3,
-      "use": "snowmachine — снегопад",
-      "extra_files": [
-        "%{_bindir}/snowmachine"
-      ]
-    },
-    {
-      "name": "PyBonsai",
-      "eco": "python-pkg",
-      "host": "pypi",
-      "pkg": "pybonsai",
-      "summary": "Procedural ASCII bonsai tree generator",
-      "license": "MIT",
-      "verify": true,
-      "prio": 3,
-      "use": "pybonsai — растит бонсай",
-      "pbr_exclude": [
-        "streamlink"
-      ]
-    },
-    {
-      "name": "arttime",
-      "eco": "python-pkg",
-      "host": "github",
-      "slug": "poetaman/arttime",
-      "tagp": "v",
-      "summary": "ASCII art, clock, timer and time manager for the terminal",
-      "license": "GPL-3.0-or-later",
-      "br": [
-        "python3-pytz",
-        "python3-rich",
-        "python3-tomli-w"
-      ],
-      "verify": true,
-      "prio": 3,
-      "use": "arttime — ASCII-арт+часы; arttime -m сообщение",
-      "alt": "pipx install arttime"
-    },
-    {
-      "name": "duckpond",
-      "eco": "script",
-      "host": "github",
-      "slug": "gsobell/duckpond.sh",
-      "tagp": "v",
-      "summary": "Ducks swimming in a pond, in your terminal",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "duckpond.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "fallback": "commit",
-      "use": "duckpond.sh — утки на пруду"
-    },
-    {
-      "name": "lifecycler",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "tobi-wan-kenobi/lifecycler",
-      "tagp": "v",
-      "summary": "Aquarium right in your terminal",
-      "license": "GPL-2.0-only",
-      "bins": [
-        "lifecycler"
-      ],
-      "verify": true,
-      "prio": 9,
-      "use": "lifecycler — аквариум/клеточный автомат",
-      "enabled": false,
-      "note": "Апстрим недоступен (404) / пакет удалён из registry"
-    },
-    {
-      "name": "maze",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "pipeseroni/maze.py",
-      "tagp": "v",
-      "summary": "Animated maze generator screensaver",
-      "license": "GPL-3.0-or-later",
-      "bins": [
-        "maze.py"
-      ],
-      "verify": true,
-      "prio": 3,
-      "use": "maze.py — генерация лабиринта",
-      "fallback": "commit"
-    },
-    {
-      "name": "snakes",
-      "eco": "script",
-      "host": "github",
-      "slug": "pipeseroni/snakes.pl",
-      "tagp": "v",
-      "summary": "Snakes crawling across your terminal",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "snakes.pl"
-      ],
-      "req": [
-        "perl"
-      ],
-      "interp": "perl",
-      "verify": true,
-      "prio": 3,
-      "use": "snakes.pl — змейки",
-      "fallback": "commit"
-    },
-    {
-      "name": "weave",
-      "eco": "script",
-      "host": "github",
-      "slug": "pipeseroni/weave.sh",
-      "tagp": "v",
-      "summary": "Weaving pattern screensaver",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "weave.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "use": "weave.sh — плетение узоров"
-    },
-    {
-      "name": "gh-screensaver",
-      "eco": "go",
-      "host": "github",
-      "slug": "vilmibm/gh-screensaver",
-      "tagp": "v",
-      "summary": "Screensaver extension for gh (fireworks/starfield/pipes)",
-      "license": "MIT",
-      "bins": [
-        "gh-screensaver"
-      ],
-      "gpkg": ".",
-      "verify": true,
-      "prio": 3,
-      "use": "gh screensaver -e fireworks (нужен GitHub CLI)"
-    },
-    {
-      "name": "shuffle",
-      "eco": "script",
-      "host": "github",
-      "slug": "wyjok/shuffle",
-      "tagp": "v",
-      "summary": "ASCII art with a cool shuffle effect",
-      "license": "MIT",
-      "files": [
-        "shuffle.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "enabled": false,
-      "prio": 9
-    },
-    {
-      "name": "cbeams",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "tartley/cbeams",
-      "tagp": "",
-      "summary": "Colorful animated beams in the terminal",
-      "license": "BSD-2-Clause",
-      "bins": [
-        "cbeams"
-      ],
-      "req": [
-        "python3-colorama"
-      ],
-      "verify": true,
-      "prio": 3,
-      "use": "cbeams — цветные лучи"
-    },
-    {
-      "name": "ascsaver",
-      "eco": "script",
-      "host": "gitlab",
-      "slug": "mezantrop/ascsaver",
-      "tagp": "v",
-      "summary": "Collection of ASCII screensavers (dogs/globe/nasa/star_wars)",
-      "license": "GPL-2.0-only",
-      "share": {
-        "src": ".",
-        "dst": "/usr/libexec/ascsaver"
-      },
-      "req": [
-        "bash",
-        "perl"
-      ],
-      "interp": "sh",
-      "verify": true,
-      "prio": 3,
-      "fallback": "commit"
-    },
-    {
-      "name": "weatherspect",
-      "eco": "script",
-      "host": "web",
-      "url": "https://www.robobunny.com/projects/weatherspect/perl/weatherspect_v{version}.pl",
-      "version": "1.15",
-      "summary": "Elaborate ASCII weather simulation",
-      "license": "GPL-2.0-only",
-      "files": [
-        "weatherspect.pl"
-      ],
-      "req": [
-        "perl"
-      ],
-      "interp": "perl",
-      "verify": true,
-      "enabled": false,
-      "prio": 9
-    },
-    {
-      "name": "zenta",
-      "eco": "go",
-      "host": "github",
-      "slug": "e6a5/zenta",
-      "tagp": "v",
-      "summary": "Meditative zen terminal screensaver",
-      "license": "MIT",
-      "files": [
-        "zenta.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "use": "zenta.sh — дзен-скринсейвер",
-      "gpkg": ".",
-      "bins": [
-        "zenta"
-      ]
-    },
-    {
-      "name": "tspace",
-      "eco": "script",
-      "host": "github",
-      "slug": "mtklr/tspace",
-      "tagp": "v",
-      "summary": "Fly a little spaceship around your terminal",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "tspace.c"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "fallback": "commit",
-      "use": "tspace.sh — кораблик"
-    },
-    {
-      "name": "tfire",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "tech-chad/tfire",
-      "tagp": "v",
-      "summary": "Fire animation in your terminal",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "tfire.py"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "fallback": "commit",
-      "use": "tfire.sh — огонь",
-      "bins": [
-        "tfire"
-      ],
-      "script_src": {
-        "tfire": "tfire.py"
-      }
-    },
-    {
-      "name": "termdvd",
-      "eco": "npm",
-      "host": "npm",
-      "pkg": "termdvd",
-      "summary": "Flying DVD logo screensaver for the terminal",
-      "license": "MIT",
-      "npmbin": "termdvd",
-      "verify": true,
-      "prio": 9,
-      "enabled": false,
-      "note": "Апстрим недоступен (404) / пакет удалён из registry"
-    },
-    {
-      "name": "fireworks",
-      "eco": "script",
-      "host": "web",
-      "url": "https://archive.org/download/bash-fireworks/fireworks.sh",
-      "version": "1.0",
-      "summary": "Bash fireworks screensaver",
-      "license": "GPL-2.0-only",
-      "files": [
-        "fireworks.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "prio": 3,
-      "use": "fireworks.sh — фейерверк",
-      "enabled": false,
-      "note": "Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети"
-    },
-    {
-      "name": "cli-fx",
-      "eco": "script",
-      "host": "github",
-      "slug": "lukeslp/cli-fx",
-      "tagp": "",
-      "summary": "Terminal visual effects library in pure bash (glitch/plasma/rain)",
-      "license": "MIT",
-      "share": {
-        "src": "lib",
-        "dst": "/usr/share/cli-fx"
-      },
-      "bins": [],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 3,
-      "use": "source /usr/share/cli-fx/lib/core.sh — эффекты в своих скриптах"
-    },
-    {
-      "name": "hollywood",
-      "eco": "script",
-      "host": "github",
-      "slug": "dustinkirkland/hollywood",
-      "tagp": "",
-      "summary": "Fill your console with Hollywood melodrama technobabble",
-      "license": "GPL-3.0-or-later",
-      "share": {
-        "src": ".",
-        "dst": "/usr/libexec/hollywood"
-      },
-      "bins": [
-        "hollywood"
-      ],
-      "req": [
-        "byobu",
-        "ccze",
-        "cmatrix",
-        "oneko",
-        "cowsay",
-        "fortune-mod",
-        "jp2a"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 9,
-      "use": "hollywood — консоль хакера из кино (нужен byobu)"
-    },
-    {
-      "name": "bb",
-      "eco": "c-autotools",
-      "host": "web",
-      "url": "http://aa-project.sourceforge.net/bb/bb-1.3.0.tar.gz",
-      "version": "1.3.0",
-      "topdir": "bb-1.3.0",
-      "summary": "High-res ASCII art demo (aalib showcase)",
-      "license": "GPL-2.0-only",
-      "br": [
-        "aalib-devel",
-        "gcc"
-      ],
-      "autoreconf": true,
-      "verify": true,
-      "prio": 9,
-      "enabled": false,
-      "note": "Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети"
-    },
-    {
-      "name": "ponysay",
-      "eco": "script",
-      "host": "github",
-      "slug": "erkin/ponysay",
-      "tagp": "v",
-      "summary": "cowsay reimplemention for ponies, 256-color",
-      "license": "GPL-3.0-or-later",
-      "install_extra": "python3 setup.py --root=%{buildroot} install || ./install.sh --prefix=%{buildroot}%{_prefix}",
-      "verify": true,
-      "prio": 4,
-      "use": "ponysay 'Привет!' или ponysay -l список пони",
-      "alt": "git clone && ./install.sh"
-    },
-    {
-      "name": "yosay",
-      "eco": "npm",
-      "host": "github",
-      "slug": "yeoman/yosay",
-      "tagp": "v",
-      "summary": "Tell Yeoman what to say, ANSI-art speech bubbles",
-      "license": "BSD-2-Clause",
-      "npmbin": "yosay",
-      "prio": 4,
-      "use": "yosay 'Привет!'",
-      "alt": "npm install -g yosay"
-    },
-    {
-      "name": "parrotsay",
-      "eco": "npm",
-      "host": "npm",
-      "pkg": "parrotsay",
-      "summary": "Party parrot says things in your terminal",
-      "license": "MIT",
-      "npmbin": "parrotsay",
-      "verify": true,
-      "prio": 4,
-      "use": "parrotsay 'Привет!'",
-      "alt": "npm install -g parrotsay"
-    },
-    {
-      "name": "ricksay",
-      "eco": "custom",
-      "host": "github",
-      "slug": "kochie/ricksay",
-      "tagp": "v",
-      "summary": "Rick and Morty quotes of the day (cowsay clone)",
-      "license": "MIT",
-      "files": [
-        "ricksay"
-      ],
-      "req": [
-        "bash",
-        "cowsay"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 4,
-      "fallback": "commit",
-      "use": "ricksay — цитата Рика и Морти",
-      "build_cmd": "gcc -O2 src/main.c -o ricksay",
-      "bins": [
-        "ricksay"
-      ],
-      "share": {
-        "src": "src/quotes.json",
-        "dst": "/usr/share/ricksay"
-      },
-      "br": [
-        "gcc"
-      ]
-    },
-    {
-      "name": "jp2a",
-      "eco": "c-autotools",
-      "host": "github",
-      "slug": "Talinx/jp2a",
-      "tagp": "v",
-      "summary": "Convert JPG/PNG images to ASCII art",
-      "license": "GPL-2.0-only",
-      "br": [
-        "autoconf",
-        "automake",
-        "gcc",
-        "libjpeg-turbo-devel",
-        "libpng-devel",
-        "libwebp-devel",
-        "libexif-devel"
-      ],
-      "autoreconf": true,
-      "prio": 4,
-      "use": "jp2a photo.jpg --width=80",
-      "alt": "./autogen.sh && make && make install из исходников"
-    },
-    {
-      "name": "artem",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "FineFindus/artem",
-      "tagp": "v",
-      "summary": "Convert images from multiple formats to ASCII art",
-      "license": "MPL-2.0",
-      "bins": [
-        "artem"
-      ],
-      "prio": 4,
-      "use": "artem photo.jpg — картинка в ASCII",
-      "alt": "cargo install artem"
-    },
-    {
-      "name": "viu",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "atanunq/viu",
-      "tagp": "v",
-      "summary": "View images right from the terminal",
-      "license": "MIT",
-      "bins": [
-        "viu"
-      ],
-      "prio": 4,
-      "use": "viu photo.jpg — картинка прямо в терминале",
-      "alt": "cargo install viu"
-    },
-    {
-      "name": "durdraw",
-      "eco": "python-pkg",
-      "host": "github",
-      "slug": "cmang/durdraw",
-      "tagp": "v",
-      "summary": "ANSI/ASCII and Unicode art editor with animation",
-      "license": "GPL-3.0-or-later",
-      "verify": true,
-      "prio": 4,
-      "use": "durdraw — редактор ANSI-арта",
-      "alt": "pipx install durdraw",
-      "extra_files": [
-        "%{_bindir}/durdraw",
-        "%{_bindir}/durfetch",
-        "%{_bindir}/durview"
-      ]
-    },
-    {
-      "name": "diagon",
-      "eco": "c-cmake",
-      "host": "github",
-      "slug": "ArthurSonzogni/Diagon",
-      "tagp": "v",
-      "summary": "Interactive ASCII diagram generator (math/tree/table/flow)",
-      "license": "MIT",
-      "br": [
-        "cmake",
-        "gcc-c++"
-      ],
-      "exp": true,
-      "prio": 9,
-      "use": "diagon math — интерактивные ASCII-диаграммы",
-      "enabled": false,
-      "note": "cmake FetchContent требует сеть при сборке — отключён до vendored релиза"
-    },
-    {
-      "name": "tulizu",
-      "eco": "c-make",
-      "host": "github",
-      "slug": "loh-tar/tulizu",
-      "tagp": "",
-      "summary": "Tool to customize ASCII art in /etc/issue",
-      "license": "GPL-3.0-or-later",
-      "install_cmd": "%make_install PREFIX=%{_prefix}",
-      "verify": true,
-      "prio": 4,
-      "use": "tulizu --help — арт для /etc/issue",
-      "noman": true
-    },
-    {
-      "name": "cadubi",
-      "eco": "script",
-      "host": "github",
-      "slug": "statico/cadubi",
-      "tagp": "v",
-      "summary": "Creative ASCII drawing utility",
-      "license": "ISC",
-      "files": [
-        "cadubi"
-      ],
-      "req": [
-        "perl"
-      ],
-      "interp": "perl",
-      "verify": true,
-      "prio": 4,
-      "use": "cadubi — рисование ASCII"
-    },
-    {
-      "name": "colorls",
-      "eco": "gem",
-      "host": "github",
-      "slug": "athityakumar/colorls",
-      "tagp": "v",
-      "summary": "Prettifies ls output with colors and font-awesome icons",
-      "license": "MIT",
-      "verify": true,
-      "exp": true,
-      "prio": 8,
-      "use": "colorls — красивый ls (нужен Nerd Font)",
-      "gem_git": true,
-      "br": [
-        "git-core"
-      ],
-      "alt": "gem install colorls"
-    },
-    {
-      "name": "pscircle",
-      "eco": "c-autotools",
-      "host": "gitlab",
-      "slug": "mildlyparallel/pscircle",
-      "tagp": "v",
-      "summary": "Visualize processes as a circular tree wallpaper",
-      "license": "GPL-2.0-or-later",
-      "br": [
-        "autoconf",
-        "automake",
-        "cairo-devel",
-        "gcc",
-        "glib2-devel",
-        "make"
-      ],
-      "prio": 4,
-      "verify": true,
-      "use": "pscircle --output=pscircle.png — процессы кругом",
-      "autoreconf": true
-    },
-    {
-      "name": "powerlevel10k",
-      "eco": "script",
-      "host": "github",
-      "slug": "romkatv/powerlevel10k",
-      "tagp": "v",
-      "summary": "Zsh theme focused on speed, flexibility and out-of-box UX",
-      "license": "MIT",
-      "share": {
-        "src": ".",
-        "dst": "/usr/share/powerlevel10k"
-      },
-      "bins": [],
-      "req": [
-        "zsh"
-      ],
-      "interp": "zsh",
-      "prio": 5,
-      "use": "echo 'source /usr/share/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc",
-      "alt": "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.powerlevel10k && echo 'source ~/.powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc"
-    },
-    {
-      "name": "oh-my-zsh",
-      "eco": "script",
-      "host": "github",
-      "slug": "ohmyzsh/ohmyzsh",
-      "tagp": "",
-      "summary": "Framework for managing zsh configuration with 300+ plugins",
-      "license": "MIT",
-      "share": {
-        "src": ".",
-        "dst": "/usr/share/oh-my-zsh"
-      },
-      "bins": [],
-      "req": [
-        "zsh"
-      ],
-      "interp": "zsh",
-      "prio": 5,
-      "fallback": "commit",
-      "use": "экспортируй ZSH=/usr/share/oh-my-zsh и source oh-my-zsh.sh в ~/.zshrc",
-      "alt": "sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" (ставит в ~/.oh-my-zsh)"
-    },
-    {
-      "name": "pure",
-      "eco": "npm",
-      "host": "github",
-      "slug": "sindresorhus/pure",
-      "tagp": "v",
-      "summary": "Pretty, minimal and fast ZSH prompt",
-      "license": "MIT",
-      "share": {
-        "src": "pure.zsh",
-        "dst": "/usr/share/zsh/site-functions/prompt_pure_setup"
-      },
-      "npmbin": "",
-      "req": [
-        "zsh"
-      ],
-      "verify": true,
-      "prio": 5,
-      "use": "npm-глобал: добавь 'prompt pure' через antigen/zplug",
-      "alt": "npm install -g pure-prompt или git clone + symlink в fpath"
-    },
-    {
-      "name": "pywal",
-      "eco": "python-pkg",
-      "host": "pypi",
-      "pkg": "pywal",
-      "summary": "Generate and change color-schemes on the fly",
-      "license": "MIT",
-      "prio": 5,
-      "use": "wal -i обои.jpg — палитра из картинки",
-      "alt": "pip install --user pywal",
-      "extra_files": [
-        "%{_bindir}/wal",
-        "%{_prefix}/man/man1/wal.1*"
-      ]
-    },
-    {
-      "name": "wallust",
-      "eco": "cargo",
-      "host": "codeberg",
-      "slug": "explosion-mental/wallust",
-      "tagp": "v",
-      "summary": "Generate colorschemes from images (pywal successor)",
-      "license": "MIT",
-      "bins": [
-        "wallust",
-        "salsort"
-      ],
-      "prio": 5,
-      "verify": true,
-      "use": "wallust run обои.jpg",
-      "alt": "cargo install wallust"
-    },
-    {
-      "name": "flavours",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Misterio77/flavours",
-      "tagp": "v",
-      "summary": "Manager and builder for Base16 base00-FF schemes",
-      "license": "MIT",
-      "bins": [
-        "flavours"
-      ],
-      "verify": true,
-      "prio": 5,
-      "use": "flavours apply gruvbox-dark",
-      "alt": "cargo install flavours"
-    },
-    {
-      "name": "tint",
-      "eco": "script",
-      "host": "github",
-      "slug": "corygabrielsen/tint",
-      "tagp": "v",
-      "summary": "Terminal theme switcher with live preview",
-      "license": "MIT",
-      "files": [
-        "tint"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 5,
-      "use": "tint dracula — сменить тему терминала; tint -l список"
-    },
-    {
-      "name": "cli-visualizer",
-      "eco": "c-cmake",
-      "host": "github",
-      "slug": "dpayne/cli-visualizer",
-      "tagp": "",
-      "summary": "CLI audio visualizer for mpd/alsa/pulse",
-      "license": "MIT",
-      "br": [
-        "cmake",
-        "fftw-devel",
-        "gcc-c++",
-        "ncurses-devel",
-        "pulseaudio-libs-devel"
-      ],
-      "verify": true,
-      "exp": true,
-      "prio": 9,
-      "use": "vis — визуализатор звука (mpd/alsa/pulse)",
-      "enabled": false,
-      "note": "Апстрим недоступен (404) / пакет удалён из registry"
-    },
-    {
-      "name": "linuxwave",
-      "eco": "zig",
-      "host": "github",
-      "slug": "orhun/linuxwave",
-      "tagp": "v",
-      "summary": "Generate music from the entropy of Linux",
-      "license": "Apache-2.0",
-      "bins": [
-        "linuxwave"
-      ],
-      "prio": 5,
-      "use": "linuxwave -o out.wav — музыка из энтропии",
-      "alt": "cargo install linuxwave",
-      "enabled": true,
-      "note": "",
-      "exp": false
-    },
-    {
-      "name": "musikcube",
-      "eco": "c-cmake",
-      "host": "github",
-      "slug": "clangen/musikcube",
-      "tagp": "",
-      "summary": "Terminal-based music player, library and streaming server",
-      "license": "BSD-3-Clause",
-      "br": [
-        "alsa-lib-devel",
-        "cmake",
-        "ffmpeg-devel",
-        "gcc-c++",
-        "libmicrodns-devel",
-        "ncurses-devel",
-        "pulseaudio-libs-devel"
-      ],
-      "exp": true,
-      "prio": 8,
-      "use": "musikcube — консольный плеер"
-    },
-    {
-      "name": "chucknorris",
-      "eco": "script",
-      "host": "github",
-      "slug": "bfontaine/chucknorris",
-      "tagp": "",
-      "summary": "Chuck Norris jokes in your terminal",
-      "license": "MIT",
-      "files": [
-        "bin/chucknorris"
-      ],
-      "req": [
-        "ruby"
-      ],
-      "interp": "ruby",
-      "verify": true,
-      "prio": 9,
-      "enabled": false,
-      "note": "Апстрим-слаг не найден, пакет отключён до уточнения"
-    },
-    {
-      "name": "hack",
-      "eco": "script",
-      "host": "github",
-      "slug": "ivanovmg/hack",
-      "tagp": "",
-      "summary": "Simulate Hollywood hacking in your terminal",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "hack.sh"
-      ],
-      "bins": [
-        "hack"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 9,
-      "enabled": false,
-      "note": "Апстрим-слаг не найден, пакет отключён до уточнения"
-    },
-    {
-      "name": "rickrollrc",
-      "eco": "script",
-      "host": "github",
-      "slug": "keroserene/rickrollrc",
-      "tagp": "",
-      "summary": "Rick Astley rickrolls your terminal",
-      "license": "MIT",
-      "files": [
-        "roll.sh"
-      ],
-      "req": [
-        "bash"
-      ],
-      "interp": "bash",
-      "verify": true,
-      "prio": 6,
-      "fallback": "commit"
-    },
-    {
-      "name": "WezTerm",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "wez/wezterm",
-      "tagp": "",
-      "summary": "GPU-accelerated cross-platform terminal emulator and multiplexer",
-      "license": "MIT",
-      "bins": [
-        "wezterm"
-      ],
-      "exp": true,
-      "enabled": false,
-      "note": "Сборка ~40+ мин, может не собраться на s390x/ppc64le",
-      "prio": 9
-    },
-    {
-      "name": "Rio",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "raphamorim/rio",
-      "tagp": "v",
-      "summary": "Hardware-accelerated terminal emulator focused on typography",
-      "license": "MIT",
-      "bins": [
-        "rio"
-      ],
-      "exp": true,
-      "prio": 9,
-      "br": [
-        "cargo-rpm-macros",
-        "fontconfig-devel",
-        "glslang",
-        "pkgconf-pkg-config"
-      ],
-      "cdir": "frontends/rioterm"
-    },
-    {
-      "name": "Ghostty",
-      "eco": "zig",
-      "host": "github",
-      "slug": "ghostty-org/ghostty",
-      "tagp": "v",
-      "summary": "Blazing fast native terminal emulator",
-      "license": "MIT",
-      "exp": true,
-      "enabled": false,
-      "note": "Требуется zig, которого нет в Fedora; собирать вручную или из COPR pgdev",
-      "prio": 9
-    },
-    {
-      "name": "eDEX-UI",
-      "eco": "npm",
-      "host": "github",
-      "slug": "GitSquared/edex-ui",
-      "tagp": "v",
-      "summary": "Sci-fi computer terminal emulator and system monitor",
-      "license": "GPL-3.0-or-later",
-      "npmbin": "edex-ui",
-      "exp": true,
-      "enabled": false,
-      "note": "Electron, огромная сборка; проще flathub",
-      "prio": 9
-    },
-    {
-      "name": "terminaltexteffects",
-      "eco": "python-pkg",
-      "host": "pypi",
-      "pkg": "terminaltexteffects",
-      "summary": "Terminal text effects engine — анимации печати и эффектов в терминале",
-      "license": "MIT",
-      "bins": [
-        "tte"
-      ],
-      "prio": 3,
-      "alt": "pip install terminaltexteffects",
-      "use": "tte \"твой текст\" — эффекты печати; tte --list-effects"
-    },
-    {
-      "name": "ascii-image-converter",
-      "eco": "go",
-      "host": "github",
-      "slug": "TheZoraiz/ascii-image-converter",
-      "tagp": "v",
-      "summary": "Конвертация изображений в ASCII-art прямо в терминале",
-      "license": "Apache-2.0",
-      "bins": [
-        "ascii-image-converter"
-      ],
-      "gpkg": ".",
-      "prio": 3,
-      "alt": "бинарники: github.com/TheZoraiz/ascii-image-converter/releases",
-      "use": "ascii-image-converter photo.jpg --color"
-    },
-    {
-      "name": "gum",
-      "eco": "go",
-      "host": "github",
-      "slug": "charmbracelet/gum",
-      "tagp": "v",
-      "summary": "Glamorous tool для шелл-скриптов: спиннеры, выбор, ввод (charm-стиль)",
-      "license": "MIT",
-      "bins": [
-        "gum"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "alt": "офиц. репо Charm: sudo dnf copr enable charmbracelet/charm? нет — см. github.com/charmbracelet/gum#installation",
-      "use": "gum choose 'вариант 1' 'вариант 2'; gum spin -- sleep 2"
-    },
-    {
-      "name": "glow",
-      "eco": "go",
-      "host": "github",
-      "slug": "charmbracelet/glow",
-      "tagp": "v",
-      "summary": "Рендер markdown прямо в терминале с подсветкой (charm)",
-      "license": "MIT",
-      "bins": [
-        "glow"
-      ],
-      "gpkg": ".",
-      "prio": 1,
-      "alt": "github.com/charmbracelet/glow#installation (бинарники/репо Charm)",
-      "use": "glow README.md — читай markdown в терминале"
-    },
-    {
-      "name": "unimatrix",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "will8211/unimatrix",
-      "summary": "Матрица из unicode-символов (гибкий аналог cmatrix)",
-      "license": "GPL-3.0-or-later",
-      "files": [
-        "unimatrix.py"
-      ],
-      "bins": [
-        "unimatrix"
-      ],
-      "fallback": "commit",
-      "verify": true,
-      "prio": 3,
-      "alt": "git clone https://github.com/will8211/unimatrix && sudo ./install.py",
-      "use": "unimatrix -s 96 — unicode-матрица"
-    },
-    {
-      "name": "ttyper",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "max-niederman/ttyper",
-      "tagp": "v",
-      "summary": "Тренажёр слепой печати в терминале",
-      "license": "MIT",
-      "bins": [
-        "ttyper"
-      ],
-      "prio": 3,
-      "alt": "cargo install ttyper --locked",
-      "use": "ttyper — тест слепой печати (ru: --language ru1000)"
-    },
-    {
-      "name": "csview",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "wfxr/csview",
-      "tagp": "v",
-      "summary": "Быстрый csv-просмотрщик с поддержкой CJK/эмодзи",
-      "license": "MIT",
-      "bins": [
-        "csview"
-      ],
-      "prio": 1
-    },
-    {
-      "name": "lolcrab",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "mazznoer/lolcrab",
-      "tagp": "v",
-      "summary": "lolcat с шумом и радугой (Rust)",
-      "license": "MIT",
-      "bins": [
-        "lolcrab"
-      ],
-      "prio": 3
-    },
-    {
-      "name": "joshuto",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "kamiyaa/joshuto",
-      "tagp": "v",
-      "summary": "ranger-подобный файловый менеджер (Rust)",
-      "license": "LGPL-3.0-or-later",
-      "bins": [
-        "joshuto"
-      ],
-      "br": [
-        "libxcb-devel"
-      ],
-      "prio": 3
-    },
-    {
-      "name": "ttysvr",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "cxreiff/ttysvr",
-      "tagp": "v",
-      "summary": "Набор скринсейверов для терминала",
-      "license": "MIT",
-      "bins": [
-        "ttysvr"
-      ],
-      "fallback": "commit",
-      "verify": true,
-      "prio": 3
-    },
-    {
-      "name": "termusic",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "tramhao/termusic",
-      "tagp": "v",
-      "summary": "TUI музыкальный плеер (mpv/ytdlp)",
-      "license": "MIT",
-      "bins": [
-        "termusic"
-      ],
-      "cdir": "termusic",
-      "exp": true,
-      "verify": true,
-      "prio": 7,
-      "note": "воркспейс; тяжёлые зависимости mpv/gstreamer"
-    },
-    {
-      "name": "pipes.rs",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "lhvy/pipes-rs",
-      "tagp": "v",
-      "summary": "Over-engineered pipes.sh на Rust",
-      "license": "MIT",
-      "bins": [
-        "pipes"
-      ],
-      "gpkg": ".",
-      "verify": true,
-      "prio": 3
-    },
-    {
-      "name": "choose",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "theryangeary/choose",
-      "tagp": "v",
-      "summary": "Умный cut на Rust",
-      "license": "MIT",
-      "bins": [
-        "choose"
-      ],
-      "exp": true,
-      "prio": 5
-    },
-    {
-      "name": "broot",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Canop/broot",
-      "tagp": "v",
-      "summary": "Дерево каталогов с навигацией и предпросмотром",
-      "license": "AGPL-3.0-or-later",
-      "bins": [
-        "broot"
-      ],
-      "use": "broot — интерактивное дерево файлов",
-      "prio": 1,
-      "alt": "cargo install broot"
-    },
-    {
-      "name": "just",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "casey/just",
-      "tagp": "",
-      "summary": "Современный command runner (Make без боли)",
-      "license": "CC0-1.0 OR MIT",
-      "bins": [
-        "just"
-      ],
-      "use": "just <рецепт>; just --list",
-      "prio": 1
-    },
-    {
-      "name": "hyperfine",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "sharkdp/hyperfine",
-      "tagp": "v",
-      "summary": "Бенчмарк команд со статистикой и экспортом",
-      "license": "Apache-2.0 OR MIT",
-      "bins": [
-        "hyperfine"
-      ],
-      "use": "hyperfine 'sleep 0.3'",
-      "prio": 1
-    },
-    {
-      "name": "tokei",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "XAMPPRocky/tokei",
-      "tagp": "v",
-      "summary": "Статистика кода по языкам, молниеносная",
-      "license": "MIT OR Apache-2.0",
-      "bins": [
-        "tokei"
-      ],
-      "use": "tokei ./src",
-      "prio": 1
-    },
-    {
-      "name": "tealdeer",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "dbrgn/tealdeer",
-      "tagp": "v",
-      "summary": "Быстрый tldr-client: примеры команд вместо man",
-      "license": "MIT OR Apache-2.0",
-      "bins": [
-        "tldr"
-      ],
-      "fallback": "commit",
-      "verify": true,
-      "use": "tldr tar — шпаргалки",
-      "br": [
-        "gzip"
-      ],
-      "prio": 1
-    },
-    {
-      "name": "dog",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "ogham/dog",
-      "tagp": "v",
-      "summary": "DNS-клиент doggo-класса с цветным выводом",
-      "license": "EUPL-1.2",
-      "bins": [
-        "dog"
-      ],
-      "verify": true,
-      "prio": 4
-    },
-    {
-      "name": "zenith",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "bvaisnard/zenith",
-      "tagp": "v",
-      "summary": "Системный дашборд: CPU/GPU/сеть/диски графиками",
-      "license": "MIT",
-      "bins": [
-        "zenith"
-      ],
-      "exp": true,
-      "use": "zenith",
-      "prio": 7
-    },
-    {
-      "name": "ctop",
-      "eco": "go",
-      "host": "github",
-      "slug": "bcicen/ctop",
-      "tagp": "v",
-      "summary": "top для контейнеров (docker/podman)",
-      "license": "MIT",
-      "bins": [
-        "ctop"
-      ],
-      "gpkg": ".",
-      "use": "ctop — живой монитор контейнеров",
-      "prio": 2
-    },
-    {
-      "name": "wtfutil",
-      "eco": "go",
-      "host": "github",
-      "slug": "wtfutil/wtfutil",
-      "tagp": "v",
-      "summary": "Личный дашборд-терминал из модулей (ops-style)",
-      "license": "MPL-2.0",
-      "bins": [
-        "wtfutil"
-      ],
-      "gpkg": ".",
-      "fallback": "commit",
-      "use": "wtfutil — дашборд модулей",
-      "prio": 2
-    },
-    {
-      "name": "slides",
-      "eco": "go",
-      "host": "github",
-      "slug": "maaslalani/slides",
-      "tagp": "v",
-      "summary": "Презентации прямо в терминале из markdown",
-      "license": "MIT",
-      "bins": [
-        "slides"
-      ],
-      "gpkg": ".",
-      "use": "slides deck.md — презентация",
-      "prio": 2
-    },
-    {
-      "name": "presenterm",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "mfontanini/presenterm",
-      "tagp": "v",
-      "summary": "Терминальные презентации из markdown с темами",
-      "license": "BSD-2-Clause",
-      "bins": [
-        "presenterm"
-      ],
-      "use": "presenterm slides.md",
-      "prio": 2
-    },
-    {
-      "name": "tabiew",
-      "eco": "go",
-      "host": "github",
-      "slug": "fathulfahmy/tabiew",
-      "tagp": "v",
-      "summary": "TUI-просмотр csv/parquet/json датасетов",
-      "license": "MIT",
-      "bins": [
-        "tabiew"
-      ],
-      "gpkg": ".",
-      "fallback": "commit",
-      "verify": true,
-      "use": "tabiew data.csv",
-      "prio": 3
-    },
-    {
-      "name": "typioca",
-      "eco": "go",
-      "host": "github",
-      "slug": "bloznelis/typioca",
-      "tagp": "",
-      "summary": "Минималистичный тест скорости печати",
-      "license": "MIT",
-      "bins": [
-        "typioca"
-      ],
-      "use": "typioca — печать на скорость",
-      "prio": 3,
-      "gpkg": "."
-    },
-    {
-      "name": "bacon",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Canop/bacon",
-      "tagp": "v",
-      "summary": "Фоновый компилятор/тестер Rust-проектов на лету",
-      "license": "AGPL-3.0-or-later",
-      "bins": [
-        "bacon"
-      ],
-      "use": "bacon — фоновая проверка проекта",
-      "prio": 2
-    },
-    {
-      "name": "kondo",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "tbillington/kondo",
-      "tagp": "v",
-      "summary": "Чистка build-артефактов проектов (node_modules/target)",
-      "license": "MIT",
-      "bins": [
-        "kondo"
-      ],
-      "use": "kondo ~/dev — найти мусор",
-      "prio": 2
-    },
-    {
-      "name": "grex",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "pemistahl/grex",
-      "tagp": "v",
-      "summary": "Генератор регулярок из примеров строк",
-      "license": "Apache-2.0",
-      "bins": [
-        "grex"
-      ],
-      "use": "grex a1 b2 → '^a[12]b[12]$'",
-      "prio": 2
-    },
-    {
-      "name": "himalaya",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "pimalaya/himalaya",
-      "tagp": "v",
-      "summary": "Email-клиент целиком в CLI",
-      "license": "MIT",
-      "bins": [
-        "himalaya"
-      ],
-      "exp": true,
-      "use": "himalaya list — письма в терминале",
-      "prio": 6,
-      "note": "проверить BR openssl/rustls при сборке"
-    },
-    {
-      "name": "dua",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Byron/dua-cli",
-      "tagp": "v",
-      "summary": "Анализ места на диске + интерактивное удаление",
-      "license": "MIT",
-      "bins": [
-        "dua"
-      ],
-      "gpkg": ".",
-      "use": "dua i — интерактивный режим",
-      "prio": 2
-    },
-    {
-      "name": "pet",
-      "eco": "go",
-      "host": "github",
-      "slug": "knqyf263/pet",
-      "tagp": "v",
-      "summary": "Менеджер сниппетов: сохрани и вставь команду",
-      "license": "MIT",
-      "bins": [
-        "pet"
-      ],
-      "gpkg": ".",
-      "use": "pet new / pet exec <имя>",
-      "prio": 2
-    },
-    {
-      "name": "nb",
-      "eco": "script",
-      "host": "github",
-      "slug": "xwmx/nb",
-      "tagp": "",
-      "summary": "Заметки/закладки/блокноты — всё в CLI (один bash-файл)",
-      "license": "AGPL-3.0-or-later",
-      "files": [
-        "nb"
-      ],
-      "req": [
-        "bash",
-        "git"
-      ],
-      "interp": "bash",
-      "fallback": "commit",
-      "verify": true,
-      "use": "nb add текст заметки; nb ls",
-      "prio": 2
-    },
-    {
-      "name": "zk",
-      "eco": "go",
-      "host": "github",
-      "slug": "zk-org/zk",
-      "tagp": "v",
-      "summary": "Zettelkasten-заметки в терминале",
-      "license": "GPL-3.0-or-later",
-      "bins": [
-        "zk"
-      ],
-      "fallback": "commit",
-      "verify": true,
-      "use": "zk new; zk list",
-      "prio": 2,
-      "gpkg": "."
-    },
-    {
-      "name": "cyme",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "tuna-f1sh/cyme",
-      "tagp": "v",
-      "summary": "lsusb с красивым выводом и фильтрами",
-      "license": "MIT OR Apache-2.0",
-      "bins": [
-        "cyme"
-      ],
-      "br": [
-        "libusb1-devel"
-      ],
-      "use": "cyme",
-      "prio": 3
-    },
-    {
-      "name": "systeroid",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "orhun/systeroid",
-      "tagp": "v",
-      "summary": "sysctl(8) с TUI-графикой",
-      "license": "MIT OR Apache-2.0",
-      "bins": [
-        "systeroid",
-        "systctl"
-      ],
-      "exp": true,
-      "use": "systeroid --tui",
-      "prio": 7
-    },
-    {
-      "name": "fend",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "printf/fend",
-      "tagp": "v",
-      "summary": "Калькулятор произвольной точности",
-      "license": "MIT",
-      "bins": [
-        "fend"
-      ],
-      "use": "echo '1+2' | fend",
-      "verify": true,
-      "prio": 3
-    },
-    {
-      "name": "ascii-patrol",
-      "eco": "c-cmake",
-      "host": "github",
-      "slug": "msokalski/ascii-patrol",
-      "tagp": "",
-      "summary": "ASCII Patrol — аркада в стиле Moon Patrol",
-      "license": "MIT",
-      "bins": [
-        "aptr"
-      ],
-      "exp": true,
-      "use": "aptr",
-      "prio": 7
-    },
-    {
-      "name": "taskwarrior-tui",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "kdheepak/taskwarrior-tui",
-      "tagp": "v",
-      "enabled": false,
-      "prio": 9,
-      "summary": "TUI для taskwarrior",
-      "license": "MIT",
-      "note": "Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого"
-    },
-    {
-      "name": "genact",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "svenstaro/genact",
-      "tagp": "v",
-      "summary": "Генератор безумной активности — притворись хакером",
-      "license": "MIT",
-      "bins": [
-        "genact"
-      ],
-      "use": "genact — Ctrl+C остановить",
-      "prio": 3
-    },
-    {
-      "name": "mise",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "jdx/mise",
-      "tagp": "v",
-      "summary": "Менеджер рантаймов node/python/ruby — быстрый asdf-killer",
-      "license": "MIT",
-      "bins": [
-        "mise"
-      ],
-      "use": "mise use --pin node@22",
-      "prio": 1,
-      "alt": "curl https://mise.run | sh"
-    },
-    {
-      "name": "bandwhich",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "imsnif/bandwhich",
-      "tagp": "v",
-      "summary": "Какой процесс жрёт сеть — в реальном времени",
-      "license": "MIT",
-      "bins": [
-        "bandwhich"
-      ],
-      "use": "sudo bandwhich -i wlan0",
-      "prio": 1
-    },
-    {
-      "name": "oha",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "hatoo/oha",
-      "tagp": "v",
-      "summary": "HTTP бенчмарк с красивым TUI",
-      "license": "MIT",
-      "bins": [
-        "oha"
-      ],
-      "use": "oha -n 200 https://example.com",
-      "prio": 1
-    },
-    {
-      "name": "scc",
-      "eco": "go",
-      "host": "github",
-      "slug": "boyter/scc",
-      "tagp": "v",
-      "summary": "Счётчик строк кода по языкам — быстрее cloc",
-      "license": "MIT OR Unlicense",
-      "bins": [
-        "scc"
-      ],
-      "gpkg": ".",
-      "use": "scc ./project",
-      "prio": 1
-    },
-    {
-      "name": "trippy",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "fujiapple852/trippy",
-      "tagp": "",
-      "summary": "Гибрид mtr/traceroute с живым TUI",
-      "license": "Apache-2.0 OR MIT",
-      "bins": [
-        "trippy"
-      ],
-      "gpkg": ".",
-      "use": "sudo trip example.com",
-      "prio": 1,
-      "cdir": "crates/trippy"
-    },
-    {
-      "name": "watchexec",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "watchexec/watchexec",
-      "tagp": "",
-      "summary": "Перезапуск команд при изменении файлов",
-      "license": "Apache-2.0",
-      "bins": [
-        "watchexec"
-      ],
-      "cdir": "crates/cli",
-      "note": "воркспейс; CLI в crates/cli",
-      "use": "watchexec -- make test",
-      "prio": 1
-    },
-    {
-      "name": "rmpc",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "mierak/rmpc",
-      "tagp": "v",
-      "summary": "Красивый TUI клиент MPD",
-      "license": "BSD-3-Clause",
-      "bins": [
-        "rmpc"
-      ],
-      "exp": true,
-      "use": "rmpc — нужен запущенный mpd",
-      "prio": 7
-    },
-    {
-      "name": "erdtree",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "solidiquis/erdtree",
-      "tagp": "v",
-      "summary": "Анализ дерева каталогов с размерами",
-      "license": "MIT",
-      "bins": [
-        "ert"
-      ],
-      "use": "ert — размеры по папкам",
-      "prio": 5
-    },
-    {
-      "name": "tetris",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "samtay/tetris",
-      "tagp": "",
-      "summary": "Тетрис в терминале",
-      "license": "MIT",
-      "bins": [
-        "tetris"
-      ],
-      "use": "tetris — стрелки и пробел",
-      "prio": 9,
-      "enabled": false,
-      "note": "Апстрим на Haskell (Setup.hs) — в COPR не собрать без GHC"
-    },
-    {
-      "name": "diagram",
-      "eco": "go",
-      "host": "github",
-      "slug": "esimov/diagram",
-      "tagp": "v",
-      "summary": "ASCII-диаграммы из текста",
-      "license": "MIT",
-      "bins": [
-        "diagram"
-      ],
-      "gpkg": "./cmd/diagram",
-      "use": "diagram --svg out.svg in.txt",
-      "prio": 4
-    },
-    {
-      "name": "termshot",
-      "eco": "go",
-      "host": "github",
-      "slug": "homeport/termshot",
-      "tagp": "",
-      "summary": "Скриншот команды в виде терминального окна",
-      "license": "MIT",
-      "bins": [
-        "termshot"
-      ],
-      "gpkg": ".",
-      "use": "termshot --out shot.png -- ls -la",
-      "prio": 3
-    },
-    {
-      "name": "peaclock",
-      "eco": "custom",
-      "host": "github",
-      "slug": "octobanana/peaclock",
-      "tagp": "",
-      "summary": "Часы/секундомер/таймер с цветными цифрами",
-      "license": "MIT",
-      "br": [
-        "gcc-c++",
-        "cmake",
-        "make",
-        "ncurses-devel"
-      ],
-      "build_cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build && cp build/peaclock .",
-      "bins": [
-        "peaclock"
-      ],
-      "exp": true,
-      "verify": true,
-      "use": "peaclock",
-      "prio": 8
-    },
-    {
-      "name": "dysk",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "Canop/dysk",
-      "tagp": "v",
-      "summary": "df для людей: диски человекочитаемо",
-      "license": "MIT",
-      "bins": [
-        "dysk"
-      ],
-      "use": "dysk — все точки монтирования",
-      "prio": 2
-    },
-    {
-      "name": "video-to-ascii",
-      "eco": "python-pkg",
-      "host": "pypi",
-      "pkg": "video-to-ascii",
-      "summary": "Играть видео прямо в терминале ASCII-символами",
-      "license": "MIT",
-      "extra_files": [
-        "%{_bindir}/video-to-ascii"
-      ],
-      "use": "video-to-ascii -f clip.mp4 — нужны ffmpeg и portaudio",
-      "note": "нужны ffmpeg и portaudio в системе",
-      "prio": 6
-    },
-    {
-      "name": "pokete",
-      "eco": "python-script",
-      "host": "github",
-      "slug": "lxgr-linux/pokete",
-      "tagp": "",
-      "summary": "Покемоны в терминале (полноценная игра)",
-      "license": "GPL-3.0-or-later",
-      "moddir": "pokete_src",
-      "bins": [
-        "pokete.py"
-      ],
-      "exp": true,
-      "verify": true,
-      "use": "pokete.py",
-      "prio": 8
-    },
-    {
-      "name": "gittype",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "unhappychoice/gittype",
-      "tagp": "v",
-      "summary": "Тренажёр печати на коде твоих репозиториев",
-      "license": "MIT",
-      "bins": [
-        "gittype"
-      ],
-      "exp": true,
-      "use": "gittype в каталоге репо",
-      "prio": 7,
-      "br": [
-        "perl"
-      ]
-    }
-  ]
+  {
+   "name": "lazygit",
+   "eco": "go",
+   "host": "github",
+   "slug": "jesseduffield/lazygit",
+   "tagp": "v",
+   "summary": "Simple terminal UI for git commands",
+   "license": "MIT",
+   "bins": [
+    "lazygit"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "use": "запусти lazygit внутри git-репозитория",
+   "alt": "бинарник со страницы Releases или COPR: dnf copr enable atim/lazygit"
+  },
+  {
+   "name": "lazydocker",
+   "eco": "go",
+   "host": "github",
+   "slug": "jesseduffield/lazydocker",
+   "tagp": "v",
+   "summary": "Lazier way to manage everything docker",
+   "license": "MIT",
+   "bins": [
+    "lazydocker"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "use": "запусти lazydocker при работающем docker"
+  },
+  {
+   "name": "bottom",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "ClementTsang/bottom",
+   "tagp": "v",
+   "summary": "Cross-platform graphical process/system monitor",
+   "license": "Apache-2.0",
+   "bins": [
+    "btm"
+   ],
+   "prio": 1,
+   "use": "btm — монитор процессов с графиками",
+   "alt": "dnf copr enable atim/bottom или cargo install bottom"
+  },
+  {
+   "name": "yazi",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sxyazi/yazi",
+   "tagp": "v",
+   "summary": "Blazing fast terminal file manager written in Rust",
+   "license": "MIT",
+   "bins": [
+    "yazi",
+    "ya"
+   ],
+   "prio": 1,
+   "use": "yazi — файловый менеджер; выход Q",
+   "br": [
+    "cargo-rpm-macros",
+    "git-core"
+   ],
+   "build_env": [
+    "VERGEN_GIT_SHA=\"copr-build\""
+   ],
+   "alt": "cargo install yazi-cli или бинарники Releases",
+   "cdir": "yazi-build"
+  },
+  {
+   "name": "lf",
+   "eco": "go",
+   "host": "github",
+   "slug": "gokcehan/lf",
+   "tagp": "",
+   "summary": "Terminal file manager",
+   "license": "MIT",
+   "bins": [
+    "lf"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "use": "lf — файловый менеджер"
+  },
+  {
+   "name": "sd",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "chmln/sd",
+   "tagp": "v",
+   "summary": "Intuitive find & replace CLI (sed alternative)",
+   "license": "MIT",
+   "bins": [
+    "sd"
+   ],
+   "prio": 1,
+   "use": "sd 'старый текст' 'новый текст' file.txt",
+   "alt": "cargo install sd",
+   "cdir": "sd-cli"
+  },
+  {
+   "name": "xh",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "ducaale/xh",
+   "tagp": "v",
+   "summary": "Friendly and fast tool for sending HTTP requests",
+   "license": "MIT",
+   "bins": [
+    "xh"
+   ],
+   "prio": 1,
+   "br": [
+    "openssl-devel"
+   ],
+   "use": "xh GET https://api.github.com",
+   "alt": "cargo install xh или бинарники Releases"
+  },
+  {
+   "name": "curlie",
+   "eco": "go",
+   "host": "github",
+   "slug": "rs/curlie",
+   "tagp": "v",
+   "summary": "The power of curl, the ease of use of httpie",
+   "license": "MIT",
+   "bins": [
+    "curlie"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "use": "curlie https://api.github.com"
+  },
+  {
+   "name": "viddy",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sachaos/viddy",
+   "tagp": "v",
+   "summary": "Modern watch command (with key bindings and diffs)",
+   "license": "MIT",
+   "bins": [
+    "viddy"
+   ],
+   "prio": 1,
+   "use": "viddy 'df -h' — watch с подсветкой diff",
+   "alt": "go install github.com/sachaos/viddy@latest"
+  },
+  {
+   "name": "gping",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "orf/gping",
+   "tagp": "gping-v",
+   "summary": "Ping, but with a graph",
+   "license": "GPL-3.0-only",
+   "bins": [
+    "gping"
+   ],
+   "gpkg": "gping",
+   "prio": 1,
+   "use": "gping 1.1.1.1 — ping с графиком",
+   "cdir": "gping",
+   "br": [
+    "cargo-rpm-macros"
+   ],
+   "alt": "cargo install gping"
+  },
+  {
+   "name": "doggo",
+   "eco": "go",
+   "host": "github",
+   "slug": "mr-karan/doggo",
+   "tagp": "v",
+   "summary": "Fast command-line DNS client for humans",
+   "license": "GPL-3.0-only",
+   "bins": [
+    "doggo"
+   ],
+   "gpkg": "./cmd/doggo",
+   "prio": 1,
+   "use": "doggo example.com MX",
+   "alt": "go install github.com/mr-karan/doggo/cmd/doggo@latest"
+  },
+  {
+   "name": "fx",
+   "eco": "go",
+   "host": "github",
+   "slug": "antonmedv/fx",
+   "tagp": "",
+   "summary": "Terminal JSON viewer and processor",
+   "license": "MIT",
+   "bins": [
+    "fx"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "use": "cat data.json | fx — интерактивный JSON"
+  },
+  {
+   "name": "zellij",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "zellij-org/zellij",
+   "tagp": "v",
+   "summary": "Terminal workspace with panels, plugins and layouts",
+   "license": "MIT",
+   "bins": [
+    "zellij"
+   ],
+   "exp": true,
+   "prio": 8,
+   "use": "zellij — мультиплексор, Ctrl+p для помощи",
+   "br": [
+    "openssl-devel",
+    "perl"
+   ],
+   "alt": "curl -sSfL https://get.zellij.dev | sh (или cargo install zellij)"
+  },
+  {
+   "name": "macchina",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Macchina-CLI/macchina",
+   "tagp": "v",
+   "summary": "System information fetcher with an emphasis on performance",
+   "license": "MIT",
+   "bins": [
+    "macchina"
+   ],
+   "prio": 2,
+   "use": "macchina — инфа о системе",
+   "alt": "cargo install macchina-cli (или .rpm со страницы релизов)"
+  },
+  {
+   "name": "neofetch",
+   "eco": "script",
+   "host": "github",
+   "slug": "dylanaraps/neofetch",
+   "tagp": "v",
+   "summary": "Command-line system information tool",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "neofetch"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "prio": 2,
+   "use": "neofetch",
+   "alt": "git clone https://github.com/dylanaraps/neofetch && sudo make install"
+  },
+  {
+   "name": "ghfetch",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "SafarSoFar/ghfetch",
+   "tagp": "v",
+   "summary": "Neofetch-like utility to fetch GitHub info in the terminal",
+   "license": "MIT",
+   "bins": [
+    "ghfetch"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "ghfetch <логин-github>",
+   "fallback": "commit"
+  },
+  {
+   "name": "gitfetch",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "FabricSoul/gitfetch",
+   "tagp": "v",
+   "summary": "GitHub contribution visualization tool inspired by neofetch",
+   "license": "MIT",
+   "bins": [
+    "gitfetch"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "gitfetch <логин-github>"
+  },
+  {
+   "name": "bunnyfetch",
+   "eco": "go",
+   "host": "github",
+   "slug": "Rosettea/bunnyfetch",
+   "tagp": "v",
+   "summary": "Tiny system info fetch utility",
+   "license": "MIT",
+   "bins": [
+    "bunnyfetch"
+   ],
+   "gpkg": ".",
+   "verify": true,
+   "prio": 2,
+   "use": "bunnyfetch"
+  },
+  {
+   "name": "catnap",
+   "eco": "nim",
+   "host": "github",
+   "slug": "iinsertNameHere/catnap",
+   "tagp": "v",
+   "summary": "Playful simple system information tool",
+   "license": "MIT",
+   "build_cmd": "nim c -d:release --out:catnap src/catnap.nim",
+   "verify": true,
+   "prio": 2,
+   "enabled": false,
+   "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
+  },
+  {
+   "name": "nitch",
+   "eco": "nim",
+   "host": "github",
+   "slug": "ssleert/nitch",
+   "tagp": "v",
+   "summary": "Incredibly fast system fetch written in Nim",
+   "license": "MIT",
+   "build_cmd": "nim c -d:release --out:nitch src/nitch.nim",
+   "verify": true,
+   "prio": 2,
+   "enabled": false,
+   "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
+  },
+  {
+   "name": "rxfetch",
+   "eco": "script",
+   "host": "github",
+   "slug": "mngshm/rxfetch",
+   "tagp": "v",
+   "summary": "Custom system fetching tool written in bash",
+   "license": "MIT",
+   "files": [
+    "rxfetch"
+   ],
+   "share": {
+    "src": "custom",
+    "dst": "/usr/share/rxfetch"
+   },
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 2,
+   "use": "rxfetch",
+   "alt": "git clone https://github.com/Mangeshrex/rxfetch && sudo ./install.sh",
+   "fallback": "commit"
+  },
+  {
+   "name": "nerdfetch",
+   "eco": "script",
+   "host": "codeberg",
+   "slug": "thatonecalculator/NerdFetch",
+   "tagp": "v",
+   "summary": "POSIX nix fetch script using Nerdfonts",
+   "license": "MIT",
+   "files": [
+    "nerdfetch"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "sh",
+   "verify": true,
+   "prio": 2,
+   "use": "nerdfetch (нужен Nerd Font)"
+  },
+  {
+   "name": "disfetch",
+   "eco": "script",
+   "host": "github",
+   "slug": "q60/disfetch",
+   "tagp": "v",
+   "summary": "Yet another *nix distro fetching program, less complex",
+   "license": "WTFPL",
+   "files": [
+    "disfetch"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "sh",
+   "verify": true,
+   "prio": 2,
+   "use": "disfetch"
+  },
+  {
+   "name": "ufetch",
+   "eco": "script",
+   "host": "gitlab",
+   "slug": "jschx/ufetch",
+   "tagp": "v",
+   "summary": "Tiny system info for Unix-like operating systems",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "ufetch-alpine"
+   ],
+   "req": [
+    "sh"
+   ],
+   "interp": "sh",
+   "verify": true,
+   "prio": 2,
+   "use": "ufetch",
+   "fallback": "commit"
+  },
+  {
+   "name": "albafetch",
+   "eco": "meson",
+   "host": "github",
+   "slug": "alba4k/albafetch",
+   "tagp": "v",
+   "summary": "Faster neofetch alternative written in C",
+   "license": "GPL-3.0-or-later",
+   "verify": true,
+   "prio": 2,
+   "br": [
+    "ncurses-devel",
+    "pkgconf-pkg-config",
+    "sqlite-devel"
+   ],
+   "use": "albafetch"
+  },
+  {
+   "name": "CrabFetch",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "LivacoNew/CrabFetch",
+   "tagp": "v",
+   "summary": "Extremely fast and featureful command-line fetcher",
+   "license": "MIT",
+   "bins": [
+    "crabfetch"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "crabfetch"
+  },
+  {
+   "name": "animfetch",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Andrew-Velox/animfetch",
+   "tagp": "v",
+   "summary": "Animated system fetch pinned above your shell",
+   "license": "MIT",
+   "bins": [
+    "animfetch"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "animfetch — анимированный fetch",
+   "br": [
+    "cargo-rpm-macros"
+   ]
+  },
+  {
+   "name": "archey4",
+   "eco": "python-pkg",
+   "host": "github",
+   "slug": "HorlogeSkynet/archey4",
+   "tagp": "v",
+   "summary": "Arch Linux system information tool (maintained fork)",
+   "license": "GPL-3.0-or-later",
+   "br": [
+    "python3-dbus",
+    "python3-distro",
+    "python3-netifaces",
+    "python3-setproctitle"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "archey",
+   "alt": "pip install archey4",
+   "extra_files": [
+    "%{_bindir}/archey",
+    "%{_docdir}/archey4"
+   ]
+  },
+  {
+   "name": "pokemon-icat",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "aflaag/pokemon-icat",
+   "tagp": "v",
+   "summary": "Show any Pokemon sprite in your terminal",
+   "license": "MIT",
+   "moddir": "src",
+   "bins": [
+    "pokemon-icat"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "pokemon-icat pikachu — спрайт покемона",
+   "fallback": "commit"
+  },
+  {
+   "name": "pridefetch",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "cartoon-raccoon/pridefetch",
+   "tagp": "v",
+   "summary": "Neofetch, but gay",
+   "license": "GPL-3.0-or-later",
+   "bins": [
+    "pridefetch"
+   ],
+   "verify": true,
+   "prio": 2,
+   "use": "pridefetch",
+   "fallback": "commit"
+  },
+  {
+   "name": "winfetch",
+   "eco": "script",
+   "host": "github",
+   "slug": "lptstr/winfetch",
+   "tagp": "v",
+   "summary": "Command-line system information utility for Windows/PowerShell",
+   "license": "MIT",
+   "files": [
+    "winfetch.ps1"
+   ],
+   "bins": [
+    "winfetch.ps1"
+   ],
+   "req": [],
+   "interp": "pwsh",
+   "verify": true,
+   "prio": 9,
+   "use": "winfetch (требуется PowerShell/pwsh)",
+   "enabled": false,
+   "note": "Апстрим Windows-only ('Only supported on Windows'). На Linux используйте fastfetch/macchina"
+  },
+  {
+   "name": "pipes.sh",
+   "eco": "script",
+   "host": "github",
+   "slug": "pipeseroni/pipes.sh",
+   "tagp": "v",
+   "summary": "Animated pipes terminal screensaver",
+   "license": "MIT",
+   "files": [
+    "pipes.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "prio": 3,
+   "use": "pipes.sh — трубы-скринсейвер, Esc для выхода"
+  },
+  {
+   "name": "pipesX",
+   "eco": "script",
+   "host": "github",
+   "slug": "pipeseroni/pipesX.sh",
+   "tagp": "v",
+   "summary": "Animated pipes screensaver, extended edition",
+   "license": "MIT",
+   "files": [
+    "pipesX.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "use": "pipesX.sh"
+  },
+  {
+   "name": "lavat",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "AngelJumbo/lavat",
+   "tagp": "v",
+   "summary": "Lava lamp in the terminal",
+   "license": "MIT",
+   "br": [
+    "ncurses-devel"
+   ],
+   "install_cmd": "install -Dpm0755 lavat %{buildroot}%{_bindir}/lavat",
+   "verify": true,
+   "prio": 3,
+   "use": "lavat — лава-лампа; клавиши +/- меняют скорость",
+   "noman": true
+  },
+  {
+   "name": "ascii-rain",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "nkleemann/ascii-rain",
+   "tagp": "v",
+   "summary": "Comfy rain for your console",
+   "license": "GPL-2.0-only",
+   "br": [
+    "ncurses-devel"
+   ],
+   "install_cmd": "install -Dpm0755 rain %{buildroot}%{_bindir}/ascii-rain",
+   "verify": true,
+   "prio": 3,
+   "use": "ascii-rain — дождь, Ctrl+C выход",
+   "fallback": "commit"
+  },
+  {
+   "name": "tty-clock",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "xorg62/tty-clock",
+   "tagp": "v",
+   "summary": "Digital clock in ncurses",
+   "license": "BSD-2-Clause",
+   "br": [
+    "ncurses-devel"
+   ],
+   "install_cmd": "%make_install PREFIX=%{_prefix}",
+   "verify": true,
+   "prio": 3,
+   "use": "tty-clock -c -C 4 — часы по центру, цвет 4",
+   "alt": "git clone + make install"
+  },
+  {
+   "name": "ctree",
+   "eco": "go",
+   "host": "github",
+   "slug": "gleich/ctree",
+   "tagp": "v",
+   "summary": "A Christmas tree right from your terminal",
+   "license": "MIT",
+   "bins": [
+    "ctree"
+   ],
+   "gpkg": ".",
+   "verify": true,
+   "prio": 3,
+   "use": "ctree — новогодняя ёлка"
+  },
+  {
+   "name": "terminal-parrot",
+   "eco": "go",
+   "host": "github",
+   "slug": "jmhobbs/terminal-parrot",
+   "tagp": "",
+   "summary": "Party parrot time, in your terminal",
+   "license": "MIT",
+   "bins": [
+    "terminal-parrot"
+   ],
+   "gpkg": ".",
+   "prio": 3,
+   "fallback": "commit",
+   "use": "terminal-parrot — танцующий попугай"
+  },
+  {
+   "name": "snowmachine",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "snowmachine",
+   "summary": "Snow in your terminal",
+   "license": "MIT",
+   "prio": 3,
+   "use": "snowmachine — снегопад",
+   "extra_files": [
+    "%{_bindir}/snowmachine"
+   ]
+  },
+  {
+   "name": "PyBonsai",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "pybonsai",
+   "summary": "Procedural ASCII bonsai tree generator",
+   "license": "MIT",
+   "verify": true,
+   "prio": 3,
+   "use": "pybonsai — растит бонсай",
+   "pbr_exclude": [
+    "streamlink"
+   ]
+  },
+  {
+   "name": "arttime",
+   "eco": "script",
+   "host": "github",
+   "slug": "poetaman/arttime",
+   "tagp": "v",
+   "summary": "ASCII art, clock, timer and time manager for the terminal",
+   "license": "GPL-3.0-or-later",
+   "br": [
+    "python3-pytz",
+    "python3-rich",
+    "python3-tomli-w"
+   ],
+   "verify": true,
+   "prio": 3,
+   "use": "arttime — ASCII-арт+часы; arttime -m сообщение",
+   "alt": "pipx install arttime",
+   "interp": "bash",
+   "files": [
+    "bin/arttime",
+    "bin/artprint"
+   ]
+  },
+  {
+   "name": "duckpond",
+   "eco": "script",
+   "host": "github",
+   "slug": "gsobell/duckpond.sh",
+   "tagp": "v",
+   "summary": "Ducks swimming in a pond, in your terminal",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "duckpond.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "fallback": "commit",
+   "use": "duckpond.sh — утки на пруду"
+  },
+  {
+   "name": "lifecycler",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "tobi-wan-kenobi/lifecycler",
+   "tagp": "v",
+   "summary": "Aquarium right in your terminal",
+   "license": "GPL-2.0-only",
+   "bins": [
+    "lifecycler"
+   ],
+   "verify": true,
+   "prio": 9,
+   "use": "lifecycler — аквариум/клеточный автомат",
+   "enabled": false,
+   "note": "Апстрим недоступен (404) / пакет удалён из registry"
+  },
+  {
+   "name": "maze",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "pipeseroni/maze.py",
+   "tagp": "v",
+   "summary": "Animated maze generator screensaver",
+   "license": "GPL-3.0-or-later",
+   "bins": [
+    "maze.py"
+   ],
+   "verify": true,
+   "prio": 3,
+   "use": "maze.py — генерация лабиринта",
+   "fallback": "commit"
+  },
+  {
+   "name": "snakes",
+   "eco": "script",
+   "host": "github",
+   "slug": "pipeseroni/snakes.pl",
+   "tagp": "v",
+   "summary": "Snakes crawling across your terminal",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "snakes.pl"
+   ],
+   "req": [
+    "perl"
+   ],
+   "interp": "perl",
+   "verify": true,
+   "prio": 3,
+   "use": "snakes.pl — змейки",
+   "fallback": "commit"
+  },
+  {
+   "name": "weave",
+   "eco": "script",
+   "host": "github",
+   "slug": "pipeseroni/weave.sh",
+   "tagp": "v",
+   "summary": "Weaving pattern screensaver",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "weave.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "use": "weave.sh — плетение узоров"
+  },
+  {
+   "name": "gh-screensaver",
+   "eco": "go",
+   "host": "github",
+   "slug": "vilmibm/gh-screensaver",
+   "tagp": "v",
+   "summary": "Screensaver extension for gh (fireworks/starfield/pipes)",
+   "license": "MIT",
+   "bins": [
+    "gh-screensaver"
+   ],
+   "gpkg": ".",
+   "verify": true,
+   "prio": 3,
+   "use": "gh screensaver -e fireworks (нужен GitHub CLI)"
+  },
+  {
+   "name": "shuffle",
+   "eco": "script",
+   "host": "github",
+   "slug": "wyjok/shuffle",
+   "tagp": "v",
+   "summary": "ASCII art with a cool shuffle effect",
+   "license": "MIT",
+   "files": [
+    "shuffle.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "enabled": false,
+   "prio": 9
+  },
+  {
+   "name": "cbeams",
+   "eco": "python-pkg",
+   "host": "github",
+   "slug": "tartley/cbeams",
+   "tagp": "",
+   "summary": "Colorful animated beams in the terminal",
+   "license": "BSD-2-Clause",
+   "bins": [
+    "cbeams"
+   ],
+   "req": [
+    "python3-colorama"
+   ],
+   "verify": true,
+   "prio": 3,
+   "use": "cbeams — цветные лучи"
+  },
+  {
+   "name": "ascsaver",
+   "eco": "script",
+   "host": "gitlab",
+   "slug": "mezantrop/ascsaver",
+   "tagp": "v",
+   "summary": "Collection of ASCII screensavers (dogs/globe/nasa/star_wars)",
+   "license": "GPL-2.0-only",
+   "share": {
+    "src": ".",
+    "dst": "/usr/libexec/ascsaver"
+   },
+   "req": [
+    "bash",
+    "perl"
+   ],
+   "interp": "sh",
+   "verify": true,
+   "prio": 3,
+   "fallback": "commit"
+  },
+  {
+   "name": "weatherspect",
+   "eco": "script",
+   "host": "web",
+   "url": "https://www.robobunny.com/projects/weatherspect/perl/weatherspect_v{version}.pl",
+   "version": "1.15",
+   "summary": "Elaborate ASCII weather simulation",
+   "license": "GPL-2.0-only",
+   "files": [
+    "weatherspect.pl"
+   ],
+   "req": [
+    "perl"
+   ],
+   "interp": "perl",
+   "verify": true,
+   "enabled": false,
+   "prio": 9
+  },
+  {
+   "name": "zenta",
+   "eco": "go",
+   "host": "github",
+   "slug": "e6a5/zenta",
+   "tagp": "v",
+   "summary": "Meditative zen terminal screensaver",
+   "license": "MIT",
+   "files": [
+    "zenta.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "use": "zenta.sh — дзен-скринсейвер",
+   "gpkg": ".",
+   "bins": [
+    "zenta"
+   ]
+  },
+  {
+   "name": "tspace",
+   "eco": "script",
+   "host": "github",
+   "slug": "mtklr/tspace",
+   "tagp": "v",
+   "summary": "Fly a little spaceship around your terminal",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "tspace.c"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "fallback": "commit",
+   "use": "tspace.sh — кораблик"
+  },
+  {
+   "name": "tfire",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "tech-chad/tfire",
+   "tagp": "v",
+   "summary": "Fire animation in your terminal",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "tfire.py"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "fallback": "commit",
+   "use": "tfire.sh — огонь",
+   "bins": [
+    "tfire"
+   ],
+   "script_src": {
+    "tfire": "tfire.py"
+   }
+  },
+  {
+   "name": "termdvd",
+   "eco": "npm",
+   "host": "npm",
+   "pkg": "termdvd",
+   "summary": "Flying DVD logo screensaver for the terminal",
+   "license": "MIT",
+   "npmbin": "termdvd",
+   "verify": true,
+   "prio": 9,
+   "enabled": false,
+   "note": "Апстрим недоступен (404) / пакет удалён из registry"
+  },
+  {
+   "name": "fireworks",
+   "eco": "script",
+   "host": "web",
+   "url": "https://archive.org/download/bash-fireworks/fireworks.sh",
+   "version": "1.0",
+   "summary": "Bash fireworks screensaver",
+   "license": "GPL-2.0-only",
+   "files": [
+    "fireworks.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "prio": 3,
+   "use": "fireworks.sh — фейерверк",
+   "enabled": false,
+   "note": "Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети"
+  },
+  {
+   "name": "cli-fx",
+   "eco": "script",
+   "host": "github",
+   "slug": "lukeslp/cli-fx",
+   "tagp": "",
+   "summary": "Terminal visual effects library in pure bash (glitch/plasma/rain)",
+   "license": "MIT",
+   "share": {
+    "src": "lib",
+    "dst": "/usr/share/cli-fx"
+   },
+   "bins": [],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 3,
+   "use": "source /usr/share/cli-fx/lib/core.sh — эффекты в своих скриптах"
+  },
+  {
+   "name": "hollywood",
+   "eco": "script",
+   "host": "github",
+   "slug": "dustinkirkland/hollywood",
+   "tagp": "",
+   "summary": "Fill your console with Hollywood melodrama technobabble",
+   "license": "GPL-3.0-or-later",
+   "share": {
+    "src": ".",
+    "dst": "/usr/libexec/hollywood"
+   },
+   "bins": [
+    "hollywood"
+   ],
+   "req": [
+    "byobu",
+    "ccze",
+    "cmatrix",
+    "oneko",
+    "cowsay",
+    "fortune-mod",
+    "jp2a"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 9,
+   "use": "hollywood — консоль хакера из кино (нужен byobu)"
+  },
+  {
+   "name": "bb",
+   "eco": "c-autotools",
+   "host": "web",
+   "url": "http://aa-project.sourceforge.net/bb/bb-1.3.0.tar.gz",
+   "version": "1.3.0",
+   "topdir": "bb-1.3.0",
+   "summary": "High-res ASCII art demo (aalib showcase)",
+   "license": "GPL-2.0-only",
+   "br": [
+    "aalib-devel",
+    "gcc"
+   ],
+   "autoreconf": true,
+   "verify": true,
+   "prio": 9,
+   "enabled": false,
+   "note": "Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети"
+  },
+  {
+   "name": "ponysay",
+   "eco": "script",
+   "host": "github",
+   "slug": "erkin/ponysay",
+   "tagp": "v",
+   "summary": "cowsay reimplemention for ponies, 256-color",
+   "license": "GPL-3.0-or-later",
+   "install_extra": "python3 setup.py --root=%{buildroot} install || ./install.sh --prefix=%{buildroot}%{_prefix}",
+   "verify": true,
+   "prio": 4,
+   "use": "ponysay 'Привет!' или ponysay -l список пони",
+   "alt": "git clone && ./install.sh"
+  },
+  {
+   "name": "yosay",
+   "eco": "npm",
+   "host": "github",
+   "slug": "yeoman/yosay",
+   "tagp": "v",
+   "summary": "Tell Yeoman what to say, ANSI-art speech bubbles",
+   "license": "BSD-2-Clause",
+   "npmbin": "yosay",
+   "prio": 4,
+   "use": "yosay 'Привет!'",
+   "alt": "npm install -g yosay"
+  },
+  {
+   "name": "parrotsay",
+   "eco": "npm",
+   "host": "npm",
+   "pkg": "parrotsay",
+   "summary": "Party parrot says things in your terminal",
+   "license": "MIT",
+   "npmbin": "parrotsay",
+   "verify": true,
+   "prio": 4,
+   "use": "parrotsay 'Привет!'",
+   "alt": "npm install -g parrotsay"
+  },
+  {
+   "name": "ricksay",
+   "eco": "custom",
+   "host": "github",
+   "slug": "kochie/ricksay",
+   "tagp": "v",
+   "summary": "Rick and Morty quotes of the day (cowsay clone)",
+   "license": "MIT",
+   "files": [
+    "ricksay"
+   ],
+   "req": [
+    "bash",
+    "cowsay"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 4,
+   "fallback": "commit",
+   "use": "ricksay — цитата Рика и Морти",
+   "build_cmd": "gcc -O2 src/main.c -o ricksay",
+   "bins": [
+    "ricksay"
+   ],
+   "share": {
+    "src": "src/quotes.json",
+    "dst": "/usr/share/ricksay"
+   },
+   "br": [
+    "gcc"
+   ]
+  },
+  {
+   "name": "jp2a",
+   "eco": "c-autotools",
+   "host": "github",
+   "slug": "Talinx/jp2a",
+   "tagp": "v",
+   "summary": "Convert JPG/PNG images to ASCII art",
+   "license": "GPL-2.0-only",
+   "br": [
+    "autoconf",
+    "automake",
+    "gcc",
+    "libjpeg-turbo-devel",
+    "libpng-devel",
+    "libwebp-devel",
+    "libexif-devel"
+   ],
+   "autoreconf": true,
+   "prio": 4,
+   "use": "jp2a photo.jpg --width=80",
+   "alt": "./autogen.sh && make && make install из исходников"
+  },
+  {
+   "name": "artem",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "FineFindus/artem",
+   "tagp": "v",
+   "summary": "Convert images from multiple formats to ASCII art",
+   "license": "MPL-2.0",
+   "bins": [
+    "artem"
+   ],
+   "prio": 4,
+   "use": "artem photo.jpg — картинка в ASCII",
+   "alt": "cargo install artem"
+  },
+  {
+   "name": "viu",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "atanunq/viu",
+   "tagp": "v",
+   "summary": "View images right from the terminal",
+   "license": "MIT",
+   "bins": [
+    "viu"
+   ],
+   "prio": 4,
+   "use": "viu photo.jpg — картинка прямо в терминале",
+   "alt": "cargo install viu"
+  },
+  {
+   "name": "durdraw",
+   "eco": "python-pkg",
+   "host": "github",
+   "slug": "cmang/durdraw",
+   "tagp": "v",
+   "summary": "ANSI/ASCII and Unicode art editor with animation",
+   "license": "GPL-3.0-or-later",
+   "verify": true,
+   "prio": 4,
+   "use": "durdraw — редактор ANSI-арта",
+   "alt": "pipx install durdraw",
+   "extra_files": [
+    "%{_bindir}/durdraw",
+    "%{_bindir}/durfetch",
+    "%{_bindir}/durview"
+   ]
+  },
+  {
+   "name": "diagon",
+   "eco": "c-cmake",
+   "host": "github",
+   "slug": "ArthurSonzogni/Diagon",
+   "tagp": "v",
+   "summary": "Interactive ASCII diagram generator (math/tree/table/flow)",
+   "license": "MIT",
+   "br": [
+    "cmake",
+    "gcc-c++"
+   ],
+   "exp": true,
+   "prio": 9,
+   "use": "diagon math — интерактивные ASCII-диаграммы",
+   "enabled": false,
+   "note": "cmake FetchContent требует сеть при сборке — отключён до vendored релиза"
+  },
+  {
+   "name": "tulizu",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "loh-tar/tulizu",
+   "tagp": "",
+   "summary": "Tool to customize ASCII art in /etc/issue",
+   "license": "GPL-3.0-or-later",
+   "install_cmd": "%make_install PREFIX=%{_prefix}",
+   "verify": true,
+   "prio": 4,
+   "use": "tulizu --help — арт для /etc/issue",
+   "noman": true
+  },
+  {
+   "name": "cadubi",
+   "eco": "script",
+   "host": "github",
+   "slug": "statico/cadubi",
+   "tagp": "v",
+   "summary": "Creative ASCII drawing utility",
+   "license": "ISC",
+   "files": [
+    "cadubi"
+   ],
+   "req": [
+    "perl"
+   ],
+   "interp": "perl",
+   "verify": true,
+   "prio": 4,
+   "use": "cadubi — рисование ASCII"
+  },
+  {
+   "name": "colorls",
+   "eco": "gem",
+   "host": "github",
+   "slug": "athityakumar/colorls",
+   "tagp": "v",
+   "summary": "Prettifies ls output with colors and font-awesome icons",
+   "license": "MIT",
+   "verify": true,
+   "exp": true,
+   "prio": 8,
+   "use": "colorls — красивый ls (нужен Nerd Font)",
+   "gem_git": true,
+   "br": [
+    "git-core"
+   ],
+   "alt": "gem install colorls"
+  },
+  {
+   "name": "pscircle",
+   "eco": "c-autotools",
+   "host": "gitlab",
+   "slug": "mildlyparallel/pscircle",
+   "tagp": "v",
+   "summary": "Visualize processes as a circular tree wallpaper",
+   "license": "GPL-2.0-or-later",
+   "br": [
+    "autoconf",
+    "automake",
+    "cairo-devel",
+    "gcc",
+    "glib2-devel",
+    "make"
+   ],
+   "prio": 4,
+   "verify": true,
+   "use": "pscircle --output=pscircle.png — процессы кругом",
+   "autoreconf": true
+  },
+  {
+   "name": "powerlevel10k",
+   "eco": "script",
+   "host": "github",
+   "slug": "romkatv/powerlevel10k",
+   "tagp": "v",
+   "summary": "Zsh theme focused on speed, flexibility and out-of-box UX",
+   "license": "MIT",
+   "share": {
+    "src": ".",
+    "dst": "/usr/share/powerlevel10k"
+   },
+   "bins": [],
+   "req": [
+    "zsh"
+   ],
+   "interp": "zsh",
+   "prio": 5,
+   "use": "echo 'source /usr/share/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc",
+   "alt": "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.powerlevel10k && echo 'source ~/.powerlevel10k/powerlevel10k.zsh-theme' >> ~/.zshrc"
+  },
+  {
+   "name": "oh-my-zsh",
+   "eco": "script",
+   "host": "github",
+   "slug": "ohmyzsh/ohmyzsh",
+   "tagp": "",
+   "summary": "Framework for managing zsh configuration with 300+ plugins",
+   "license": "MIT",
+   "share": {
+    "src": ".",
+    "dst": "/usr/share/oh-my-zsh"
+   },
+   "bins": [],
+   "req": [
+    "zsh"
+   ],
+   "interp": "zsh",
+   "prio": 5,
+   "fallback": "commit",
+   "use": "экспортируй ZSH=/usr/share/oh-my-zsh и source oh-my-zsh.sh в ~/.zshrc",
+   "alt": "sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" (ставит в ~/.oh-my-zsh)"
+  },
+  {
+   "name": "pure",
+   "eco": "npm",
+   "host": "github",
+   "slug": "sindresorhus/pure",
+   "tagp": "v",
+   "summary": "Pretty, minimal and fast ZSH prompt",
+   "license": "MIT",
+   "share": {
+    "src": "pure.zsh",
+    "dst": "/usr/share/zsh/site-functions/prompt_pure_setup"
+   },
+   "npmbin": "",
+   "req": [
+    "zsh"
+   ],
+   "verify": true,
+   "prio": 5,
+   "use": "npm-глобал: добавь 'prompt pure' через antigen/zplug",
+   "alt": "npm install -g pure-prompt или git clone + symlink в fpath"
+  },
+  {
+   "name": "pywal",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "pywal",
+   "summary": "Generate and change color-schemes on the fly",
+   "license": "MIT",
+   "prio": 5,
+   "use": "wal -i обои.jpg — палитра из картинки",
+   "alt": "pip install --user pywal",
+   "extra_files": [
+    "%{_bindir}/wal",
+    "%{_prefix}/man/man1/wal.1*"
+   ]
+  },
+  {
+   "name": "wallust",
+   "eco": "cargo",
+   "host": "codeberg",
+   "slug": "explosion-mental/wallust",
+   "tagp": "v",
+   "summary": "Generate colorschemes from images (pywal successor)",
+   "license": "MIT",
+   "bins": [
+    "wallust",
+    "salsort"
+   ],
+   "prio": 5,
+   "verify": true,
+   "use": "wallust run обои.jpg",
+   "alt": "cargo install wallust"
+  },
+  {
+   "name": "flavours",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Misterio77/flavours",
+   "tagp": "v",
+   "summary": "Manager and builder for Base16 base00-FF schemes",
+   "license": "MIT",
+   "bins": [
+    "flavours"
+   ],
+   "verify": true,
+   "prio": 5,
+   "use": "flavours apply gruvbox-dark",
+   "alt": "cargo install flavours"
+  },
+  {
+   "name": "tint",
+   "eco": "script",
+   "host": "github",
+   "slug": "corygabrielsen/tint",
+   "tagp": "v",
+   "summary": "Terminal theme switcher with live preview",
+   "license": "MIT",
+   "files": [
+    "tint"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 5,
+   "use": "tint dracula — сменить тему терминала; tint -l список"
+  },
+  {
+   "name": "cli-visualizer",
+   "eco": "c-cmake",
+   "host": "github",
+   "slug": "dpayne/cli-visualizer",
+   "tagp": "",
+   "summary": "CLI audio visualizer for mpd/alsa/pulse",
+   "license": "MIT",
+   "br": [
+    "cmake",
+    "fftw-devel",
+    "gcc-c++",
+    "ncurses-devel",
+    "pulseaudio-libs-devel"
+   ],
+   "verify": true,
+   "exp": true,
+   "prio": 9,
+   "use": "vis — визуализатор звука (mpd/alsa/pulse)",
+   "enabled": false,
+   "note": "Апстрим недоступен (404) / пакет удалён из registry"
+  },
+  {
+   "name": "linuxwave",
+   "eco": "zig",
+   "host": "github",
+   "slug": "orhun/linuxwave",
+   "tagp": "v",
+   "summary": "Generate music from the entropy of Linux",
+   "license": "Apache-2.0",
+   "bins": [
+    "linuxwave"
+   ],
+   "prio": 5,
+   "use": "linuxwave -o out.wav — музыка из энтропии",
+   "alt": "cargo install linuxwave",
+   "enabled": true,
+   "note": "",
+   "exp": false
+  },
+  {
+   "name": "musikcube",
+   "eco": "c-cmake",
+   "host": "github",
+   "slug": "clangen/musikcube",
+   "tagp": "",
+   "summary": "Terminal-based music player, library and streaming server",
+   "license": "BSD-3-Clause",
+   "br": [
+    "alsa-lib-devel",
+    "cmake",
+    "ffmpeg-devel",
+    "gcc-c++",
+    "libmicrodns-devel",
+    "ncurses-devel",
+    "pulseaudio-libs-devel"
+   ],
+   "exp": true,
+   "prio": 8,
+   "use": "musikcube — консольный плеер"
+  },
+  {
+   "name": "chucknorris",
+   "eco": "script",
+   "host": "github",
+   "slug": "bfontaine/chucknorris",
+   "tagp": "",
+   "summary": "Chuck Norris jokes in your terminal",
+   "license": "MIT",
+   "files": [
+    "bin/chucknorris"
+   ],
+   "req": [
+    "ruby"
+   ],
+   "interp": "ruby",
+   "verify": true,
+   "prio": 9,
+   "enabled": false,
+   "note": "Апстрим-слаг не найден, пакет отключён до уточнения"
+  },
+  {
+   "name": "hack",
+   "eco": "script",
+   "host": "github",
+   "slug": "ivanovmg/hack",
+   "tagp": "",
+   "summary": "Simulate Hollywood hacking in your terminal",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "hack.sh"
+   ],
+   "bins": [
+    "hack"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 9,
+   "enabled": false,
+   "note": "Апстрим-слаг не найден, пакет отключён до уточнения"
+  },
+  {
+   "name": "rickrollrc",
+   "eco": "script",
+   "host": "github",
+   "slug": "keroserene/rickrollrc",
+   "tagp": "",
+   "summary": "Rick Astley rickrolls your terminal",
+   "license": "MIT",
+   "files": [
+    "roll.sh"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 6,
+   "fallback": "commit"
+  },
+  {
+   "name": "WezTerm",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "wez/wezterm",
+   "tagp": "",
+   "summary": "GPU-accelerated cross-platform terminal emulator and multiplexer",
+   "license": "MIT",
+   "bins": [
+    "wezterm"
+   ],
+   "exp": true,
+   "enabled": false,
+   "note": "Сборка ~40+ мин, может не собраться на s390x/ppc64le",
+   "prio": 9
+  },
+  {
+   "name": "Rio",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "raphamorim/rio",
+   "tagp": "v",
+   "summary": "Hardware-accelerated terminal emulator focused on typography",
+   "license": "MIT",
+   "bins": [
+    "rio"
+   ],
+   "exp": true,
+   "prio": 9,
+   "br": [
+    "cargo-rpm-macros",
+    "fontconfig-devel",
+    "glslang",
+    "pkgconf-pkg-config"
+   ],
+   "cdir": "frontends/rioterm"
+  },
+  {
+   "name": "Ghostty",
+   "eco": "zig",
+   "host": "github",
+   "slug": "ghostty-org/ghostty",
+   "tagp": "v",
+   "summary": "Blazing fast native terminal emulator",
+   "license": "MIT",
+   "exp": true,
+   "enabled": false,
+   "note": "Требуется zig, которого нет в Fedora; собирать вручную или из COPR pgdev",
+   "prio": 9
+  },
+  {
+   "name": "eDEX-UI",
+   "eco": "npm",
+   "host": "github",
+   "slug": "GitSquared/edex-ui",
+   "tagp": "v",
+   "summary": "Sci-fi computer terminal emulator and system monitor",
+   "license": "GPL-3.0-or-later",
+   "npmbin": "edex-ui",
+   "exp": true,
+   "enabled": false,
+   "note": "Electron, огромная сборка; проще flathub",
+   "prio": 9
+  },
+  {
+   "name": "terminaltexteffects",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "terminaltexteffects",
+   "summary": "Terminal text effects engine — анимации печати и эффектов в терминале",
+   "license": "MIT",
+   "bins": [
+    "tte"
+   ],
+   "prio": 3,
+   "alt": "pip install terminaltexteffects",
+   "use": "tte \"твой текст\" — эффекты печати; tte --list-effects"
+  },
+  {
+   "name": "ascii-image-converter",
+   "eco": "go",
+   "host": "github",
+   "slug": "TheZoraiz/ascii-image-converter",
+   "tagp": "v",
+   "summary": "Конвертация изображений в ASCII-art прямо в терминале",
+   "license": "Apache-2.0",
+   "bins": [
+    "ascii-image-converter"
+   ],
+   "gpkg": ".",
+   "prio": 3,
+   "alt": "бинарники: github.com/TheZoraiz/ascii-image-converter/releases",
+   "use": "ascii-image-converter photo.jpg --color"
+  },
+  {
+   "name": "gum",
+   "eco": "go",
+   "host": "github",
+   "slug": "charmbracelet/gum",
+   "tagp": "v",
+   "summary": "Glamorous tool для шелл-скриптов: спиннеры, выбор, ввод (charm-стиль)",
+   "license": "MIT",
+   "bins": [
+    "gum"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "alt": "офиц. репо Charm: sudo dnf copr enable charmbracelet/charm? нет — см. github.com/charmbracelet/gum#installation",
+   "use": "gum choose 'вариант 1' 'вариант 2'; gum spin -- sleep 2"
+  },
+  {
+   "name": "glow",
+   "eco": "go",
+   "host": "github",
+   "slug": "charmbracelet/glow",
+   "tagp": "v",
+   "summary": "Рендер markdown прямо в терминале с подсветкой (charm)",
+   "license": "MIT",
+   "bins": [
+    "glow"
+   ],
+   "gpkg": ".",
+   "prio": 1,
+   "alt": "github.com/charmbracelet/glow#installation (бинарники/репо Charm)",
+   "use": "glow README.md — читай markdown в терминале"
+  },
+  {
+   "name": "unimatrix",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "will8211/unimatrix",
+   "summary": "Матрица из unicode-символов (гибкий аналог cmatrix)",
+   "license": "GPL-3.0-or-later",
+   "files": [
+    "unimatrix.py"
+   ],
+   "bins": [
+    "unimatrix"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "prio": 3,
+   "alt": "git clone https://github.com/will8211/unimatrix && sudo ./install.py",
+   "use": "unimatrix -s 96 — unicode-матрица"
+  },
+  {
+   "name": "ttyper",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "max-niederman/ttyper",
+   "tagp": "v",
+   "summary": "Тренажёр слепой печати в терминале",
+   "license": "MIT",
+   "bins": [
+    "ttyper"
+   ],
+   "prio": 3,
+   "alt": "cargo install ttyper --locked",
+   "use": "ttyper — тест слепой печати (ru: --language ru1000)"
+  },
+  {
+   "name": "csview",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "wfxr/csview",
+   "tagp": "v",
+   "summary": "Быстрый csv-просмотрщик с поддержкой CJK/эмодзи",
+   "license": "MIT",
+   "bins": [
+    "csview"
+   ],
+   "prio": 1
+  },
+  {
+   "name": "lolcrab",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mazznoer/lolcrab",
+   "tagp": "v",
+   "summary": "lolcat с шумом и радугой (Rust)",
+   "license": "MIT",
+   "bins": [
+    "lolcrab"
+   ],
+   "prio": 3
+  },
+  {
+   "name": "joshuto",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "kamiyaa/joshuto",
+   "tagp": "v",
+   "summary": "ranger-подобный файловый менеджер (Rust)",
+   "license": "LGPL-3.0-or-later",
+   "bins": [
+    "joshuto"
+   ],
+   "br": [
+    "libxcb-devel"
+   ],
+   "prio": 3
+  },
+  {
+   "name": "ttysvr",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "cxreiff/ttysvr",
+   "tagp": "v",
+   "summary": "Набор скринсейверов для терминала",
+   "license": "MIT",
+   "bins": [
+    "ttysvr"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "termusic",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "tramhao/termusic",
+   "tagp": "v",
+   "summary": "TUI музыкальный плеер (mpv/ytdlp)",
+   "license": "MIT",
+   "bins": [
+    "termusic"
+   ],
+   "cdir": "termusic",
+   "exp": true,
+   "verify": true,
+   "prio": 7,
+   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer"
+  },
+  {
+   "name": "pipes.rs",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "lhvy/pipes-rs",
+   "tagp": "v",
+   "summary": "Over-engineered pipes.sh на Rust",
+   "license": "MIT",
+   "bins": [
+    "pipes"
+   ],
+   "gpkg": ".",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "choose",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "theryangeary/choose",
+   "tagp": "v",
+   "summary": "Умный cut на Rust",
+   "license": "MIT",
+   "bins": [
+    "choose"
+   ],
+   "exp": true,
+   "prio": 5
+  },
+  {
+   "name": "broot",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Canop/broot",
+   "tagp": "v",
+   "summary": "Дерево каталогов с навигацией и предпросмотром",
+   "license": "AGPL-3.0-or-later",
+   "bins": [
+    "broot"
+   ],
+   "use": "broot — интерактивное дерево файлов",
+   "prio": 1,
+   "alt": "cargo install broot"
+  },
+  {
+   "name": "just",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "casey/just",
+   "tagp": "",
+   "summary": "Современный command runner (Make без боли)",
+   "license": "CC0-1.0 OR MIT",
+   "bins": [
+    "just"
+   ],
+   "use": "just <рецепт>; just --list",
+   "prio": 1
+  },
+  {
+   "name": "hyperfine",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sharkdp/hyperfine",
+   "tagp": "v",
+   "summary": "Бенчмарк команд со статистикой и экспортом",
+   "license": "Apache-2.0 OR MIT",
+   "bins": [
+    "hyperfine"
+   ],
+   "use": "hyperfine 'sleep 0.3'",
+   "prio": 1
+  },
+  {
+   "name": "tokei",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "XAMPPRocky/tokei",
+   "tagp": "v",
+   "summary": "Статистика кода по языкам, молниеносная",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "tokei"
+   ],
+   "use": "tokei ./src",
+   "prio": 1
+  },
+  {
+   "name": "tealdeer",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "dbrgn/tealdeer",
+   "tagp": "v",
+   "summary": "Быстрый tldr-client: примеры команд вместо man",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "tldr"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "use": "tldr tar — шпаргалки",
+   "br": [
+    "gzip"
+   ],
+   "prio": 1
+  },
+  {
+   "name": "dog",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "ogham/dog",
+   "tagp": "v",
+   "summary": "DNS-клиент doggo-класса с цветным выводом",
+   "license": "EUPL-1.2",
+   "bins": [
+    "dog"
+   ],
+   "verify": true,
+   "prio": 4,
+   "br": [
+    "openssl-devel"
+   ]
+  },
+  {
+   "name": "zenith",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "bvaisnard/zenith",
+   "tagp": "v",
+   "summary": "Системный дашборд: CPU/GPU/сеть/диски графиками",
+   "license": "MIT",
+   "bins": [
+    "zenith"
+   ],
+   "exp": true,
+   "use": "zenith",
+   "prio": 7
+  },
+  {
+   "name": "ctop",
+   "eco": "go",
+   "host": "github",
+   "slug": "bcicen/ctop",
+   "tagp": "v",
+   "summary": "top для контейнеров (docker/podman)",
+   "license": "MIT",
+   "bins": [
+    "ctop"
+   ],
+   "gpkg": ".",
+   "use": "ctop — живой монитор контейнеров",
+   "prio": 2
+  },
+  {
+   "name": "wtfutil",
+   "eco": "go",
+   "host": "github",
+   "slug": "wtfutil/wtfutil",
+   "tagp": "v",
+   "summary": "Личный дашборд-терминал из модулей (ops-style)",
+   "license": "MPL-2.0",
+   "bins": [
+    "wtfutil"
+   ],
+   "gpkg": ".",
+   "fallback": "commit",
+   "use": "wtfutil — дашборд модулей",
+   "prio": 2
+  },
+  {
+   "name": "slides",
+   "eco": "go",
+   "host": "github",
+   "slug": "maaslalani/slides",
+   "tagp": "v",
+   "summary": "Презентации прямо в терминале из markdown",
+   "license": "MIT",
+   "bins": [
+    "slides"
+   ],
+   "gpkg": ".",
+   "use": "slides deck.md — презентация",
+   "prio": 2
+  },
+  {
+   "name": "presenterm",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mfontanini/presenterm",
+   "tagp": "v",
+   "summary": "Терминальные презентации из markdown с темами",
+   "license": "BSD-2-Clause",
+   "bins": [
+    "presenterm"
+   ],
+   "use": "presenterm slides.md",
+   "prio": 2
+  },
+  {
+   "name": "tabiew",
+   "eco": "go",
+   "host": "github",
+   "slug": "fathulfahmy/tabiew",
+   "tagp": "v",
+   "summary": "TUI-просмотр csv/parquet/json датасетов",
+   "license": "MIT",
+   "bins": [
+    "tabiew"
+   ],
+   "gpkg": ".",
+   "fallback": "commit",
+   "verify": true,
+   "use": "tabiew data.csv",
+   "prio": 3
+  },
+  {
+   "name": "typioca",
+   "eco": "go",
+   "host": "github",
+   "slug": "bloznelis/typioca",
+   "tagp": "",
+   "summary": "Минималистичный тест скорости печати",
+   "license": "MIT",
+   "bins": [
+    "typioca"
+   ],
+   "use": "typioca — печать на скорость",
+   "prio": 3,
+   "gpkg": "."
+  },
+  {
+   "name": "bacon",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Canop/bacon",
+   "tagp": "v",
+   "summary": "Фоновый компилятор/тестер Rust-проектов на лету",
+   "license": "AGPL-3.0-or-later",
+   "bins": [
+    "bacon"
+   ],
+   "use": "bacon — фоновая проверка проекта",
+   "prio": 2
+  },
+  {
+   "name": "kondo",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "tbillington/kondo",
+   "tagp": "v",
+   "summary": "Чистка build-артефактов проектов (node_modules/target)",
+   "license": "MIT",
+   "bins": [
+    "kondo"
+   ],
+   "use": "kondo ~/dev — найти мусор",
+   "prio": 2
+  },
+  {
+   "name": "grex",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "pemistahl/grex",
+   "tagp": "v",
+   "summary": "Генератор регулярок из примеров строк",
+   "license": "Apache-2.0",
+   "bins": [
+    "grex"
+   ],
+   "use": "grex a1 b2 → '^a[12]b[12]$'",
+   "prio": 2
+  },
+  {
+   "name": "himalaya",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "pimalaya/himalaya",
+   "tagp": "v",
+   "summary": "Email-клиент целиком в CLI",
+   "license": "MIT",
+   "bins": [
+    "himalaya"
+   ],
+   "exp": true,
+   "use": "himalaya list — письма в терминале",
+   "prio": 6,
+   "note": "проверить BR openssl/rustls при сборке"
+  },
+  {
+   "name": "dua",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Byron/dua-cli",
+   "tagp": "v",
+   "summary": "Анализ места на диске + интерактивное удаление",
+   "license": "MIT",
+   "bins": [
+    "dua"
+   ],
+   "gpkg": ".",
+   "use": "dua i — интерактивный режим",
+   "prio": 2
+  },
+  {
+   "name": "pet",
+   "eco": "go",
+   "host": "github",
+   "slug": "knqyf263/pet",
+   "tagp": "v",
+   "summary": "Менеджер сниппетов: сохрани и вставь команду",
+   "license": "MIT",
+   "bins": [
+    "pet"
+   ],
+   "gpkg": ".",
+   "use": "pet new / pet exec <имя>",
+   "prio": 2
+  },
+  {
+   "name": "nb",
+   "eco": "script",
+   "host": "github",
+   "slug": "xwmx/nb",
+   "tagp": "",
+   "summary": "Заметки/закладки/блокноты — всё в CLI (один bash-файл)",
+   "license": "AGPL-3.0-or-later",
+   "files": [
+    "nb"
+   ],
+   "req": [
+    "bash",
+    "git"
+   ],
+   "interp": "bash",
+   "fallback": "commit",
+   "verify": true,
+   "use": "nb add текст заметки; nb ls",
+   "prio": 2
+  },
+  {
+   "name": "zk",
+   "eco": "go",
+   "host": "github",
+   "slug": "zk-org/zk",
+   "tagp": "v",
+   "summary": "Zettelkasten-заметки в терминале",
+   "license": "GPL-3.0-or-later",
+   "bins": [
+    "zk"
+   ],
+   "fallback": "commit",
+   "verify": true,
+   "use": "zk new; zk list",
+   "prio": 2,
+   "gpkg": "."
+  },
+  {
+   "name": "cyme",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "tuna-f1sh/cyme",
+   "tagp": "v",
+   "summary": "lsusb с красивым выводом и фильтрами",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "cyme"
+   ],
+   "br": [
+    "libusb1-devel"
+   ],
+   "use": "cyme",
+   "prio": 3
+  },
+  {
+   "name": "systeroid",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "orhun/systeroid",
+   "tagp": "v",
+   "summary": "sysctl(8) с TUI-графикой",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "systeroid",
+    "systctl"
+   ],
+   "exp": true,
+   "use": "systeroid --tui",
+   "prio": 7
+  },
+  {
+   "name": "fend",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "printf/fend",
+   "tagp": "v",
+   "summary": "Калькулятор произвольной точности",
+   "license": "MIT",
+   "bins": [
+    "fend"
+   ],
+   "use": "echo '1+2' | fend",
+   "verify": true,
+   "prio": 3
+  },
+  {
+   "name": "ascii-patrol",
+   "eco": "c-cmake",
+   "host": "github",
+   "slug": "msokalski/ascii-patrol",
+   "tagp": "",
+   "summary": "ASCII Patrol — аркада в стиле Moon Patrol",
+   "license": "MIT",
+   "bins": [
+    "aptr"
+   ],
+   "exp": true,
+   "use": "aptr",
+   "prio": 7
+  },
+  {
+   "name": "taskwarrior-tui",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "kdheepak/taskwarrior-tui",
+   "tagp": "v",
+   "enabled": false,
+   "prio": 9,
+   "summary": "TUI для taskwarrior",
+   "license": "MIT",
+   "note": "Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого"
+  },
+  {
+   "name": "genact",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "svenstaro/genact",
+   "tagp": "v",
+   "summary": "Генератор безумной активности — притворись хакером",
+   "license": "MIT",
+   "bins": [
+    "genact"
+   ],
+   "use": "genact — Ctrl+C остановить",
+   "prio": 3
+  },
+  {
+   "name": "mise",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "jdx/mise",
+   "tagp": "v",
+   "summary": "Менеджер рантаймов node/python/ruby — быстрый asdf-killer",
+   "license": "MIT",
+   "bins": [
+    "mise"
+   ],
+   "use": "mise use --pin node@22",
+   "prio": 1,
+   "alt": "curl https://mise.run | sh"
+  },
+  {
+   "name": "bandwhich",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "imsnif/bandwhich",
+   "tagp": "v",
+   "summary": "Какой процесс жрёт сеть — в реальном времени",
+   "license": "MIT",
+   "bins": [
+    "bandwhich"
+   ],
+   "use": "sudo bandwhich -i wlan0",
+   "prio": 1
+  },
+  {
+   "name": "oha",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "hatoo/oha",
+   "tagp": "v",
+   "summary": "HTTP бенчмарк с красивым TUI",
+   "license": "MIT",
+   "bins": [
+    "oha"
+   ],
+   "use": "oha -n 200 https://example.com",
+   "prio": 1
+  },
+  {
+   "name": "scc",
+   "eco": "go",
+   "host": "github",
+   "slug": "boyter/scc",
+   "tagp": "v",
+   "summary": "Счётчик строк кода по языкам — быстрее cloc",
+   "license": "MIT OR Unlicense",
+   "bins": [
+    "scc"
+   ],
+   "gpkg": ".",
+   "use": "scc ./project",
+   "prio": 1
+  },
+  {
+   "name": "trippy",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "fujiapple852/trippy",
+   "tagp": "",
+   "summary": "Гибрид mtr/traceroute с живым TUI",
+   "license": "Apache-2.0 OR MIT",
+   "bins": [
+    "trippy"
+   ],
+   "gpkg": ".",
+   "use": "sudo trip example.com",
+   "prio": 1,
+   "cdir": "crates/trippy"
+  },
+  {
+   "name": "watchexec",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "watchexec/watchexec",
+   "tagp": "",
+   "summary": "Перезапуск команд при изменении файлов",
+   "license": "Apache-2.0",
+   "bins": [
+    "watchexec"
+   ],
+   "cdir": "crates/cli",
+   "note": "воркспейс; CLI в crates/cli",
+   "use": "watchexec -- make test",
+   "prio": 1
+  },
+  {
+   "name": "rmpc",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mierak/rmpc",
+   "tagp": "v",
+   "summary": "Красивый TUI клиент MPD",
+   "license": "BSD-3-Clause",
+   "bins": [
+    "rmpc"
+   ],
+   "exp": true,
+   "use": "rmpc — нужен запущенный mpd",
+   "prio": 7
+  },
+  {
+   "name": "erdtree",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "solidiquis/erdtree",
+   "tagp": "v",
+   "summary": "Анализ дерева каталогов с размерами",
+   "license": "MIT",
+   "bins": [
+    "ert"
+   ],
+   "use": "ert — размеры по папкам",
+   "prio": 5
+  },
+  {
+   "name": "tetris",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "samtay/tetris",
+   "tagp": "",
+   "summary": "Тетрис в терминале",
+   "license": "MIT",
+   "bins": [
+    "tetris"
+   ],
+   "use": "tetris — стрелки и пробел",
+   "prio": 9,
+   "enabled": false,
+   "note": "Апстрим на Haskell (Setup.hs) — в COPR не собрать без GHC"
+  },
+  {
+   "name": "diagram",
+   "eco": "go",
+   "host": "github",
+   "slug": "esimov/diagram",
+   "tagp": "v",
+   "summary": "ASCII-диаграммы из текста",
+   "license": "MIT",
+   "bins": [
+    "diagram"
+   ],
+   "gpkg": ".",
+   "use": "diagram --svg out.svg in.txt",
+   "prio": 4
+  },
+  {
+   "name": "termshot",
+   "eco": "go",
+   "host": "github",
+   "slug": "homeport/termshot",
+   "tagp": "",
+   "summary": "Скриншот команды в виде терминального окна",
+   "license": "MIT",
+   "bins": [
+    "termshot"
+   ],
+   "gpkg": ".",
+   "use": "termshot --out shot.png -- ls -la",
+   "prio": 3
+  },
+  {
+   "name": "peaclock",
+   "eco": "custom",
+   "host": "github",
+   "slug": "octobanana/peaclock",
+   "tagp": "",
+   "summary": "Часы/секундомер/таймер с цветными цифрами",
+   "license": "MIT",
+   "br": [
+    "gcc-c++",
+    "cmake",
+    "make",
+    "ncurses-devel"
+   ],
+   "build_cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build && cp build/peaclock .",
+   "bins": [
+    "peaclock"
+   ],
+   "exp": true,
+   "verify": true,
+   "use": "peaclock",
+   "prio": 8
+  },
+  {
+   "name": "dysk",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Canop/dysk",
+   "tagp": "v",
+   "summary": "df для людей: диски человекочитаемо",
+   "license": "MIT",
+   "bins": [
+    "dysk"
+   ],
+   "use": "dysk — все точки монтирования",
+   "prio": 2
+  },
+  {
+   "name": "video-to-ascii",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "video-to-ascii",
+   "summary": "Играть видео прямо в терминале ASCII-символами",
+   "license": "MIT",
+   "extra_files": [
+    "%{_bindir}/video-to-ascii"
+   ],
+   "use": "video-to-ascii -f clip.mp4 — нужны ffmpeg и portaudio",
+   "note": "нужны ffmpeg и portaudio в системе",
+   "prio": 6
+  },
+  {
+   "name": "pokete",
+   "eco": "python-script",
+   "host": "github",
+   "slug": "lxgr-linux/pokete",
+   "tagp": "",
+   "summary": "Покемоны в терминале (полноценная игра)",
+   "license": "GPL-3.0-or-later",
+   "moddir": "pokete_src",
+   "bins": [
+    "pokete.py"
+   ],
+   "exp": true,
+   "verify": true,
+   "use": "pokete.py",
+   "prio": 8
+  },
+  {
+   "name": "gittype",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "unhappychoice/gittype",
+   "tagp": "v",
+   "summary": "Тренажёр печати на коде твоих репозиториев",
+   "license": "MIT",
+   "bins": [
+    "gittype"
+   ],
+   "exp": true,
+   "use": "gittype в каталоге репо",
+   "prio": 7,
+   "br": [
+    "perl"
+   ]
+  }
+ ]
 }

@@ -1,5 +1,5 @@
 Name:           pokemon-icat
-Version:        0
+Version:        20260829.54d4bc5
 Release:        1%{?dist}
 Summary:        Show any Pokemon sprite in your terminal
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pokemon-icat
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 20260829.54d4bc5-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

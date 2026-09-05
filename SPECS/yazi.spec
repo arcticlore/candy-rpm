@@ -1,5 +1,5 @@
 Name:           yazi
-Version:        0
+Version:        26.8.15
 Release:        1%{?dist}
 Summary:        Blazing fast terminal file manager written in Rust
 
@@ -52,5 +52,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ya
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 26.8.15-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

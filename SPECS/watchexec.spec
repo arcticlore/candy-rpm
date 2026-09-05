@@ -1,5 +1,5 @@
 Name:           watchexec
-Version:        0
+Version:        2.7.0
 Release:        1%{?dist}
 Summary:        Перезапуск команд при изменении файлов
 
@@ -50,5 +50,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/watchexec
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 2.7.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

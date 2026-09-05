@@ -1,5 +1,5 @@
 Name:           ttyper
-Version:        0
+Version:        1.6.0
 Release:        1%{?dist}
 Summary:        Тренажёр слепой печати в терминале
 
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ttyper
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 1.6.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           termusic
-Version:        0
+Version:        0.13.2
 Release:        1%{?dist}
 Summary:        TUI музыкальный плеер (mpv/ytdlp)
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -51,5 +51,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/termusic
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 0.13.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           yosay
-Version:        0
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:        Tell Yeoman what to say, ANSI-art speech bubbles
 
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/yosay
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 3.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

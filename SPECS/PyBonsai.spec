@@ -1,5 +1,5 @@
 Name:           PyBonsai
-Version:        0
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:        Procedural ASCII bonsai tree generator
 
@@ -27,7 +27,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n pybonsai-3.0.0
 
 %build
 %pyproject_wheel
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files -f %{pyproject_files}
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 3.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

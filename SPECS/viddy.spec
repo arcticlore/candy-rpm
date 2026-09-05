@@ -1,5 +1,5 @@
 Name:           viddy
-Version:        0
+Version:        1.3.1
 Release:        1%{?dist}
 Summary:        Modern watch command (with key bindings and diffs)
 
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/viddy
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 1.3.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

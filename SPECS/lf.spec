@@ -1,5 +1,5 @@
 Name:           lf
-Version:        0
+Version:        r42
 Release:        1%{?dist}
 Summary:        Terminal file manager
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/lf
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - r42-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

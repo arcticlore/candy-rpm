@@ -1,5 +1,5 @@
 Name:           disfetch
-Version:        0
+Version:        3.7
 Release:        1%{?dist}
 Summary:        Yet another *nix distro fetching program, less complex
 
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/disfetch
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 3.7-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

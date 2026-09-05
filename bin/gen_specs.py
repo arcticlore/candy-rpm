@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import json
 import re
 import sys
 from dataclasses import dataclass, field
@@ -500,6 +501,8 @@ def body_gem(m: Package, br: list[str], req: list[str]) -> str:
             "git init -q . && git config user.email b@b.c && git config user.name b && git add -A && git commit -qm init"
         )
     out += [
+        "# Create missing files referenced by gemspec",
+        "for f in man/*.1 zsh/_*; do [ -f \"$f\" ] || touch \"$f\"; done",
         "gem build *.gemspec",
         "",
         "%install",
@@ -825,11 +828,19 @@ def main() -> None:
         out_dir = root / "SPECS"
         out_dir.mkdir(exist_ok=True)
         ok = bad = 0
+        state_path = root / "state" / "state.json"
+        state = {}
+        if state_path.exists():
+            try:
+                state = json.loads(state_path.read_text())
+            except Exception:
+                pass
         for n, m in meta.items():
             if not m.is_enabled():
                 continue
             try:
-                (out_dir / f"{n}.spec").write_text(render(n, "0", meta))
+                ver = state.get(n, {}).get("ver", "0")
+                (out_dir / f"{n}.spec").write_text(render(n, ver, meta))
                 ok += 1
             except (KeyError, ValueError, OSError) as e:
                 print(f"[FAIL] {n}: {e}", file=sys.stderr)

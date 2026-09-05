@@ -1,5 +1,5 @@
 Name:           ricksay
-Version:        0
+Version:        20260829.e75f53d
 Release:        1%{?dist}
 Summary:        Rick and Morty quotes of the day (cowsay clone)
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/ricksay
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 20260829.e75f53d-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

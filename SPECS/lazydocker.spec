@@ -1,5 +1,5 @@
 Name:           lazydocker
-Version:        0
+Version:        0.25.2
 Release:        1%{?dist}
 Summary:        Lazier way to manage everything docker
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/lazydocker
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 0.25.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

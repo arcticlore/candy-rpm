@@ -1,5 +1,5 @@
 Name:           pipes.rs
-Version:        0
+Version:        1.6.4
 Release:        1%{?dist}
 Summary:        Over-engineered pipes.sh на Rust
 
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pipes
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 1.6.4-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

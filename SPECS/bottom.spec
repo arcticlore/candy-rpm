@@ -1,5 +1,5 @@
 Name:           bottom
-Version:        0
+Version:        0.14.9
 Release:        1%{?dist}
 Summary:        Cross-platform graphical process/system monitor
 
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/btm
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 0.14.9-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

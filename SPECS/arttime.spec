@@ -1,5 +1,5 @@
 Name:           arttime
-Version:        0
+Version:        2.5.0
 Release:        1%{?dist}
 Summary:        ASCII art, clock, timer and time manager for the terminal
 
@@ -9,14 +9,10 @@ Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
-BuildRequires:  python3-devel
-BuildRequires:  pyproject-rpm-macros
+BuildArch:      noarch
 BuildRequires:  python3-pytz
 BuildRequires:  python3-rich
 BuildRequires:  python3-tomli-w
-
-%generate_buildrequires
-%pyproject_buildrequires
 
 %description
 ASCII art, clock, timer and time manager for the terminal
@@ -30,19 +26,23 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n arttime-2.5.0
 
 %build
-%pyproject_wheel
+# чистый скрипт, сборка не требуется
 
 %install
-%pyproject_install
-%pyproject_save_files -l '*'
+install -Dpm0755 bin/arttime %{buildroot}%{_bindir}/arttime
+install -Dpm0755 bin/artprint %{buildroot}%{_bindir}/artprint
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
-%files -f %{pyproject_files}
+%files
+%{_licensedir}/%{name}
+
+%{_bindir}/arttime
+%{_bindir}/artprint
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 2.5.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

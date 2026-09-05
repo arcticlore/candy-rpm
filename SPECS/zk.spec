@@ -1,5 +1,5 @@
 Name:           zk
-Version:        0
+Version:        0.15.6
 Release:        1%{?dist}
 Summary:        Zettelkasten-заметки в терминале
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/zk
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 0.15.6-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

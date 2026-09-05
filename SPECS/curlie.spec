@@ -1,5 +1,5 @@
 Name:           curlie
-Version:        0
+Version:        1.8.2
 Release:        1%{?dist}
 Summary:        The power of curl, the ease of use of httpie
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/curlie
 
 %changelog
-* Wed Sep 02 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 05 2026 candy-bot <candy@localhost> - 1.8.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
