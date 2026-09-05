@@ -227,6 +227,7 @@ jobs:
 
       - name: Dashboard
         if: always()
+        run: echo "dashboard step - no action needed"
 
       - name: Commit state
         if: always()
