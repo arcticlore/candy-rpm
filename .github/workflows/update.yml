@@ -1,7 +1,7 @@
 name: submit to copr
 on:
   schedule:
-    - cron: "0 */3 * * *"   # каждые 3 часа
+    - cron: "0 */3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -89,16 +89,13 @@ jobs:
         run: |
           echo "=== Smart submit starting ==="
           python3 << 'PYEOF'
-          import json, subprocess, time, os, glob, sys
+          import json, subprocess, time, os, glob
 
           MAX_BUILDS = 5
-          POLL_INTERVAL = 60  # seconds between checks
-          MAX_WAIT = 1800     # 30 minutes max total wait
-
-          # copr-cli reads ~/.config/copr automatically
+          POLL_INTERVAL = 30
+          MAX_WAIT = 3600
 
           def get_copr_status():
-              """Get current build statuses from COPR."""
               try:
                   r = subprocess.run(
                       ['curl', '-4', '-s', '--connect-timeout', '10',
@@ -112,7 +109,6 @@ jobs:
                       state = b['state']
                       if name not in states:
                           states[name] = state
-                      # If any build is running/pending, mark as such
                       if state in ('running', 'starting', 'pending', 'importing'):
                           states[name] = state
                   return states
@@ -121,13 +117,11 @@ jobs:
                   return {}
 
           def get_enabled_packages():
-              """Get list of enabled packages from pkgs.json."""
               with open('pkgs.json') as f:
                   pkgs = json.load(f)
               return {p['name'] for p in pkgs.get('packages', []) if p.get('enabled', True)}
 
           def get_srpm_files():
-              """Get available SRPM files."""
               result = {}
               for path in glob.glob('SRPMS/*.src.rpm'):
                   name = os.path.basename(path).split('-')[0]
@@ -135,7 +129,6 @@ jobs:
               return result
 
           def submit_build(srpm_path):
-              """Submit a single SRPM to COPR via copr-cli."""
               r = subprocess.run(
                   ['copr-cli', 'build', '--nowait', 'arcticlore/candy', srpm_path],
                   capture_output=True, text=True, timeout=120
@@ -152,35 +145,28 @@ jobs:
               print(f"  [WARN] {r.stdout[:200]}")
               return False
 
-          # Main loop
           enabled = get_enabled_packages()
           srpms = get_srpm_files()
           submitted = set()
+          no_srpm = set()
           start_time = time.time()
 
-          print(f"Enabled packages: {len(enabled)}")
-          print(f"SRPMs available: {len(srpms)}")
-          print(f"Max concurrent builds: {MAX_BUILDS}")
+          print(f"Enabled: {len(enabled)}, SRPMs: {len(srpms)}, Max slots: {MAX_BUILDS}")
           print()
 
           while True:
               elapsed = time.time() - start_time
               if elapsed > MAX_WAIT:
-                  print(f"\n[DONE] Timeout reached ({MAX_WAIT}s). Submitted: {len(submitted)}")
+                  print(f"\n[DONE] Timeout ({MAX_WAIT}s). Submitted: {len(submitted)}")
                   break
 
-              # Get current COPR status
               states = get_copr_status()
               active = sum(1 for s in states.values() if s in ('running', 'starting'))
               succeeded = {n for n, s in states.items() if s == 'succeeded'}
               failed = {n for n, s in states.items() if s == 'failed'}
-
-              # Find packages still needing submission
-              # Exclude: succeeded, already in any active/pending state, already submitted this run
               pending_or_active = {n for n, s in states.items() if s in ('pending', 'running', 'starting', 'importing')}
-              need_submit = enabled - succeeded - pending_or_active - submitted
-              # Also retry failed ones (they might work now) - but only if not already pending
-              need_submit |= (failed & enabled) - pending_or_active - submitted
+
+              need_submit = enabled - succeeded - pending_or_active - submitted - no_srpm
 
               available_slots = MAX_BUILDS - active
 
@@ -192,51 +178,52 @@ jobs:
                   print("\n[DONE] All packages submitted and no active builds!")
                   break
 
-              if not need_submit and active > 0:
-                  print(f"  Waiting for {active} active builds to finish...")
-                  time.sleep(POLL_INTERVAL)
-                  continue
-
               if available_slots <= 0:
-                  print(f"  All {MAX_BUILDS} slots full, waiting...")
+                  print(f"  All {MAX_BUILDS} slots full, waiting {POLL_INTERVAL}s...")
                   time.sleep(POLL_INTERVAL)
                   continue
 
-              # Submit up to available_slots
               to_submit = sorted(need_submit)[:available_slots]
+              if not to_submit:
+                  if active > 0:
+                      print(f"  Waiting for {active} active builds...")
+                      time.sleep(POLL_INTERVAL)
+                  continue
+
               for name in to_submit:
                   if name not in srpms:
-                      print(f"  [SKIP] {name}: no SRPM file")
+                      no_srpm.add(name)
+                      print(f"  [SKIP] {name}: no SRPM")
                       continue
 
                   print(f"  [SUBMIT] {name}")
                   if submit_build(srpms[name]):
                       submitted.add(name)
                   else:
-                      print(f"  [FAIL] {name}: submit failed")
+                      print(f"  [FAIL] {name}")
 
-                  time.sleep(2)  # rate limit between submits
+                  time.sleep(2)
 
-              # Brief pause before next check
-              time.sleep(10)
+              time.sleep(5)
 
           print(f"\nTotal submitted this run: {len(submitted)}")
+          if no_srpm:
+              print(f"No SRPM ({len(no_srpm)}): {', '.join(sorted(no_srpm))}")
 
-          # Final summary
           states = get_copr_status()
           succeeded_all = {n for n, s in states.items() if s == 'succeeded'}
           failed_all = {n for n, s in states.items() if s == 'failed'}
           running_all = {n for n, s in states.items() if s in ('running', 'starting', 'pending', 'importing')}
           print(f"\n=== FINAL SUMMARY ===")
           print(f"Total enabled: {len(enabled)}")
-          print(f"Succeeded on COPR: {len(succeeded_all)}")
-          print(f"Failed on COPR: {len(failed_all)}")
-          print(f"Still building: {len(running_all)}")
-          print(f"Never submitted: {len(enabled - set(states.keys()))}")
+          print(f"Succeeded: {len(succeeded_all)}")
+          print(f"Failed: {len(failed_all)}")
+          print(f"Building: {len(running_all)}")
+          print(f"Not submitted: {len(enabled - set(states.keys()))}")
           if failed_all:
-              print(f"\nFailed packages: {', '.join(sorted(failed_all))}")
+              print(f"Failed: {', '.join(sorted(failed_all))}")
           if running_all:
-              print(f"Building now: {', '.join(sorted(running_all))}")
+              print(f"Building: {', '.join(sorted(running_all))}")
           PYEOF
 
       - name: Auto-triage (fix known failures)
@@ -249,18 +236,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bin/auto-issue.sh || true
 
-      - name: Dashboard
-        if: always()
-        run: echo "dashboard step - no action needed"
-
       - name: Commit state
         if: always()
         run: |
+          cd "$GITHUB_WORKSPACE"
           echo "=== Commit state step ==="
           git config user.name  "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git add state/state.json pkgs.json SPECS/ docs/index.html 2>&1 || true
+          git add state/state.json pkgs.json SPECS/ 2>&1 || true
           echo "Files staged:"
           git diff --cached --stat || true
           if ! git diff --cached --quiet; then
@@ -278,7 +262,6 @@ jobs:
             CHAT_ID=$(grep -oP 'TG_CHAT_ID=\K.*' ~/.config/candy/tg.conf | head -1)
             BOT_TOKEN=$(grep -oP 'TG_BOT_TOKEN=\K.*' ~/.config/candy/tg.conf | head -1)
           fi
-          # fallback to secrets
           CHAT_ID="${CHAT_ID:-${{ secrets.TG_CHAT_ID }}}"
           BOT_TOKEN="${BOT_TOKEN:-${{ secrets.TG_BOT_TOKEN }}}"
           if [ -n "$CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
