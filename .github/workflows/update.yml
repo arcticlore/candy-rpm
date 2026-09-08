@@ -10,7 +10,7 @@ permissions:
 jobs:
   submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     container: fedora:44
     steps:
       - uses: actions/checkout@v4
@@ -37,10 +37,8 @@ jobs:
           key: srpm-cache-${{ github.run_id }}
           restore-keys: srpm-cache-
 
-      - name: Build SRPMs for packages needing submission
+- name: Build SRPMs for packages needing submission
         run: |
-          set -x
-          MAX_BUILDS=30
           echo "=== Querying COPR for succeeded packages ==="
           NOT_OK=$(curl -4 -s --connect-timeout 10 --max-time 30 \
             "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
@@ -60,12 +58,12 @@ jobs:
               print(n)
           " 2>/dev/null)
           echo "Packages needing SRPM rebuild: $(echo "$NOT_OK" | wc -l)"
+          echo "Starting rebuild of ALL packages (no build cap)"
 
           BUILT=0
           SKIPPED=0
           FAILED=0
           for name in $NOT_OK; do
-            [ $BUILT -ge $MAX_BUILDS ] && echo "Build cap reached: $MAX_BUILDS" && break
             if ls SRPMS/"$name"-*.src.rpm >/dev/null 2>&1; then
               echo "  [CACHED] $name"
               SKIPPED=$((SKIPPED+1))
@@ -85,15 +83,15 @@ jobs:
           done
           echo "=== SRPMs built: $BUILT, cached: $SKIPPED, failed: $FAILED ==="
 
-      - name: Smart submit with slot management
+- name: Smart submit with slot management
         run: |
           echo "=== Smart submit starting ==="
           python3 << 'PYEOF'
           import json, subprocess, time, os, glob
 
           MAX_BUILDS = 5
-          POLL_INTERVAL = 30
-          MAX_WAIT = 3600
+          POLL_INTERVAL = 20
+          MAX_WAIT = 600
 
           def get_copr_status():
               try:
@@ -131,7 +129,7 @@ jobs:
           def submit_build(srpm_path):
               r = subprocess.run(
                   ['copr-cli', 'build', '--nowait', 'arcticlore/candy', srpm_path],
-                  capture_output=True, text=True, timeout=120
+                  capture_output=True, text=True, timeout=60
               )
               if r.returncode != 0:
                   print(f"  [ERROR] copr-cli: {r.stderr[:200]}")
@@ -148,7 +146,6 @@ jobs:
           enabled = get_enabled_packages()
           srpms = get_srpm_files()
           submitted = set()
-          no_srpm = set()
           start_time = time.time()
 
           print(f"Enabled: {len(enabled)}, SRPMs: {len(srpms)}, Max slots: {MAX_BUILDS}")
@@ -166,7 +163,11 @@ jobs:
               failed = {n for n, s in states.items() if s == 'failed'}
               pending_or_active = {n for n, s in states.items() if s in ('pending', 'running', 'starting', 'importing')}
 
-              need_submit = enabled - succeeded - pending_or_active - submitted - no_srpm
+              # Packages that already have a build running/pending - don't re-submit
+              pending_only = {n for n, s in states.items() if s in ('pending', 'importing')}
+
+              # What we can still submit: enabled minus everything already handled
+              need_submit = enabled - succeeded - pending_or_active - submitted
 
               available_slots = MAX_BUILDS - active
 
@@ -174,16 +175,17 @@ jobs:
                     f"free={available_slots} succeeded={len(succeeded)} "
                     f"need={len(need_submit)} submitted_here={len(submitted)}")
 
-              if not need_submit and active == 0:
-                  print("\n[DONE] All packages submitted and no active builds!")
-                  break
-
-              if available_slots <= 0:
+              if available_slots <= 0 and active == 0:
                   print(f"  All {MAX_BUILDS} slots full, waiting {POLL_INTERVAL}s...")
                   time.sleep(POLL_INTERVAL)
                   continue
 
-              to_submit = sorted(need_submit)[:available_slots]
+              if not need_submit and active == 0:
+                  print("\n[DONE] Nothing new to submit!")
+                  break
+
+              # Fill available slots
+              to_submit = sorted(need_submit)[:max(available_slots, 0)]
               if not to_submit:
                   if active > 0:
                       print(f"  Waiting for {active} active builds...")
@@ -192,8 +194,7 @@ jobs:
 
               for name in to_submit:
                   if name not in srpms:
-                      no_srpm.add(name)
-                      print(f"  [SKIP] {name}: no SRPM")
+                      print(f"  [SKIP] {name}: no SRPM file")
                       continue
 
                   print(f"  [SUBMIT] {name}")
@@ -202,14 +203,11 @@ jobs:
                   else:
                       print(f"  [FAIL] {name}")
 
-                  time.sleep(2)
+                  time.sleep(1)  # rate limit
 
-              time.sleep(5)
+              time.sleep(POLL_INTERVAL)
 
           print(f"\nTotal submitted this run: {len(submitted)}")
-          if no_srpm:
-              print(f"No SRPM ({len(no_srpm)}): {', '.join(sorted(no_srpm))}")
-
           states = get_copr_status()
           succeeded_all = {n for n, s in states.items() if s == 'succeeded'}
           failed_all = {n for n, s in states.items() if s == 'failed'}
@@ -239,11 +237,50 @@ jobs:
       - name: Commit state
         if: always()
         run: |
-          cd "$GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE" 2>/dev/null || true
           echo "=== Commit state step ==="
-          git config user.name  "candy-bot"
+          git status --short
+          if [ ! -d ".git" ]; then
+            echo "Not in git repo, skipping commit"
+            exit 0
+          fi
+          git config user.name "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global --add safe-directory "$GITHUB_WORKSPACE" 2>/dev/null || true
+          git add state/state.json pkgs.json SPECS/ 2>&1 || true
+          echo "Files staged:"
+          git diff --cached --stat || true
+          if ! git diff --cached --quiet; then
+            git commit -qm "submit sync [skip ci]" || echo "Commit failed"
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master 2>&1 || echo "Push failed (non-critical)"
+          else
+            echo "No changes to commit"
+          fi
+          echo "=== Commit state done ==="
+
+      - name: Auto-triage (fix known failures)
+        if: always()
+        run: bin/auto-triage.sh || true
+
+      - name: Auto-issue (report failures)
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bin/auto-issue.sh || true
+
+      - name: Commit state
+        if: always()
+        run: |
+          cd "$GITHUB_WORKSPACE" 2>/dev/null || true
+          echo "=== Commit state step ==="
+          git status --short
+          if [ ! -d ".git" ]; then
+            echo "Not in git repo, skipping commit"
+            exit 0
+          fi
+          git config user.name "candy-bot" || true
+          git config user.email "candy-bot@users.noreply.github.com" || true
+          git config --global --add safe-directory "$GITHUB_WORKSPACE" 2>/dev/null || true
           git add state/state.json pkgs.json SPECS/ 2>&1 || true
           echo "Files staged:"
           git diff --cached --stat || true
