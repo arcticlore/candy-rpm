@@ -1,7 +1,7 @@
 name: monitor
 on:
   schedule:
-    - cron: "*/30 * * * *"   # каждые 30 минут
+    - cron: "23 */2 * * *"   # каждые 2 часа — не грузим COPR лишними опросами
   workflow_dispatch:
 
 permissions:
@@ -14,36 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: COPR status snapshot
+      - name: COPR status snapshot + failed list
         run: |
-          curl -4 -s --connect-timeout 10 \
-            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
-            | python3 -c "
+          API="https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200"
+          curl -4 -s --connect-timeout 10 "$API" | python3 -c "
           import json,sys
           d=json.load(sys.stdin)
           counts={}
+          failed=set()
           for b in d.get('items',[]):
               s=b.get('state','?')
               counts[s]=counts.get(s,0)+1
+              if s=='failed': failed.add(b['source_package']['name'])
           for s,c in sorted(counts.items(), key=lambda x:-x[1]):
               print(f'{s}: {c}')
-          " 2>&1
-
-      - name: Failed packages
-        run: |
-          curl -4 -s --connect-timeout 10 \
-            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
-            | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          failed=[b['source_package']['name'] for b in d.get('items',[]) if b.get('state')=='failed']
           if failed:
-              print('FAILED:', ', '.join(sorted(set(failed))))
+              print('FAILED:', ', '.join(sorted(failed))[:300])
           else:
               print('No failed packages')
           " 2>&1
-
-      - name: Dashboard
 
       - name: Telegram alert on failures
         run: |
@@ -64,14 +53,4 @@ $(echo "$FAILED" | tr ',' '\n' | head -10 | sed 's/^/• /')"
               curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
                 -d chat_id="$CHAT_ID" -d parse_mode=HTML -d text="$MSG" >/dev/null 2>&1 || true
             fi
-          fi
-
-      - name: Commit dashboard
-        run: |
-          git config user.name  "candy-bot"
-          git config user.email "candy-bot@users.noreply.github.com"
-          git add docs/index.html || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "dashboard update [skip ci]"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
           fi

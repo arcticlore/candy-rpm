@@ -1,7 +1,7 @@
 name: telegram bot
 on:
   schedule:
-    - cron: "*/5 * * * *"   # каждые 5 минут
+    - cron: "*/10 * * * *"   # фолбэк: локальный systemd-бот в ~/.../candy-tg.service — основной (24/7)
   workflow_dispatch:
 
 permissions:

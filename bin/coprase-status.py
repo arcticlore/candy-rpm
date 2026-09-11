@@ -21,10 +21,10 @@ PROJECT = "candy"
 COPR_URL = "https://copr.fedorainfracloud.org/api_3"
 PAGE_LIMIT = 100
 
-# Slot management
-MAX_BUILDS = 3
-POLL_INTERVAL = 30
-MAX_WAIT = 3600  # 1 hour total
+# Slot management — keep it polite, we share COPR with other users
+MAX_BUILDS = 2
+POLL_INTERVAL = 60
+MAX_WAIT = 7200  # 2 hours total
 
 
 def copr_api(endpoint: str, extra: str = "") -> dict:

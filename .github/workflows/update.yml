@@ -1,7 +1,7 @@
 name: submit to copr
 on:
   schedule:
-    - cron: "0 */6 * * *"   # каждые 6 часов (was 3 hours — too aggressive, triggered DDoS warning)
+    - cron: "17 2,14 * * *"   # 2 раза/сутки (5:17 и 17:17 MSK) — вежливо к общим билдерам COPR
   workflow_dispatch:
 
 permissions:
@@ -40,9 +40,9 @@ jobs:
       - name: Build SRPMs for packages needing submission
         run: |
           echo "=== Building SRPMs for packages that need submission ==="
-          python3 bin/coprase-status.py check 2>&1 | tee logs/check.log
-          NEEDS=$(python3 bin/coprase-status.py check 2>/dev/null | grep -E "^\s+\S+ \(has SRPM" | awk '{print $1}' || true)
-          NEEDS_SRPM=$(python3 bin/coprase-status.py check 2>/dev/null | grep -E "^\s+\S+ \(no SRPM" | awk '{print $1}' || true)
+          CHECK=$(python3 bin/coprase-status.py check 2>&1)
+          echo "$CHECK" | tee logs/check.log
+          NEEDS_SRPM=$(echo "$CHECK" | grep -E "no SRPM" | awk '{print $1}' || true)
 
           BUILT=0
           FAILED=0

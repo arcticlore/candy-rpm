@@ -153,6 +153,30 @@ def run(cmd: str) -> str:
     return result.stdout.strip()[:3800] or "(пусто)"
 
 
+_last_offset_push = 0.0
+
+
+def push_offset() -> None:
+    """Commit+push tg-offset.txt so the GH Actions fallback never re-processes hot updates.
+
+    Throttled to once per 30s; silent on failure (laptop may be offline).
+    """
+    global _last_offset_push
+    now = time.monotonic()
+    if now - _last_offset_push < 30:
+        return
+    _last_offset_push = now
+    tok = os.environ.get("GITHUB_TOKEN", "")
+    if not tok:
+        return
+    for cmd in (
+        'git add state/tg-offset.txt',
+        'git commit -qm "tg offset [skip ci]"',
+        f'git push "https://x-access-token:{tok}@github.com/{os.environ.get("GH_REPO", "arcticlore/candy-rpm")}.git" HEAD:master',
+    ):
+        subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, check=False)
+
+
 # Menu keyboard
 MENU_KB: dict[str, Any] = {
     "keyboard": [
@@ -422,6 +446,7 @@ def main() -> None:
                     # Persist offset after each update
                     offset_file.parent.mkdir(parents=True, exist_ok=True)
                     offset_file.write_text(str(offset - 1))
+                    push_offset()
 
                     if "callback_query" in upd:
                         handle_callback(upd["callback_query"])
