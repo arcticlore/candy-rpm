@@ -89,7 +89,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "langset": "🌐 Язык: русский",
         "empty": "Пусто — всё спокойно ✅",
         "nofail": "🎉 Красных пакетов нет!",
-        "digest": "✅ Weekly digest создан в репо",
         "relay_ack": "📬 Передано владельцу. Ответ придёт сюда.",
         "replyfmt": "Формат: /reply <chat_id> <текст>",
         "sent": "✅ Отправлено",
@@ -108,7 +107,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "langset": "🌐 Language: English",
         "empty": "Nothing — all calm ✅",
         "nofail": "🎉 No red packages!",
-        "digest": "✅ Weekly digest issue created",
         "relay_ack": "📬 Relayed to the maintainer. Reply will come here.",
         "replyfmt": "Usage: /reply <chat_id> <text>",
         "sent": "✅ Sent",
@@ -233,24 +231,11 @@ def action_errors(cid: str) -> str:
 
 
 def action_report(cid: str) -> str:
-    """Get report output."""
-    run(
-        "cat logs/morning-report.md 2>/dev/null || ./bin/report.sh >/dev/null; cat logs/morning-report.md"
-    )
+    """Show morning report."""
+    report = ROOT / "logs" / "morning-report.md"
+    if not report.exists():
+        return tr(cid, "empty", LANGS)
     return run("cat logs/morning-report.md")
-
-
-def action_digest(cid: str) -> str:
-    """Trigger digest creation."""
-    subprocess.run(
-        "./bin/weekly-digest.sh",
-        shell=True,
-        cwd=ROOT,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-    return tr(cid, "digest", LANGS)
 
 
 ACTIONS: dict[str, Any] = {
@@ -258,7 +243,6 @@ ACTIONS: dict[str, Any] = {
     "Прогресс / Progress": action_progress,
     "Ошибки / Failures": action_errors,
     "Отчёт / Report": action_report,
-    "Дайджест / Digest": action_digest,
     "Язык / Lang": None,
 }
 

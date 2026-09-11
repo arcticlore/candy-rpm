@@ -1,7 +1,7 @@
 name: submit to copr
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: "0 */6 * * *"   # каждые 6 часов (was 3 hours — too aggressive, triggered DDoS warning)
   workflow_dispatch:
 
 permissions:
@@ -37,43 +37,18 @@ jobs:
           key: srpm-cache-${{ github.run_id }}
           restore-keys: srpm-cache-
 
-- name: Build SRPMs for packages needing submission
+      - name: Build SRPMs for packages needing submission
         run: |
-          echo "=== Querying COPR for succeeded packages ==="
-          NOT_OK=$(curl -4 -s --connect-timeout 10 --max-time 30 \
-            "https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200" \
-            | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          ok=set()
-          for b in d.get('items',[]):
-              n=b.get('source_package',{}).get('name','')
-              s=b.get('state','')
-              if n and s=='succeeded': ok.add(n)
-          enabled=set()
-          with open('pkgs.json') as f:
-              for p in json.load(f).get('packages',[]):
-                  if p.get('enabled',True): enabled.add(p['name'])
-          for n in sorted(enabled - ok):
-              print(n)
-          " 2>/dev/null)
-          echo "Packages needing SRPM rebuild: $(echo "$NOT_OK" | wc -l)"
-          echo "Starting rebuild of ALL packages (no build cap)"
+          echo "=== Building SRPMs for packages that need submission ==="
+          python3 bin/coprase-status.py check 2>&1 | tee logs/check.log
+          NEEDS=$(python3 bin/coprase-status.py check 2>/dev/null | grep -E "^\s+\S+ \(has SRPM" | awk '{print $1}' || true)
+          NEEDS_SRPM=$(python3 bin/coprase-status.py check 2>/dev/null | grep -E "^\s+\S+ \(no SRPM" | awk '{print $1}' || true)
 
           BUILT=0
-          SKIPPED=0
           FAILED=0
-          for name in $NOT_OK; do
-            if ls SRPMS/"$name"-*.src.rpm >/dev/null 2>&1; then
-              echo "  [CACHED] $name"
-              SKIPPED=$((SKIPPED+1))
-              continue
-            fi
-            echo "  [BUILD] $name"
-            if [ ! -f "SPECS/$name.spec" ]; then
-              python3 bin/gen_specs.py "$name" 2>/dev/null || continue
-            fi
-            if bin/make-srpm.sh "$name" 2>&1; then
+          for name in $NEEDS_SRPM; do
+            echo "  [BUILD SRPM] $name"
+            if bin/make-srpm.sh "$name" 2>&1 | tail -3; then
               echo "  [OK] $name"
               BUILT=$((BUILT+1))
             else
@@ -81,148 +56,12 @@ jobs:
               FAILED=$((FAILED+1))
             fi
           done
-          echo "=== SRPMs built: $BUILT, cached: $SKIPPED, failed: $FAILED ==="
 
-- name: Smart submit with slot management
-        run: |
-          echo "=== Smart submit starting ==="
-          python3 << 'PYEOF'
-          import json, subprocess, time, os, glob
+          CACHED=$(ls SRPMS/*.src.rpm 2>/dev/null | wc -l)
+          echo "=== SRPMs: built=$BUILT failed=$FAILED cached=$CACHED ==="
 
-          MAX_BUILDS = 5
-          POLL_INTERVAL = 20
-          MAX_WAIT = 600
-
-          def get_copr_status():
-              try:
-                  r = subprocess.run(
-                      ['curl', '-4', '-s', '--connect-timeout', '10',
-                       'https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200'],
-                      capture_output=True, text=True, timeout=15
-                  )
-                  data = json.loads(r.stdout)
-                  states = {}
-                  for b in data.get('items', []):
-                      name = b['source_package']['name']
-                      state = b['state']
-                      if name not in states:
-                          states[name] = state
-                      if state in ('running', 'starting', 'pending', 'importing'):
-                          states[name] = state
-                  return states
-              except Exception as e:
-                  print(f"  [WARN] COPR API error: {e}")
-                  return {}
-
-          def get_enabled_packages():
-              with open('pkgs.json') as f:
-                  pkgs = json.load(f)
-              return {p['name'] for p in pkgs.get('packages', []) if p.get('enabled', True)}
-
-          def get_srpm_files():
-              result = {}
-              for path in glob.glob('SRPMS/*.src.rpm'):
-                  name = os.path.basename(path).split('-')[0]
-                  result[name] = path
-              return result
-
-          def submit_build(srpm_path):
-              r = subprocess.run(
-                  ['copr-cli', 'build', '--nowait', 'arcticlore/candy', srpm_path],
-                  capture_output=True, text=True, timeout=60
-              )
-              if r.returncode != 0:
-                  print(f"  [ERROR] copr-cli: {r.stderr[:200]}")
-                  return False
-              if 'Build was added' in r.stdout:
-                  for line in r.stdout.splitlines():
-                      if 'https://' in line:
-                          print(f"  [OK] {line.strip()}")
-                          break
-                  return True
-              print(f"  [WARN] {r.stdout[:200]}")
-              return False
-
-          enabled = get_enabled_packages()
-          srpms = get_srpm_files()
-          submitted = set()
-          start_time = time.time()
-
-          print(f"Enabled: {len(enabled)}, SRPMs: {len(srpms)}, Max slots: {MAX_BUILDS}")
-          print()
-
-          while True:
-              elapsed = time.time() - start_time
-              if elapsed > MAX_WAIT:
-                  print(f"\n[DONE] Timeout ({MAX_WAIT}s). Submitted: {len(submitted)}")
-                  break
-
-              states = get_copr_status()
-              active = sum(1 for s in states.values() if s in ('running', 'starting'))
-              succeeded = {n for n, s in states.items() if s == 'succeeded'}
-              failed = {n for n, s in states.items() if s == 'failed'}
-              pending_or_active = {n for n, s in states.items() if s in ('pending', 'running', 'starting', 'importing')}
-
-              # Packages that already have a build running/pending - don't re-submit
-              pending_only = {n for n, s in states.items() if s in ('pending', 'importing')}
-
-              # What we can still submit: enabled minus everything already handled
-              need_submit = enabled - succeeded - pending_or_active - submitted
-
-              available_slots = MAX_BUILDS - active
-
-              print(f"[{time.strftime('%H:%M:%S')}] active={active}/{MAX_BUILDS} "
-                    f"free={available_slots} succeeded={len(succeeded)} "
-                    f"need={len(need_submit)} submitted_here={len(submitted)}")
-
-              if available_slots <= 0 and active == 0:
-                  print(f"  All {MAX_BUILDS} slots full, waiting {POLL_INTERVAL}s...")
-                  time.sleep(POLL_INTERVAL)
-                  continue
-
-              if not need_submit and active == 0:
-                  print("\n[DONE] Nothing new to submit!")
-                  break
-
-              # Fill available slots
-              to_submit = sorted(need_submit)[:max(available_slots, 0)]
-              if not to_submit:
-                  if active > 0:
-                      print(f"  Waiting for {active} active builds...")
-                      time.sleep(POLL_INTERVAL)
-                  continue
-
-              for name in to_submit:
-                  if name not in srpms:
-                      print(f"  [SKIP] {name}: no SRPM file")
-                      continue
-
-                  print(f"  [SUBMIT] {name}")
-                  if submit_build(srpms[name]):
-                      submitted.add(name)
-                  else:
-                      print(f"  [FAIL] {name}")
-
-                  time.sleep(1)  # rate limit
-
-              time.sleep(POLL_INTERVAL)
-
-          print(f"\nTotal submitted this run: {len(submitted)}")
-          states = get_copr_status()
-          succeeded_all = {n for n, s in states.items() if s == 'succeeded'}
-          failed_all = {n for n, s in states.items() if s == 'failed'}
-          running_all = {n for n, s in states.items() if s in ('running', 'starting', 'pending', 'importing')}
-          print(f"\n=== FINAL SUMMARY ===")
-          print(f"Total enabled: {len(enabled)}")
-          print(f"Succeeded: {len(succeeded_all)}")
-          print(f"Failed: {len(failed_all)}")
-          print(f"Building: {len(running_all)}")
-          print(f"Not submitted: {len(enabled - set(states.keys()))}")
-          if failed_all:
-              print(f"Failed: {', '.join(sorted(failed_all))}")
-          if running_all:
-              print(f"Building: {', '.join(sorted(running_all))}")
-          PYEOF
+      - name: Submit to COPR (dedup with version comparison)
+        run: python3 bin/coprase-status.py submit 2>&1 | tee logs/submit.log
 
       - name: Auto-triage (fix known failures)
         if: always()
@@ -239,47 +78,12 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE" 2>/dev/null || true
           echo "=== Commit state step ==="
-          git status --short
           if [ ! -d ".git" ]; then
             echo "Not in git repo, skipping commit"
             exit 0
           fi
           git config user.name "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git config --global --add safe-directory "$GITHUB_WORKSPACE" 2>/dev/null || true
-          git add state/state.json pkgs.json SPECS/ 2>&1 || true
-          echo "Files staged:"
-          git diff --cached --stat || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "submit sync [skip ci]" || echo "Commit failed"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master 2>&1 || echo "Push failed (non-critical)"
-          else
-            echo "No changes to commit"
-          fi
-          echo "=== Commit state done ==="
-
-      - name: Auto-triage (fix known failures)
-        if: always()
-        run: bin/auto-triage.sh || true
-
-      - name: Auto-issue (report failures)
-        if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-issue.sh || true
-
-      - name: Commit state
-        if: always()
-        run: |
-          cd "$GITHUB_WORKSPACE" 2>/dev/null || true
-          echo "=== Commit state step ==="
-          git status --short
-          if [ ! -d ".git" ]; then
-            echo "Not in git repo, skipping commit"
-            exit 0
-          fi
-          git config user.name "candy-bot" || true
-          git config user.email "candy-bot@users.noreply.github.com" || true
           git config --global --add safe-directory "$GITHUB_WORKSPACE" 2>/dev/null || true
           git add state/state.json pkgs.json SPECS/ 2>&1 || true
           echo "Files staged:"
