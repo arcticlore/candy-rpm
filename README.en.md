@@ -5,14 +5,17 @@
 ![candy](assets/banner.svg)
 
 ![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg)
+![packages](https://img.shields.io/badge/packages-153-blueviolet)
 ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue)
 ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044-294172?logo=fedora)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![tg](https://img.shields.io/badge/Telegram-%40tct_fedorabot-26A5E4?logo=telegram)](https://t.me/tct_fedorabot)
 
 # 🧊 candy
 
 **Nightly-updated COPR repository of terminal eye-candy for Fedora**
 
+**153 packages** · 12 ecosystems · auto-build twice a day · 4 architectures  
 *x86_64 · aarch64 · ppc64le · s390x*
 
 </div>
@@ -37,6 +40,87 @@ sudo dnf copr enable arcticlore/candy
 | 📦 **COPR** | [arcticlore/candy](https://copr.fedorainfracloud.org/coprs/arcticlore/candy/) |
 | 🤖 **Telegram Bot** | [@tct_fedorabot](https://t.me/tct_fedorabot) — message me, owner will reply |
 | 📄 **Package catalog** | [PACKAGES.md](PACKAGES.md) |
+
+## ✨ Highlights
+
+<details open>
+<summary>🖼️ Fetch — system info with ASCII art</summary>
+
+| Package | What it does |
+|---------|-------------|
+| `candy/neofetch` | the classic: distro logo + specs |
+| `candy/macchina` | a minimal Rust fetch |
+| `candy/nitch` | instant fetch (prints faster than you can think) |
+| `candy/onefetch` | git-repo info with ASCII stats |
+| `candy/ghfetch` | your GitHub profile right in the terminal |
+| `candy/archey4` | pywal-aware ^C^Z happiness |
+
+</details>
+
+<details open>
+<summary>🎨 Screensavers & ASCII art</summary>
+
+| Package | What it does |
+|---------|-------------|
+| `candy/pipes.sh` | rainbow pipes like Windows 95 |
+| `candy/pipes.rs` | the same, but Rust — even smoother |
+| `candy/hollywood` | the "hacker door" — fake furious progress |
+| `candy/unimatrix` | digital rain in Matrix style |
+| `candy/lavat` | lava lamp in your terminal |
+| `candy/ascii-rain` | rain of random characters |
+| `candy/tty-clock` | huge digital clock |
+| `candy/bb` | ASCII bubbles, ASCII-Valentine style |
+
+</details>
+
+<details open>
+<summary>🛠️ Eye-candy while working: CLI upgrades</summary>
+
+| Package | What it does |
+|---------|-------------|
+| `candy/sd` | sed with a sane syntax |
+| `candy/xh` / `candy/curlie` | curl, but like httpie |
+| `candy/viddy` | `watch` in real time |
+| `candy/doggo` | dig with a human face |
+| `candy/broot` | file manager + tree + search |
+| `candy/tealdeer` | tldr: short man pages |
+| `candy/bottom` | system monitor with graphs |
+| `candy/trippy` | traceroute++ |
+
+</details>
+
+<details open>
+<summary>🎮 Games & arcades</summary>
+
+| Package | What it does |
+|---------|-------------|
+| `candy/pokete` | Pokémon, terminal-style |
+| `candy/tetris` | tetris in the terminal |
+| `candy/tty-solitaire` | Klondike solitaire on ncurses |
+| `candy/ascii-patrol` | a platformer in ASCII |
+| `candy/ttyper` / `candy/toipe` | touch-typing trainers |
+
+</details>
+
+<details open>
+<summary>🖥️ Terminal replacements</summary>
+
+| Package | What it does |
+|---------|-------------|
+| `candy/WezTerm` | cross-platform terminal (GPU, ligatures) |
+| `candy/Ghostty` | fast terminal by Mitchell Hashimoto |
+| `candy/Rio` | next-gen Rust terminal |
+
+</details>
+
+## 🔎 Searching packages
+
+```bash
+# every package in the catalog
+dnf repoquery --available '*' --repo copr:copr.fedorainfracloud.org:arcticlore:candy
+# by keyword
+dnf search --repo copr:copr.fedorainfracloud.org:arcticlore:candy fetch
+```
 
 ## ⚙️ How it works
 

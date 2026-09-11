@@ -585,7 +585,7 @@ def body_c(m: Package, br: list[str], req: list[str]) -> str:
             m.install_cmd,
             "",
             "%files",
-            f"%{{_bindir}}/{m.name}",
+            f"%{{_bindir}}/{m.bins[0] if m.bins else m.name}",
         ]
         if not m.noman:
             out.append("%{_mandir}/*")

@@ -2506,6 +2506,113 @@
    "br": [
     "perl"
    ]
+  },
+  {
+   "name": "onefetch",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "o2sh/onefetch",
+   "tagp": "v",
+   "summary": "Показывает инфо о git-репозитории ( committing, languages, lines... )",
+   "license": "MIT",
+   "bins": [
+    "onefetch"
+   ],
+   "prio": 2,
+   "use": "onefetch — из папки репозитория",
+   "alt": "cargo install onefetch --locked"
+  },
+  {
+   "name": "gitui",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "gitui-org/gitui",
+   "tagp": "v",
+   "summary": "TUI-интерфейс для git ( staging, branches, interactive rebase )",
+   "license": "MIT",
+   "bins": [
+    "gitui"
+   ],
+   "prio": 2,
+   "use": "gitui — в папке репозитория",
+   "alt": "cargo install gitui --locked"
+  },
+  {
+   "name": "toipe",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Samyak2/toipe",
+   "tagp": "v",
+   "summary": "Тест скорости печати на Rust, специальный для ( true touch typing )",
+   "license": "MIT",
+   "bins": [
+    "toipe"
+   ],
+   "prio": 3,
+   "use": "toipe — запуск без аргументов",
+   "alt": "cargo install toipe --locked"
+  },
+  {
+   "name": "tty-solitaire",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "mpereira/tty-solitaire",
+   "tagp": "v",
+   "summary": "Пасьянс в терминале на ncurses",
+   "license": "MIT",
+   "bins": [
+    "ttysolitaire"
+   ],
+   "br": [
+    "ncurses-devel"
+   ],
+   "install_cmd": "%make_install PREFIX=%{_prefix}",
+   "verify": true,
+   "prio": 3,
+   "use": "ttysolitaire — режим клавиатуры h,j,k,l",
+   "alt": "git clone + make install"
+  },
+  {
+   "name": "gtop",
+   "eco": "npm",
+   "host": "github",
+   "slug": "aksakalli/gtop",
+   "tagp": "v",
+"summary": "Панель мониторинга системы для терминала",
+        "license": "MIT",
+        "prio": 3,
+        "entry": "bin/gtop",
+        "use": "gtop — CPU/RAM/network в одном окне"
+    },
+  {
+   "name": "navi",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "denisidoro/navi",
+   "tagp": "v",
+   "summary": "Интерактивные шпаргалки ( cheatsheets ) для командной строки",
+   "license": "Apache-2.0",
+   "bins": [
+    "navi"
+   ],
+   "prio": 2,
+   "use": "navi widget bash|zsh",
+   "alt": "cargo install navi --locked"
+  },
+  {
+   "name": "delta",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "dandavison/delta",
+   "tagp": "",
+   "summary": "Подсветка синтаксиса для git diff/blame/grep, pager для df",
+   "license": "MIT",
+   "bins": [
+    "delta"
+   ],
+   "prio": 1,
+   "use": "delta -- pager для git; git config core.pager delta",
+   "alt": "cargo install git-delta --locked"
   }
  ]
 }

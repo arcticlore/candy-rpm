@@ -11,6 +11,7 @@
 | **broot** | Дерево каталогов с навигацией и предпросмотром | `broot — интерактивное дерево файлов` | github.com/Canop/broot |
 | **csview** | Быстрый csv-просмотрщик с поддержкой CJK/эмодзи | `—` | github.com/wfxr/csview |
 | **curlie** | The power of curl, the ease of use of httpie | `curlie https://api.github.com` | github.com/rs/curlie |
+| **delta** | Подсветка синтаксиса для git diff/blame/grep, pager для df | `delta -- pager для git; git config core.pager delta` | github.com/dandavison/delta |
 | **doggo** | Fast command-line DNS client for humans | `doggo example.com MX` | github.com/mr-karan/doggo |
 | **fx** | Terminal JSON viewer and processor | `cat data.json | fx — интерактивный JSON` | github.com/antonmedv/fx |
 | **glow** | Рендер markdown прямо в терминале с подсветкой (charm) | `glow README.md — читай markdown в терминале` | github.com/charmbracelet/glow |
@@ -45,12 +46,15 @@
 | **dysk** | df для людей: диски человекочитаемо | `dysk — все точки монтирования` | github.com/Canop/dysk |
 | **ghfetch** | Neofetch-like utility to fetch GitHub info in the terminal | `ghfetch <логин-github>` | github.com/SafarSoFar/ghfetch |
 | **gitfetch** | GitHub contribution visualization tool inspired by neofetch | `gitfetch <логин-github>` | github.com/FabricSoul/gitfetch |
+| **gitui** | TUI-интерфейс для git ( staging, branches, interactive rebase ) | `gitui — в папке репозитория` | github.com/gitui-org/gitui |
 | **grex** | Генератор регулярок из примеров строк | `grex a1 b2 → '^a[12]b[12]$'` | github.com/pemistahl/grex |
 | **kondo** | Чистка build-артефактов проектов (node_modules/target) | `kondo ~/dev — найти мусор` | github.com/tbillington/kondo |
 | **macchina** | System information fetcher with an emphasis on performance | `macchina — инфа о системе` | github.com/Macchina-CLI/macchina |
+| **navi** | Интерактивные шпаргалки ( cheatsheets ) для командной строки | `navi widget bash|zsh` | github.com/denisidoro/navi |
 | **nb** | Заметки/закладки/блокноты — всё в CLI (один bash-файл) | `nb add текст заметки; nb ls` | github.com/xwmx/nb |
 | **neofetch** | Command-line system information tool | `neofetch` | github.com/dylanaraps/neofetch |
 | **nerdfetch** | POSIX nix fetch script using Nerdfonts | `nerdfetch (нужен Nerd Font)` | codeberg.org/thatonecalculator/NerdFetch |
+| **onefetch** | Показывает инфо о git-репозитории ( committing, languages, lines... ) | `onefetch — из папки репозитория` | github.com/o2sh/onefetch |
 | **pet** | Менеджер сниппетов: сохрани и вставь команду | `pet new / pet exec <имя>` | github.com/knqyf263/pet |
 | **pokemon-icat** | Show any Pokemon sprite in your terminal | `pokemon-icat pikachu — спрайт покемона` | github.com/aflaag/pokemon-icat |
 | **presenterm** | Терминальные презентации из markdown с темами | `presenterm slides.md` | github.com/mfontanini/presenterm |
@@ -72,6 +76,7 @@
 | **fend** | Калькулятор произвольной точности | `echo '1+2' | fend` | github.com/printf/fend |
 | **genact** | Генератор безумной активности — притворись хакером | `genact — Ctrl+C остановить` | github.com/svenstaro/genact |
 | **gh-screensaver** | Screensaver extension for gh (fireworks/starfield/pipes) | `gh screensaver -e fireworks (нужен GitHub CLI)` | github.com/vilmibm/gh-screensaver |
+| **gtop** | Панель мониторинга системы для терминала | `gtop — CPU/RAM/network в одном окне` | github.com/aksakalli/gtop |
 | **joshuto** | ranger-подобный файловый менеджер (Rust) | `—` | github.com/kamiyaa/joshuto |
 | **lavat** | Lava lamp in the terminal | `lavat — лава-лампа; клавиши +/- меняют скорость` | github.com/AngelJumbo/lavat |
 | **lolcrab** | lolcat с шумом и радугой (Rust) | `—` | github.com/mazznoer/lolcrab |
@@ -87,8 +92,10 @@
 | **terminaltexteffects** | Terminal text effects engine — анимации печати и эффектов в терминале | `tte "твой текст" — эффекты печати; tte --list-effects` | pypi.org/project/terminaltexteffects |
 | **termshot** | Скриншот команды в виде терминального окна | `termshot --out shot.png -- ls -la` | github.com/homeport/termshot |
 | **tfire** | Fire animation in your terminal | `tfire.sh — огонь` | github.com/tech-chad/tfire |
+| **toipe** | Тест скорости печати на Rust, специальный для ( true touch typing ) | `toipe — запуск без аргументов` | github.com/Samyak2/toipe |
 | **tspace** | Fly a little spaceship around your terminal | `tspace.sh — кораблик` | github.com/mtklr/tspace |
 | **tty-clock** | Digital clock in ncurses | `tty-clock -c -C 4 — часы по центру, цвет 4` | github.com/xorg62/tty-clock |
+| **tty-solitaire** | Пасьянс в терминале на ncurses | `ttysolitaire — режим клавиатуры h,j,k,l` | github.com/mpereira/tty-solitaire |
 | **ttyper** | Тренажёр слепой печати в терминале | `ttyper — тест слепой печати (ru: --language ru1000)` | github.com/max-niederman/ttyper |
 | **ttysvr** | Набор скринсейверов для терминала | `—` | github.com/cxreiff/ttysvr |
 | **typioca** | Минималистичный тест скорости печати | `typioca — печать на скорость` | github.com/bloznelis/typioca |
