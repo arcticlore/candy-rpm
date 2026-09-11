@@ -61,7 +61,7 @@ work fully offline.
 | Priority | Type | Examples |
 |----------|------|----------|
 | 1 | CLI tools | sd, bottom, hyperfine |
-| 2 | Fetch/animations | neofetch, pipes.sh, yosay |
+| 2 | Fetch/animations | neofetch, pipes.sh, hollywood |
 | 3 | Themes & prompts | powerlevel10k, starship |
 | 4 | Heavy cargo builds | WezTerm, Ghostty |
 

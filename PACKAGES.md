@@ -21,6 +21,7 @@
 | **lazydocker** | Lazier way to manage everything docker | `запусти lazydocker при работающем docker` | github.com/jesseduffield/lazydocker |
 | **lazygit** | Simple terminal UI for git commands | `запусти lazygit внутри git-репозитория` | github.com/jesseduffield/lazygit |
 | **lf** | Terminal file manager | `lf — файловый менеджер` | github.com/gokcehan/lf |
+| **mise** | Менеджер рантаймов node/python/ruby — быстрый asdf-killer | `mise use --pin node@22` | github.com/jdx/mise |
 | **oha** | HTTP бенчмарк с красивым TUI | `oha -n 200 https://example.com` | github.com/hatoo/oha |
 | **scc** | Счётчик строк кода по языкам — быстрее cloc | `scc ./project` | github.com/boyter/scc |
 | **sd** | Intuitive find & replace CLI (sed alternative) | `sd 'старый текст' 'новый текст' file.txt` | github.com/chmln/sd |
@@ -49,6 +50,8 @@
 | **macchina** | System information fetcher with an emphasis on performance | `macchina — инфа о системе` | github.com/Macchina-CLI/macchina |
 | **nb** | Заметки/закладки/блокноты — всё в CLI (один bash-файл) | `nb add текст заметки; nb ls` | github.com/xwmx/nb |
 | **neofetch** | Command-line system information tool | `neofetch` | github.com/dylanaraps/neofetch |
+| **nerdfetch** | POSIX nix fetch script using Nerdfonts | `nerdfetch (нужен Nerd Font)` | codeberg.org/thatonecalculator/NerdFetch |
+| **pet** | Менеджер сниппетов: сохрани и вставь команду | `pet new / pet exec <имя>` | github.com/knqyf263/pet |
 | **pokemon-icat** | Show any Pokemon sprite in your terminal | `pokemon-icat pikachu — спрайт покемона` | github.com/aflaag/pokemon-icat |
 | **presenterm** | Терминальные презентации из markdown с темами | `presenterm slides.md` | github.com/mfontanini/presenterm |
 | **pridefetch** | Neofetch, but gay | `pridefetch` | github.com/cartoon-raccoon/pridefetch |
@@ -129,6 +132,7 @@
 | **peaclock** | Часы/секундомер/таймер с цветными цифрами | `peaclock` | github.com/octobanana/peaclock |
 | **pokete** | Покемоны в терминале (полноценная игра) | `pokete.py` | github.com/lxgr-linux/pokete |
 | **zellij** | Terminal workspace with panels, plugins and layouts | `zellij — мультиплексор, Ctrl+p для помощи` | github.com/zellij-org/zellij |
+| **hollywood** | Fill your console with Hollywood melodrama technobabble | `hollywood — консоль хакера из кино (нужен byobu)` | github.com/dustinkirkland/hollywood |
 | **Rio** | Hardware-accelerated terminal emulator focused on typography | `—` | github.com/raphamorim/rio |
 
 ## Отключённые (по причинам)

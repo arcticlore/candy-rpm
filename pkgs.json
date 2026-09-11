@@ -381,6 +381,25 @@
    "fallback": "commit"
   },
   {
+   "name": "nerdfetch",
+   "eco": "script",
+   "host": "codeberg",
+   "slug": "thatonecalculator/NerdFetch",
+   "tagp": "v",
+   "summary": "POSIX nix fetch script using Nerdfonts",
+   "license": "MIT",
+   "files": [
+    "nerdfetch"
+   ],
+   "req": [
+    "bash"
+   ],
+   "interp": "sh",
+   "verify": true,
+   "prio": 2,
+   "use": "nerdfetch (нужен Nerd Font)"
+  },
+  {
    "name": "disfetch",
    "eco": "script",
    "host": "github",
@@ -1024,6 +1043,35 @@
    "verify": true,
    "prio": 3,
    "use": "source /usr/share/cli-fx/lib/core.sh — эффекты в своих скриптах"
+  },
+  {
+   "name": "hollywood",
+   "eco": "script",
+   "host": "github",
+   "slug": "dustinkirkland/hollywood",
+   "tagp": "",
+   "summary": "Fill your console with Hollywood melodrama technobabble",
+   "license": "GPL-3.0-or-later",
+   "share": {
+    "src": ".",
+    "dst": "/usr/libexec/hollywood"
+   },
+   "bins": [
+    "hollywood"
+   ],
+   "req": [
+    "byobu",
+    "ccze",
+    "cmatrix",
+    "oneko",
+    "cowsay",
+    "fortune-mod",
+    "jp2a"
+   ],
+   "interp": "bash",
+   "verify": true,
+   "prio": 9,
+   "use": "hollywood — консоль хакера из кино (нужен byobu)"
   },
   {
    "name": "bb",
@@ -2067,6 +2115,21 @@
    "prio": 2
   },
   {
+   "name": "pet",
+   "eco": "go",
+   "host": "github",
+   "slug": "knqyf263/pet",
+   "tagp": "v",
+   "summary": "Менеджер сниппетов: сохрани и вставь команду",
+   "license": "MIT",
+   "bins": [
+    "pet"
+   ],
+   "gpkg": ".",
+   "use": "pet new / pet exec <имя>",
+   "prio": 2
+  },
+  {
    "name": "nb",
    "eco": "script",
    "host": "github",
@@ -2192,6 +2255,21 @@
    ],
    "use": "genact — Ctrl+C остановить",
    "prio": 3
+  },
+  {
+   "name": "mise",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "jdx/mise",
+   "tagp": "v",
+   "summary": "Менеджер рантаймов node/python/ruby — быстрый asdf-killer",
+   "license": "MIT",
+   "bins": [
+    "mise"
+   ],
+   "use": "mise use --pin node@22",
+   "prio": 1,
+   "alt": "curl https://mise.run | sh"
   },
   {
    "name": "bandwhich",
