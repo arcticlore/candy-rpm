@@ -61,7 +61,7 @@ bin/auto-triage.sh   автоматически лечит известные о
 | Приоритет | Тип | Примеры |
 |-----------|-----|---------|
 | 1 | CLI-утилиты | sd, bottom, hyperfine |
-| 2 | Fetch/анимации | neofetch, pipes.sh, hollywood |
+| 2 | Fetch/анимации | neofetch, pipes.sh, yosay |
 | 3 | Темы и промпты | powerlevel10k, starship |
 | 4 | Тяжёлые cargo-сборки | WezTerm, Ghostty |
 

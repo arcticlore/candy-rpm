@@ -76,5 +76,4 @@
 - **musikcube** (`c-cmake`) — https://github.com/clangen/musikcube/archive/{version}.tar.gz
 - **zellij** (`cargo`) — https://github.com/zellij-org/zellij/archive/v{version}.tar.gz
 - **Rio** (`cargo`) — https://github.com/raphamorim/rio/archive/v{version}.tar.gz
-- **hollywood** (`script`) — https://github.com/dustinkirkland/hollywood/archive/{version}.tar.gz
 - **winfetch** (`script`) — https://github.com/lptstr/winfetch/archive/v{version}.tar.gz
