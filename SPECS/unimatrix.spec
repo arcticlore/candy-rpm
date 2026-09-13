@@ -31,7 +31,7 @@ Don't throw tomatoes - file issues instead.
 # интерпретируемый модуль, сборки нет
 
 %install
-install -Dpm0755 unimatrix %{buildroot}%{_bindir}/unimatrix
+install -Dpm0755 unimatrix.py %{buildroot}%{_bindir}/unimatrix
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/unimatrix
 
 %changelog
-* Sat Sep 05 2026 candy-bot <candy@localhost> - 20260829.dff519f-1
+* Sun Sep 13 2026 candy-bot <candy@localhost> - 20260829.dff519f-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
