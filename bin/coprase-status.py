@@ -26,6 +26,10 @@ MAX_BUILDS = 2
 POLL_INTERVAL = 60
 MAX_WAIT = 7200  # 2 hours total
 
+# copr-cli resilience: network flakes shouldn't kill the whole batch
+SUBMIT_TIMEOUT = 180
+SUBMIT_ATTEMPTS = 3
+
 
 def copr_api(endpoint: str, extra: str = "") -> dict:
     """Query COPR API."""
@@ -130,24 +134,40 @@ def get_copr_active() -> dict[str, str]:
 
 
 def submit_build(srpm_path: str, dry_run: bool = False) -> bool:
-    """Submit a single build to COPR."""
+    """Submit a single build to COPR (copr-cli with timeout + retries)."""
     if dry_run:
         print(f"  [DRY] Would submit: {srpm_path}")
         return True
-    r = subprocess.run(
-        ["copr-cli", "build", "--nowait", f"{OWNER}/{PROJECT}", srpm_path],
-        capture_output=True, text=True, timeout=60,
-    )
-    if r.returncode != 0:
-        print(f"  [ERROR] copr-cli: {r.stderr[:200]}")
+    for attempt in range(1, SUBMIT_ATTEMPTS + 1):
+        if attempt > 1:
+            print(f"  [RETRY {attempt}/{SUBMIT_ATTEMPTS}] {srpm_path}")
+            time.sleep(5)
+        try:
+            r = subprocess.run(
+                ["copr-cli", "build", "--nowait", f"{OWNER}/{PROJECT}", srpm_path],
+                capture_output=True, text=True, timeout=SUBMIT_TIMEOUT,
+            )
+        except subprocess.TimeoutExpired:
+            print(f"  [WARN] copr-cli timed out after {SUBMIT_TIMEOUT}s (attempt {attempt}/"
+                  f"{SUBMIT_ATTEMPTS})")
+            continue
+        except Exception as e:
+            print(f"  [WARN] copr-cli error: {e}")
+            continue
+        if r.returncode != 0:
+            print(f"  [ERROR] copr-cli (attempt {attempt}): {r.stderr[:200]}")
+            if "not found" in r.stderr.lower() or "command" in r.stderr.lower():
+                return False  # copr-cli/config broken — no point retrying
+            continue
+        if "Build was added" in r.stdout or "already exists" in r.stdout.lower():
+            for line in r.stdout.splitlines():
+                if "https://" in line:
+                    print(f"  [OK] {line.strip()}")
+                    break
+            return True
+        print(f"  [WARN] {r.stdout[:200]}")
         return False
-    if "Build was added" in r.stdout or "already exists" in r.stdout.lower():
-        for line in r.stdout.splitlines():
-            if "https://" in line:
-                print(f"  [OK] {line.strip()}")
-                break
-        return True
-    print(f"  [WARN] {r.stdout[:200]}")
+    print(f"  [FAIL] {srpm_path} — not submitted after {SUBMIT_ATTEMPTS} attempts")
     return False
 
 
@@ -208,6 +228,12 @@ def cmd_submit():
         for p in json.load(f).get("packages", []):
             if p.get("enabled", True):
                 enabled.add(p["name"])
+
+    if not all_builds:
+        print("[ABORT] COPR API вернул 0 билдов (сеть/API недоступны) — "
+              "подтверждения статуса нет, чтобы не плодить дубликаты.",
+              file=sys.stderr)
+        return
 
     # Determine what needs submission
     to_submit: list[str] = []
