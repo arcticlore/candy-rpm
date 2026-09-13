@@ -1712,11 +1712,14 @@
    "summary": "Матрица из unicode-символов (гибкий аналог cmatrix)",
    "license": "GPL-3.0-or-later",
    "files": [
-    "unimatrix.py"
+      "unimatrix.py"
    ],
    "bins": [
-    "unimatrix"
+      "unimatrix"
    ],
+   "script_src": {
+      "unimatrix": "unimatrix.py"
+   },
    "fallback": "commit",
    "verify": true,
    "prio": 3,
