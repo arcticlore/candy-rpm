@@ -2533,6 +2533,9 @@
    "bins": [
     "gitui"
    ],
+   "br": [
+    "perl"
+   ],
    "prio": 2,
    "use": "gitui — в папке репозитория",
    "alt": "cargo install gitui --locked"
@@ -2563,6 +2566,7 @@
    "bins": [
     "ttysolitaire"
    ],
+   "noman": true,
    "br": [
     "ncurses-devel"
    ],

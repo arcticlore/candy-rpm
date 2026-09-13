@@ -15,6 +15,7 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  perl
 
 %description
 TUI-интерфейс для git ( staging, branches, interactive rebase )
@@ -46,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/gitui
 
 %changelog
-* Fri Sep 11 2026 candy-bot <candy@localhost> - 0.28.1-1
+* Sun Sep 13 2026 candy-bot <candy@localhost> - 0.28.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

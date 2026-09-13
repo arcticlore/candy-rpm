@@ -38,8 +38,7 @@ mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_bindir}/ttysolitaire
-%{_mandir}/*
 
 %changelog
-* Fri Sep 11 2026 candy-bot <candy@localhost> - 1.4.1-1
+* Sun Sep 13 2026 candy-bot <candy@localhost> - 1.4.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
