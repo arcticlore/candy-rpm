@@ -17,7 +17,8 @@ jobs:
 
       - name: Install toolchain
         run: |
-          dnf install -y jq git rpm-build rpmdevtools python3 golang cargo rust copr-cli 2>&1 | tail -5
+          dnf install -y jq git rpm-build rpmdevtools python3 golang cargo rust copr-cli \
+            nodejs npm 2>&1 | tail -5
 
       - name: Configure COPR
         run: |
