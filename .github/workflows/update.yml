@@ -10,7 +10,7 @@ permissions:
 jobs:
   submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     container: fedora:44
     steps:
       - uses: actions/checkout@v4
@@ -35,8 +35,14 @@ jobs:
           path: |
             SRPMS/
             SOURCES/
-          key: srpm-cache-${{ github.run_id }}
-          restore-keys: srpm-cache-
+          # Ключ = хэш pkgs.json (единственный источник правды: gen_specs.py
+          # перегенерирует SPECS из pkgs.json каждый ран). Любое изменение
+          # pkgs.json (BR, bins, версии, новые пакеты) инвалидирует кэш и
+          # форсирует полную пересборку SRPM для пакетов со статусом
+          # submission. restore-keys намеренно НЕТ: префикс подтянул бы
+          # стейл-SRPM (собранные до фикса perl/noman/install) и снова
+          # отправил бы их в COPR.
+          key: srpm-cache-${{ hashFiles('pkgs.json') }}
 
       - name: Build SRPMs for packages needing submission
         run: |
