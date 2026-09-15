@@ -35,14 +35,13 @@ jobs:
           path: |
             SRPMS/
             SOURCES/
-          # Ключ = хэш pkgs.json (единственный источник правды: gen_specs.py
-          # перегенерирует SPECS из pkgs.json каждый ран). Любое изменение
-          # pkgs.json (BR, bins, версии, новые пакеты) инвалидирует кэш и
-          # форсирует полную пересборку SRPM для пакетов со статусом
-          # submission. restore-keys намеренно НЕТ: префикс подтянул бы
-          # стейл-SRPM (собранные до фикса perl/noman/install) и снова
-          # отправил бы их в COPR.
-          key: srpm-cache-${{ hashFiles('pkgs.json') }}
+          # Ключ = хэш источников правды, от которых зависит содержимое SRPM:
+          # pkgs.json (версии/BR/bins), генератор spec и скрипт сборки SRPM.
+          # Любое их изменение инвалидирует кэш и форсирует пересборку SRPM
+          # для пакетов со статусом submission. restore-keys намеренно НЕТ:
+          # префикс подтянул бы стейл-SRPM (собранные до фикса perl/noman/install)
+          # и снова отправил бы их в COPR.
+          key: srpm-cache-${{ hashFiles('pkgs.json', 'bin/gen_specs.py', 'bin/make-srpm.sh') }}
 
       - name: Build SRPMs for packages needing submission
         run: |

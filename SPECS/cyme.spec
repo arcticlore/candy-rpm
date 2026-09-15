@@ -10,6 +10,13 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
+%ifarch i386 riscv64
+# Память билд-машин COPR на этих архитектурах ограничена — собираем по одному
+# заданию, чтобы не упираться пиковой памятью LLVM/cc (OOM).
+%global _smp_build_ncpus 1
+%global _smp_mflags -j1
+%endif
+
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
@@ -29,10 +36,14 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n cyme-3.0.1
+%autosetup -N -a1 -n %{name}-%{version}
 %cargo_prep -v vendor
 
 %build
+%ifarch i386 riscv64
+export CARGO_BUILD_JOBS=1
+export RUSTFLAGS="${RUSTFLAGS:-} -Ccodegen-units=1"
+%endif
 %cargo_build
 
 %install
@@ -47,5 +58,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/cyme
 
 %changelog
-* Sat Sep 05 2026 candy-bot <candy@localhost> - 3.0.1-1
+* Tue Sep 15 2026 candy-bot <candy@localhost> - 3.0.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

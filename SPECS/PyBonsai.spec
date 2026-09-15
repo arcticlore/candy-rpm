@@ -9,6 +9,13 @@ Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
+%ifarch i386 riscv64
+# Память билд-машин COPR на этих архитектурах ограничена — собираем по одному
+# заданию, чтобы не упираться пиковой памятью LLVM/cc (OOM).
+%global _smp_build_ncpus 1
+%global _smp_mflags -j1
+%endif
+
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
 
@@ -27,7 +34,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n pybonsai-3.0.0
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %pyproject_wheel
@@ -41,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files -f %{pyproject_files}
 
 %changelog
-* Sat Sep 05 2026 candy-bot <candy@localhost> - 3.0.0-1
+* Tue Sep 15 2026 candy-bot <candy@localhost> - 3.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
