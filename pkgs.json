@@ -2,6 +2,8 @@
  "project": {
   "copr_name": "arcticlore/candy",
   "chroots": [
+   "fedora-45-x86_64",
+   "fedora-45-aarch64",
    "fedora-44-x86_64",
    "fedora-44-aarch64",
    "fedora-43-x86_64",
@@ -9,7 +11,7 @@
    "fedora-rawhide-x86_64",
    "fedora-rawhide-aarch64"
   ],
-  "description": "Terminal eye candy (fetch tools, ASCII animations, modern CLI replacements) for Fedora 44. Auto-updated from upstream releases. Maintainer: arcticlore",
+  "description": "Terminal eye candy (fetch tools, ASCII animations, modern CLI replacements) for Fedora 43/44/45. Auto-updated from upstream releases. Maintainer: arcticlore",
   "workers": 8
  },
  "packages": [
@@ -345,7 +347,7 @@
    "verify": true,
    "prio": 2,
    "enabled": false,
-   "note": "Компилятор nim отсутствует в Fedora 45; включить после установки choosenim"
+   "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
   },
   {
    "name": "nitch",
@@ -359,7 +361,7 @@
    "verify": true,
    "prio": 2,
    "enabled": false,
-   "note": "Компилятор nim отсутствует в Fedora 45; включить после установки choosenim"
+   "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
   },
   {
    "name": "rxfetch",
