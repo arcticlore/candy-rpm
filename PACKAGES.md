@@ -144,8 +144,8 @@
 
 ## Отключённые (по причинам)
 
-- ~~catnap~~ — Компилятор nim отсутствует в Fedora 44; включить после установки choosenim
-- ~~nitch~~ — Компилятор nim отсутствует в Fedora 44; включить после установки choosenim
+- ~~catnap~~ — Компилятор nim отсутствует в Fedora 45; включить после установки choosenim
+- ~~nitch~~ — Компилятор nim отсутствует в Fedora 45; включить после установки choosenim
 - ~~winfetch~~ — Апстрим Windows-only ('Only supported on Windows'). На Linux используйте fastfetch/macchina
 - ~~lifecycler~~ — Апстрим недоступен (404) / пакет удалён из registry
 - ~~shuffle~~ — причина не указана
