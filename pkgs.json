@@ -1293,7 +1293,8 @@
       "br": [
         "git-core"
       ],
-      "alt": "gem install colorls"
+      "alt": "gem install colorls",
+      "prep_extra": "mkdir -p zsh && touch man/colorls.1 zsh/_colorls"
     },
     {
       "name": "pscircle",

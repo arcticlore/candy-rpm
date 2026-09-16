@@ -29,11 +29,12 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
+mkdir -p zsh && touch man/colorls.1 zsh/_colorls
 
 %build
 git init -q . && git config user.email b@b.c && git config user.name b && git add -A && git commit -qm init
 # Create missing files referenced by gemspec
-for f in man/*.1 zsh/_*; do [ -f "$f" ] || touch "$f"; done
+for f in man/*.1 zsh/_*; do [ -f "$f" ] || touch "$f" 2>/dev/null || :; done
 gem build *.gemspec
 
 %install

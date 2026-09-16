@@ -518,7 +518,7 @@ def body_gem(m: Package, br: list[str], req: list[str]) -> str:
         )
     out += [
         "# Create missing files referenced by gemspec",
-        "for f in man/*.1 zsh/_*; do [ -f \"$f\" ] || touch \"$f\"; done",
+        "for f in man/*.1 zsh/_*; do [ -f \"$f\" ] || touch \"$f\" 2>/dev/null || :; done",
         "gem build *.gemspec",
         "",
         "%install",
