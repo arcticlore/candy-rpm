@@ -61,23 +61,54 @@ jobs:
             gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/cancel" >/dev/null 2>&1 || true
           done
 
-      - name: Cancel running COPR builds
+      - name: Cancel COPR builds + cut net (off)
         if: steps.flip.outputs.state == 'off'
+        env:
+          COPR_CONFIG: ${{ secrets.COPR_CONFIG }}
+          COPR_API: https://copr.fedorainfracloud.org/api_3
+        run: |
+          # Сервис не имеет права бросать "нельзя, работают билды":
+          # сначала мгновенно отменяем running/pending, потом глушим сеть.
+          mkdir -p ~/.config
+          echo "$COPR_CONFIG" > ~/.config/copr
+          chmod 600 ~/.config/copr
+          LOGIN=$(grep -m1 '^login' ~/.config/copr | cut -d= -f2 | tr -d ' ')
+          TOKEN=$(grep -m1 '^token' ~/.config/copr | cut -d= -f2 | tr -d ' ')
+          for st in running pending; do
+            for id in $(curl -4 -s --max-time 30 -u "$LOGIN:$TOKEN" \
+                "${COPR_API}/builds?ownername=arcticlore&projectname=candy&status=$st&limit=200" \
+                | python3 -c "
+          import json,sys
+          for b in json.load(sys.stdin).get('items',[]):
+              print(b.get('id'))
+          "); do
+              echo "cancel copr $id ($st)"
+              curl -4 -s --max-time 30 -u "$LOGIN:$TOKEN" -X PUT \
+                "${COPR_API}/build/cancel/$id" || true
+              sleep 1
+            done
+          done
+          echo "--- net off ---"
+          curl -4 -s --max-time 30 -u "$LOGIN:$TOKEN" -X POST \
+            -H "Content-Type: application/json" -d '{"enable_net": false}' \
+            "${COPR_API}/project/edit/arcticlore/candy" \
+            | python3 -c "import sys,json;print('enable_net =>', json.load(sys.stdin).get('enable_net'))"
+
+      - name: Restore COPR net (on)
+        if: steps.flip.outputs.state == 'on'
+        env:
+          COPR_CONFIG: ${{ secrets.COPR_CONFIG }}
+          COPR_API: https://copr.fedorainfracloud.org/api_3
         run: |
           mkdir -p ~/.config
-          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          echo "$COPR_CONFIG" > ~/.config/copr
           chmod 600 ~/.config/copr
-          API="https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200"
-          for id in $(curl -4 -s --max-time 30 "$API" \
-              | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          for b in d.get('items',[]):
-              if b.get('state') in ('running','pending'): print(b['id'])
-          "); do
-            echo "cancel copr $id"
-            copr-cli cancel "$id" >/dev/null 2>&1 || true
-          done
+          LOGIN=$(grep -m1 '^login' ~/.config/copr | cut -d= -f2 | tr -d ' ')
+          TOKEN=$(grep -m1 '^token' ~/.config/copr | cut -d= -f2 | tr -d ' ')
+          curl -4 -s --max-time 30 -u "$LOGIN:$TOKEN" -X POST \
+            -H "Content-Type: application/json" -d '{"enable_net": true}' \
+            "${COPR_API}/project/edit/arcticlore/candy" \
+            | python3 -c "import sys,json;print('enable_net =>', json.load(sys.stdin).get('enable_net'))"
 
       - name: Telegram
         if: always()
