@@ -14,7 +14,7 @@ BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
 
 %generate_buildrequires
-%pyproject_buildrequires -x streamlink
+%pyproject_buildrequires | grep -vE '(python3dist(streamlink))( |$)' || :
 
 %description
 Procedural ASCII bonsai tree generator

@@ -346,11 +346,14 @@ def body_python_pkg(m: Package, br: list[str], req: list[str]) -> str:
     out: list[str] = []
     add_br_req(out, br, req)
 
-    exclude = "".join(" -x " + e for e in m.pbr_exclude)
+    br_cmd = "%pyproject_buildrequires"
+    if m.pbr_exclude:
+        pat = "|".join(f"python3dist({e})" for e in m.pbr_exclude)
+        br_cmd = f"{br_cmd} | grep -vE '({pat})( |$)' || :"
     out += [
         "",
         "%generate_buildrequires",
-        f"%pyproject_buildrequires{exclude}",
+        br_cmd,
         "",
         prep(m),
         "",
