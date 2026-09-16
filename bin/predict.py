@@ -34,16 +34,17 @@ STATE_JSON = ROOT / "state" / "state.json"
 RESULTS_JSON = ROOT / "state" / "chroot-results.json"
 
 FEDORA_RELS = ("fedora-43", "fedora-44", "fedora-rawhide")
-# 12 активных чрутов: i386 и riscv64 исключены из проекта (решено: «вычёркиваем полностью»)
-ARCHS = ("x86_64", "aarch64", "ppc64le", "s390x")
+# 6 активных чрутов: ppc64le/s390x исключены из проекта (решено: «только для обычных людей»),
+# i386 и riscv64 и не было.
+ARCHS = ("x86_64", "aarch64")
 CHROOTS = [f"{rel}-{arch}" for rel in FEDORA_RELS for arch in ARCHS]
 
 # Режим после «диеты» (gen_specs) больше не актуален: i386/riscv64 исключены из проекта.
-# История в chroot-results.json по 12 чрутам.
+# История в chroot-results.json по 6 чрутам.
 
 # Уровень риска по умолчанию, если ни истории, ни статистики нет.
 DEFAULT_FAIL = {
-    "x86_64": 0.03, "aarch64": 0.04, "ppc64le": 0.06, "s390x": 0.08,
+    "x86_64": 0.03, "aarch64": 0.04,
 }
 
 OK, RISK, FAIL = "OK", "RISK", "FAIL"
