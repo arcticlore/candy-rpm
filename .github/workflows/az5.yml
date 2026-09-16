@@ -30,13 +30,17 @@ jobs:
             echo "state=off" >> "$GITHUB_OUTPUT"
             echo "АЗ-5 нажата"
           else
-            rm -f AZ5
             echo "state=on" >> "$GITHUB_OUTPUT"
             echo "АЗ-5 снята"
           fi
           git config user.name  "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git add AZ5
+          if [ "$ACTION" = "off" ]; then
+            git add -A AZ5
+          else
+            # git rm --ignore-unmatch: 0 и когда файла нет ни в индексе, ни в worktree
+            git rm --ignore-unmatch -q -f AZ5
+          fi
           if git diff --cached --quiet; then
             echo "маркер уже в этом состоянии"
           else
