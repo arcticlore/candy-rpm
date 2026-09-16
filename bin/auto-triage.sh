@@ -186,7 +186,7 @@ while read -r id name; do
     grep -qx "$id" "$TRI" && continue
     D=logs/builder/$id
     DOWNLOADED=0
-    for chroot in fedora-44-x86_64 fedora-43-x86_64 fedora-rawhide-x86_64 fedora-44-aarch64; do
+    for chroot in fedora-45-x86_64 fedora-45-aarch64 fedora-44-x86_64 fedora-43-x86_64 fedora-rawhide-x86_64 fedora-44-aarch64 fedora-43-aarch64 fedora-rawhide-aarch64; do
         curl -sL --max-time 60 -o "$D.log.gz" \
           "https://download.copr.fedorainfracloud.org/results/arcticlore/candy/${chroot}/${id}-${name}/builder-live.log.gz" 2>/dev/null \
           && DOWNLOADED=1 && break
