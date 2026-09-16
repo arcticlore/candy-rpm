@@ -15,6 +15,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  ncurses-devel
+BuildRequires:  icu-devel
 
 %description
 Часы/секундомер/таймер с цветными цифрами

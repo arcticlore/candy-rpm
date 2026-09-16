@@ -10,18 +10,11 @@ Source0:        %{name}-%{version}.tar.gz
 %global _unpackaged_files_terminate_build 0
 
 
+BuildRequires:  meson
 BuildRequires:  gcc
-BuildRequires:  make
-BuildRequires:  autoconf
-BuildRequires:  automake
 BuildRequires:  cairo-devel
-BuildRequires:  gcc
 BuildRequires:  glib2-devel
-BuildRequires:  make
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  gettext
-BuildRequires:  libtool
+BuildRequires:  libpng-devel
 
 %description
 Visualize processes as a circular tree wallpaper
@@ -38,20 +31,16 @@ Don't throw tomatoes - file issues instead.
 %autosetup -p1 -n %{name}-v%{version}
 
 %build
-export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"
-autoreconf -vfi
-%configure
-%make_build
+%meson
+%meson_build
 
 %install
-%make_install
-find %{buildroot} -name '*.la' -delete
+%meson_install
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
-%{_bindir}/pscircle
-%{_mandir}/*
+%{_bindir}/*
 
 %changelog
 * Wed Sep 16 2026 candy-bot <candy@localhost> - 1.4.0-1

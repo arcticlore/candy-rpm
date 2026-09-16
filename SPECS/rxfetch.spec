@@ -33,7 +33,7 @@ Don't throw tomatoes - file issues instead.
 %install
 install -Dpm0755 rxfetch %{buildroot}%{_bindir}/rxfetch
 mkdir -p %{buildroot}/usr/share/rxfetch
-cp -r custom/. %{buildroot}/usr/share/rxfetch/
+cp -r ttf-material-design-icons/. %{buildroot}/usr/share/rxfetch/
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done

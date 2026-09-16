@@ -33,9 +33,11 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
+cd crates/pipes-rs
 %cargo_build
 
 %install
+cd crates/pipes-rs
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 

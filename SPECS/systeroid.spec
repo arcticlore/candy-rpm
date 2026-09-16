@@ -34,9 +34,11 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
+cd systeroid
 %cargo_build
 
 %install
+cd systeroid
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 
@@ -46,7 +48,6 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_licensedir}/%{name}
 
 %{_bindir}/systeroid
-%{_bindir}/systctl
 
 %changelog
 * Wed Sep 16 2026 candy-bot <candy@localhost> - 0.4.6-1

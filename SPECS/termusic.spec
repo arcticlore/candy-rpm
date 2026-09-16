@@ -36,11 +36,9 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
-cd termusic
 %cargo_build
 
 %install
-cd termusic
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 

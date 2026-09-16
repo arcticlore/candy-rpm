@@ -16,6 +16,7 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  cmake
 
 %description
 Менеджер рантаймов node/python/ruby — быстрый asdf-killer

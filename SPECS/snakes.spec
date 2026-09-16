@@ -31,14 +31,14 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-install -Dpm0755 snakes.pl %{buildroot}%{_bindir}/snakes.pl
+install -Dpm0755 snake.pl %{buildroot}%{_bindir}/snake.pl
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/snakes.pl
+%{_bindir}/snake.pl
 
 %changelog
 * Wed Sep 16 2026 candy-bot <candy@localhost> - 20260829.57ee34b-1
