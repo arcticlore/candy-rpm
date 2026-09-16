@@ -3,6 +3,7 @@
 
 Usage:
     coprase-status.py check       — print list of packages needing submission
+    coprase-status.py versions    — refresh target versions from upstream (state.json)
     coprase-status.py submit      — slot-managed submit loop
     coprase-status.py clean       — list duplicate builds (informational)
 """
@@ -212,6 +213,51 @@ def submit_build(srpm_path: str, dry_run: bool = False) -> bool:
     return False
 
 
+def cmd_versions():
+    """Обновить целевые версии (state.json) из апстрима — «штука» про обновления.
+
+    Для каждого enabled-пакета: bin/api_ver.sh -> последняя апстрим-версия.
+    Если она отличается от state.json — цель обновляется, и следующий check
+    честно скажет «нужен сабмит». Пиннутые (.version в pkgs.json) не трогаем.
+    Требует jq/curl (в контейнере есть) и GITHUB_TOKEN для github-API.
+    """
+    with open("pkgs.json") as f:
+        pkgs = json.load(f).get("packages", [])
+    st_path = Path("state/state.json")
+    try:
+        st = json.loads(st_path.read_text())
+    except Exception:
+        st = {}
+
+    updated = same = failed = 0
+    for p in pkgs:
+        if not p.get("enabled", True):
+            continue
+        name = p["name"]
+        if p.get("version"):  # пин — цель фиксирована
+            continue
+        try:
+            r = subprocess.run(["bin/api_ver.sh", name], capture_output=True,
+                               text=True, timeout=60)
+            up = r.stdout.strip()
+        except Exception as e:
+            up = ""
+        if not up:
+            print(f"  [FAIL] {name}: апстрим недоступен")
+            failed += 1
+            continue
+        old = st.get(name, {}).get("ver", "") if isinstance(st.get(name), dict) else ""
+        if old == up:
+            same += 1
+            continue
+        st.setdefault(name, {})["ver"] = up
+        st[name]["ts"] = time.time()
+        print(f"  [NEW]  {name}: {old or '(нет цели)'} -> {up}")
+        updated += 1
+    st_path.write_text(json.dumps(st, ensure_ascii=False, indent=2))
+    print(f"\nЦели обновлены: {updated}, без изменений: {same}, не проверилось: {failed}")
+
+
 def cmd_check():
     """Print packages needing submission."""
     print("Fetching all COPR builds (pagination)...")
@@ -241,7 +287,7 @@ def cmd_check():
                 needs.append((name, "has SRPM", ver))
         else:
             succ_ver = ""
-            for st, bv in hist:
+            for st, bv, _ in hist:
                 if st == "succeeded":
                     succ_ver = bv.split("-", 1)[0] if "-" in bv else bv
                     break
@@ -253,6 +299,20 @@ def cmd_check():
     print(f"\nAlready OK: {len(ok)}")
     for name, succ_ver, target_ver in ok[:20]:
         print(f"  {name}: succeeded at {succ_ver} (target={target_ver})")
+
+
+def pick_srpm(name: str, files: list[str], target_ver: str) -> str:
+    """Выбрать SRPM по целевой версии (иначе по самому свежему mtime).
+
+    Алфавитный первый попавшийся может быть устаревшим (Rio-0.5.26 старее
+    Rio-0.5.27 и в glob идёт первым) — тогда в COPR вечно уезжала старая
+    версия, а новая цель так и не собиралась.
+    """
+    if target_ver:
+        for f in files:
+            if f"{name}-{target_ver}-" in os.path.basename(f):
+                return f
+    return max(files, key=lambda f: os.stat(f).st_mtime)
 
 
 def cmd_submit():
@@ -295,7 +355,7 @@ def cmd_submit():
     for name in to_submit:
         files = glob.glob(f"SRPMS/{name}-*.src.rpm")
         if files:
-            srpms[name] = files[0]
+            srpms[name] = pick_srpm(name, files, versions.get(name, ""))
 
     submitted = set()
     start_time = time.time()
@@ -352,7 +412,7 @@ def cmd_clean():
 
     dups = {}
     for name, builds in history.items():
-        succeeded = [ver for st, ver in builds if st == "succeeded"]
+        succeeded = [ver for st, ver, _ in builds if st == "succeeded"]
         if len(builds) > 5:
             dups[name] = len(builds)
         if len(succeeded) > 1:
@@ -372,6 +432,8 @@ if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "check":
         cmd_check()
+    elif cmd == "versions":
+        cmd_versions()
     elif cmd == "submit":
         cmd_submit()
     elif cmd == "clean":

@@ -34,8 +34,12 @@ jobs:
 
       - name: Install toolchain
         run: |
+          mkdir -p logs
           dnf install -y jq git rpm-build rpmdevtools dnf-plugins-core python3 golang \
-            cargo rust copr-cli nodejs npm 2>&1 | tail -5
+            cargo rust copr-cli nodejs npm > logs/dnf-install.log 2>&1 \
+            || { echo "dnf install failed:"; tail -20 logs/dnf-install.log; exit 1; }
+          tail -5 logs/dnf-install.log
+          mv logs/dnf-install.log logs/dnf-install-full.log
 
       - name: Configure COPR
         run: |
@@ -45,6 +49,11 @@ jobs:
 
       - name: Generate specs
         run: python3 bin/gen_specs.py --all
+
+      - name: Refresh upstream versions (цели для сабмита)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 bin/coprase-status.py versions 2>&1 | tee logs/versions.log
 
       - name: Restore SRPM cache
         uses: actions/cache@v5
@@ -62,26 +71,40 @@ jobs:
 
       - name: Build SRPMs for packages needing submission
         run: |
-          echo "=== Building SRPMs for packages that need submission ==="
+          set -o pipefail
+          echo "=== Building/rebuilding SRPMs for packages needing submission ==="
           CHECK=$(python3 bin/coprase-status.py check 2>&1)
           echo "$CHECK" | tee logs/check.log
-          NEEDS_SRPM=$(echo "$CHECK" | grep -E "no SRPM" | awk '{print $1}' || true)
+          TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM|no SRPM" | awk '{print $1}' || true)
 
           BUILT=0
           FAILED=0
-          for name in $NEEDS_SRPM; do
-            echo "  [BUILD SRPM] $name"
-            if bin/make-srpm.sh "$name" 2>&1 | tail -3; then
-              echo "  [OK] $name"
+          SKIPPED=0
+          for name in $TO_SUBMIT; do
+            target=$(jq -r --arg n "$name" '.[$n].ver // ""' state/state.json)
+            if [ -z "$target" ]; then
+              echo "  [SKIP] $name: нет цели в state.json"
+              SKIPPED=$((SKIPPED+1))
+              continue
+            fi
+            if ls SRPMS/$name-$target-*.src.rpm >/dev/null 2>&1; then
+              echo "  [FINE] $name: SRPM уже на цели $target"
+              continue
+            fi
+            echo "  [BUILD SRPM] $name ($target)"
+            if bin/make-srpm.sh "$name" "$target" > "logs/srpm-$name.log" 2>&1; then
+              echo "  [OK] $name ($target)"
               BUILT=$((BUILT+1))
             else
-              echo "  [FAIL] $name"
+              rc=$?
+              echo "  [FAIL] $name (rc=$rc) — хвост лога:"
+              tail -8 "logs/srpm-$name.log" | sed 's/^/    /'
               FAILED=$((FAILED+1))
             fi
           done
 
           CACHED=$(ls SRPMS/*.src.rpm 2>/dev/null | wc -l)
-          echo "=== SRPMs: built=$BUILT failed=$FAILED cached=$CACHED ==="
+          echo "=== SRPMs: built=$BUILT failed=$FAILED skipped=$SKIPPED cached=$CACHED (полные логи: logs/srpm-*.log) ==="
 
       - name: Verify BuildRequires resolve (сухой прогон dnf builddep)
         run: |

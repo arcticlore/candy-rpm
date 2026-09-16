@@ -17,12 +17,33 @@ mkdir -p logs SRPMS/blocked
 WOES="no match for argument|problem:|nothing provides|unable to find a match|\
 cannot be installed|could not resolve|not found in the repository|\
 не найдено совпадени|ничего не предоставляет|невозможно установить|не удалось разрешить"
+# инфра-сбои (не «битые зависимости»): SSL/сертификаты — ретраим, а не блокируем
+SSLWOE="ssl|certificate|certificat|verify|verification failed|проверк"
 
 PROB=0
 for SRPM in "$@"; do
     [ -f "$SRPM" ] || continue
     NAME="$(rpm -qp --qf '%{NAME}' "$SRPM" 2>/dev/null)" || NAME="${SRPM##*/}"
-    OUT="$(dnf builddep --assumeno -y "$SRPM" 2>&1)"
+
+    OUT=""
+    SSL_FAIL=0
+    for attempt in 1 2 3; do
+        OUT="$(dnf builddep --assumeno -y "$SRPM" 2>&1)"
+        if echo "$OUT" | grep -qiE "$SSLWOE"; then
+            SSL_FAIL=$attempt
+            echo "[RETRY] $NAME: dnf c SSL ($attempt/3), жду 15 c" | tee -a logs/deps.log
+            sleep 15
+            continue
+        fi
+        SSL_FAIL=0
+        break
+    done
+    if [ "$SSL_FAIL" -gt 0 ]; then
+        echo "[WARN] $NAME: dnf трижды упёрся в SSL/$SSL_FAIL — не блокирую, "
+              "но это не «битые зависимости»:" | tee -a logs/deps.log
+        echo "$OUT" | grep -iE "$SSLWOE" | head -4 | sed 's/^/    /' | tee -a logs/deps.log
+        continue
+    fi
 
     if ! echo "$OUT" | grep -qiE "$WOES"; then
         echo "[OK-dep] $NAME" | tee -a logs/deps.log
