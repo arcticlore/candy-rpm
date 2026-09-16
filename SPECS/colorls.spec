@@ -28,7 +28,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n colorls-1.5.0
 mkdir -p zsh && touch man/colorls.1 zsh/_colorls
 
 %build

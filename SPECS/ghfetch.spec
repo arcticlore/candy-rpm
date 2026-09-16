@@ -30,7 +30,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
+%autosetup -N -a1 -n ghfetch-4b44a4f442101b2c91849effef37e1b04c34fd9f
 %cargo_prep -v vendor
 
 %build
