@@ -136,12 +136,19 @@ jobs:
 
       - name: Commit state
         if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd "$GITHUB_WORKSPACE" 2>/dev/null || true
+          cd "$GITHUB_WORKSPACE" 2>/dev/null || cd "$(pwd)" || exit 0
           echo "=== Commit state step ==="
           if [ ! -d ".git" ]; then
-            echo "Not in git repo, skipping commit"
-            exit 0
+            echo "нет .git — поднимаю репозиторий и сохраняю локальные изменения"
+            git init -q
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            git -c protocol.version=2 fetch -q --depth=50 origin master
+            git reset --mixed FETCH_HEAD 2>&1 | tail -2 || true
+            git checkout -qb master 2>/dev/null || true
+            echo "=== Коммит локальных изменений (state.json) ==="
           fi
           git config user.name "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
@@ -151,7 +158,7 @@ jobs:
           git diff --cached --stat || true
           if ! git diff --cached --quiet; then
             git commit -qm "submit sync [skip ci]" || echo "Commit failed"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master 2>&1 || echo "Push failed (non-critical)"
+            git push origin HEAD:master 2>&1 || echo "Push failed (non-critical)"
           else
             echo "No changes to commit"
           fi
