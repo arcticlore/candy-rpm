@@ -17,6 +17,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  perl
+BuildRequires:  git-core
 
 %description
 TUI-интерфейс для git ( staging, branches, interactive rebase )

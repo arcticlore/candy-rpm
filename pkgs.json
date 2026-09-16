@@ -2451,7 +2451,8 @@
         "gitui"
       ],
       "br": [
-        "perl"
+        "perl",
+        "git-core"
       ],
       "prio": 2,
       "use": "gitui — в папке репозитория",
