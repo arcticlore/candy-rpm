@@ -36,7 +36,7 @@ jobs:
         run: |
           mkdir -p logs
           dnf install -y jq git rpm-build rpmdevtools dnf-plugins-core python3 golang \
-            cargo rust copr-cli nodejs npm > logs/dnf-install.log 2>&1 \
+            cargo rust copr-cli nodejs24 nodejs24-npm-bin > logs/dnf-install.log 2>&1 \
             || { echo "dnf install failed:"; tail -20 logs/dnf-install.log; exit 1; }
           tail -5 logs/dnf-install.log
           mv logs/dnf-install.log logs/dnf-install-full.log
