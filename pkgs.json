@@ -345,7 +345,7 @@
    "verify": true,
    "prio": 2,
    "enabled": false,
-   "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
+   "note": "Компилятор nim отсутствует в Fedora 45; включить после установки choosenim"
   },
   {
    "name": "nitch",
@@ -359,7 +359,7 @@
    "verify": true,
    "prio": 2,
    "enabled": false,
-   "note": "Компилятор nim отсутствует в Fedora 44; включить после установки choosenim"
+   "note": "Компилятор nim отсутствует в Fedora 45; включить после установки choosenim"
   },
   {
    "name": "rxfetch",

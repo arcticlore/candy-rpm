@@ -7,7 +7,7 @@
 ![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg)
 ![packages](https://img.shields.io/badge/packages-153-blueviolet)
 ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue)
-![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044-294172?logo=fedora)
+![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044%20%7C%2045-294172?logo=fedora)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![tg](https://img.shields.io/badge/Telegram-%40tct_fedorabot-26A5E4?logo=telegram)](https://t.me/tct_fedorabot)
 
