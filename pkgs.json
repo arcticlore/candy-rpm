@@ -630,23 +630,6 @@
       "noman": true
     },
     {
-      "name": "ascii-rain",
-      "eco": "c-make",
-      "host": "github",
-      "slug": "nkleemann/ascii-rain",
-      "tagp": "v",
-      "summary": "Comfy rain for your console",
-      "license": "GPL-2.0-only",
-      "br": [
-        "ncurses-devel"
-      ],
-      "install_cmd": "install -Dpm0755 rain %{buildroot}%{_bindir}/ascii-rain",
-      "verify": true,
-      "prio": 3,
-      "use": "ascii-rain — дождь, Ctrl+C выход",
-      "fallback": "commit"
-    },
-    {
       "name": "tty-clock",
       "eco": "c-make",
       "host": "github",
@@ -1505,27 +1488,6 @@
       "exp": false
     },
     {
-      "name": "musikcube",
-      "eco": "c-cmake",
-      "host": "github",
-      "slug": "clangen/musikcube",
-      "tagp": "",
-      "summary": "Terminal-based music player, library and streaming server",
-      "license": "BSD-3-Clause",
-      "br": [
-        "alsa-lib-devel",
-        "cmake",
-        "ffmpeg-devel",
-        "gcc-c++",
-        "libmicrodns-devel",
-        "ncurses-devel",
-        "pulseaudio-libs-devel"
-      ],
-      "exp": true,
-      "prio": 8,
-      "use": "musikcube — консольный плеер"
-    },
-    {
       "name": "chucknorris",
       "eco": "script",
       "host": "github",
@@ -1930,23 +1892,6 @@
       "prio": 1
     },
     {
-      "name": "dog",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "ogham/dog",
-      "tagp": "v",
-      "summary": "DNS-клиент doggo-класса с цветным выводом",
-      "license": "EUPL-1.2",
-      "bins": [
-        "dog"
-      ],
-      "verify": true,
-      "prio": 4,
-      "br": [
-        "openssl-devel"
-      ]
-    },
-    {
       "name": "zenith",
       "eco": "cargo",
       "host": "github",
@@ -2228,21 +2173,6 @@
       "prio": 3
     },
     {
-      "name": "ascii-patrol",
-      "eco": "c-cmake",
-      "host": "github",
-      "slug": "msokalski/ascii-patrol",
-      "tagp": "",
-      "summary": "ASCII Patrol — аркада в стиле Moon Patrol",
-      "license": "MIT",
-      "bins": [
-        "aptr"
-      ],
-      "exp": true,
-      "use": "aptr",
-      "prio": 7
-    },
-    {
       "name": "taskwarrior-tui",
       "eco": "cargo",
       "host": "github",
@@ -2374,20 +2304,6 @@
       "prio": 7
     },
     {
-      "name": "erdtree",
-      "eco": "cargo",
-      "host": "github",
-      "slug": "solidiquis/erdtree",
-      "tagp": "v",
-      "summary": "Анализ дерева каталогов с размерами",
-      "license": "MIT",
-      "bins": [
-        "ert"
-      ],
-      "use": "ert — размеры по папкам",
-      "prio": 5
-    },
-    {
       "name": "tetris",
       "eco": "cargo",
       "host": "github",
@@ -2402,21 +2318,6 @@
       "prio": 9,
       "enabled": false,
       "note": "Апстрим на Haskell (Setup.hs) — в COPR не собрать без GHC"
-    },
-    {
-      "name": "diagram",
-      "eco": "go",
-      "host": "github",
-      "slug": "esimov/diagram",
-      "tagp": "v",
-      "summary": "ASCII-диаграммы из текста",
-      "license": "MIT",
-      "bins": [
-        "diagram"
-      ],
-      "gpkg": ".",
-      "use": "diagram --svg out.svg in.txt",
-      "prio": 4
     },
     {
       "name": "termshot",
