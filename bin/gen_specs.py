@@ -323,7 +323,7 @@ def body_script(m: Package, br: list[str], req: list[str]) -> str:
     if m.share:
         src = m.share.src
         base = src.rstrip("/").split("/")[-1]
-        if "." in base and not src.endswith("/"):
+        if base != "." and "." in base and not src.endswith("/"):
             out += [f"install -Dpm0644 {src} %{{buildroot}}{m.share.dst}/{base}"]
         else:
             out += [
@@ -703,7 +703,7 @@ def body_custom(m: Package, br: list[str], req: list[str]) -> str:
     if m.share:
         src = m.share.src
         base = src.rstrip("/").split("/")[-1]
-        if "." in base and not src.endswith("/"):
+        if base != "." and "." in base and not src.endswith("/"):
             out += [f"install -Dpm0644 {src} %{{buildroot}}{m.share.dst}/{base}"]
         else:
             out += [

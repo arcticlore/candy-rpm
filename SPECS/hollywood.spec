@@ -37,7 +37,8 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-install -Dpm0644 . %{buildroot}/usr/libexec/hollywood/.
+mkdir -p %{buildroot}/usr/libexec/hollywood
+cp -r ./. %{buildroot}/usr/libexec/hollywood/
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done

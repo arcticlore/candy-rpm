@@ -296,11 +296,14 @@
       "slug": "SafarSoFar/ghfetch",
       "tagp": "v",
       "summary": "Neofetch-like utility to fetch GitHub info in the terminal",
-      "license": "MIT",
-      "bins": [
-        "ghfetch"
-      ],
-      "verify": true,
+"license": "MIT",
+  "bins": [
+    "ghfetch"
+  ],
+  "br": [
+    "openssl-devel"
+  ],
+  "verify": true,
       "prio": 2,
       "use": "ghfetch <логин-github>",
       "fallback": "commit"

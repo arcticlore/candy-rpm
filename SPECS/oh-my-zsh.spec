@@ -31,7 +31,8 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-install -Dpm0644 . %{buildroot}/usr/share/oh-my-zsh/.
+mkdir -p %{buildroot}/usr/share/oh-my-zsh
+cp -r ./. %{buildroot}/usr/share/oh-my-zsh/
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done

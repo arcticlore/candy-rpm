@@ -16,6 +16,7 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  openssl-devel
 
 %description
 Neofetch-like utility to fetch GitHub info in the terminal
