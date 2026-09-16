@@ -31,12 +31,17 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -N -a1 -n %{name}-%{version}
+mkdir -p /tmp/dummybin
+printf '#!/bin/sh\nexit 1\n' > /tmp/dummybin/curl
+chmod +x /tmp/dummybin/curl
 %cargo_prep -v vendor
 
 %build
+export PATH="/tmp/dummybin:$PATH"
 %cargo_build
 
 %install
+export PATH="/tmp/dummybin:$PATH"
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 

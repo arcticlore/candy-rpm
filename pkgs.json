@@ -2139,7 +2139,11 @@
         "libusb1-devel"
       ],
       "use": "cyme",
-      "prio": 3
+      "prio": 3,
+      "prep_extra": "mkdir -p /tmp/dummybin\nprintf '#!/bin/sh\\nexit 1\\n' > /tmp/dummybin/curl\nchmod +x /tmp/dummybin/curl",
+      "build_env": [
+        "PATH=\"/tmp/dummybin:$PATH\""
+      ]
     },
     {
       "name": "systeroid",

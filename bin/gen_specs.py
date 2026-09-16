@@ -69,6 +69,7 @@ class Package:
     pbr_exclude: list[str] = field(default_factory=list)
     extra_files: list[str] = field(default_factory=list)
     topdir: str = ""
+    prep_extra: str = ""
 
     def is_enabled(self) -> bool:
         """Check if package is enabled."""
@@ -153,6 +154,7 @@ def load_pkgs(path: Path) -> PkgsFile:
                 pbr_exclude=p.get("pbr_exclude", []),
                 extra_files=p.get("extra_files", []),
                 topdir=p.get("topdir", ""),
+                prep_extra=p.get("prep_extra", ""),
             )
         )
 
@@ -254,7 +256,12 @@ def prep(m: Package) -> str:
     n = "-N" if m.eco in ("cargo", "go") else "-p1"
     extra = " -a1" if m.eco in ("cargo", "go", "npm") else ""
 
-    return f"%prep\n%autosetup {n}{extra} -n {d}"
+    out = [f"%prep\n%autosetup {n}{extra} -n {d}"]
+    if getattr(m, "prep_extra", ""):
+        for cmd in m.prep_extra.splitlines():
+            if cmd.strip():
+                out.append(cmd)
+    return "\n".join(out)
 
 
 def add_br_req(out: list[str], br: list[str], req: list[str]) -> None:
@@ -415,7 +422,7 @@ def body_cargo(m: Package, br: list[str], req: list[str]) -> str:
         cd_b + envs + "%cargo_build",
         "",
         "%install",
-        cd_b + "%cargo_install",
+        cd_b + envs + "%cargo_install",
         "rm -rf %{buildroot}%{_datadir}/cargo",
         "",
         "%files",
