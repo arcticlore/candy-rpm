@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: "17 2,14 * * *"   # 2 раза/сутки (5:17 и 17:17 MSK) — вежливо к общим билдерам COPR
   workflow_dispatch:
+    inputs:
+      full_rebuild:
+        description: "Полный ребилд всех пакетов (напр. после добавления чрута F45)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -122,7 +127,7 @@ jobs:
           echo "=== Блокировано dnf-дозором: $BLOCKED (в SRPMS/blocked/, в COPR не уйдут) ==="
 
       - name: Submit to COPR (dedup with version comparison)
-        run: python3 bin/coprase-status.py submit 2>&1 | tee logs/submit.log
+        run: python3 bin/coprase-status.py submit ${{ inputs.full_rebuild == true && '--force' || '' }} 2>&1 | tee logs/submit.log
 
       - name: Auto-triage (fix known failures)
         if: always()

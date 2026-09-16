@@ -337,10 +337,11 @@ def cmd_submit():
         return
 
     # Determine what needs submission
+    force = "--force" in sys.argv
     to_submit: list[str] = []
     for name in order_enabled(enabled, history):
         ver = versions.get(name, "")
-        if needs_submission(name, ver, history.get(name, [])):
+        if force or needs_submission(name, ver, history.get(name, [])):
             srpm = glob.glob(f"SRPMS/{name}-*.src.rpm")
             if srpm:
                 to_submit.append(name)
