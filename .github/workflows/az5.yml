@@ -1,0 +1,95 @@
+name: AZ-5 аварийная кнопка
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'off = АЗ-5 (полный отруб проекта) | on = снять остановку'
+        required: true
+        default: 'off'
+        type: choice
+        options:
+          - off
+          - on
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  button:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Flip marker
+        id: flip
+        run: |
+          if [ "$ACTION" = "off" ]; then
+            touch AZ5
+            echo "state=off" >> "$GITHUB_OUTPUT"
+            echo "АЗ-5 нажата"
+          else
+            rm -f AZ5
+            echo "state=on" >> "$GITHUB_OUTPUT"
+            echo "АЗ-5 снята"
+          fi
+          git config user.name  "candy-bot"
+          git config user.email "candy-bot@users.noreply.github.com"
+          git add AZ5
+          if git diff --cached --quiet; then
+            echo "маркер уже в этом состоянии"
+          else
+            git commit -qm "az5: $ACTION [skip ci]"
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:master
+          fi
+        env:
+          ACTION: ${{ inputs.action }}
+
+      - name: Scram in-flight GitHub runs
+        if: steps.flip.outputs.state == 'off'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ME="$GITHUB_RUN_ID"
+          for id in $(gh api -X GET \
+              "repos/${GITHUB_REPOSITORY}/actions/runs" \
+              -f status=in_progress -f per_page=100 \
+              --jq '.workflow_runs[].id' 2>/dev/null); do
+            [ "$id" = "$ME" ] && continue
+            echo "scram run $id"
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/cancel" >/dev/null 2>&1 || true
+          done
+
+      - name: Cancel running COPR builds
+        if: steps.flip.outputs.state == 'off'
+        run: |
+          mkdir -p ~/.config
+          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          chmod 600 ~/.config/copr
+          API="https://copr.fedorainfracloud.org/api_3/build/list?ownername=arcticlore&projectname=candy&limit=200"
+          for id in $(curl -4 -s --max-time 30 "$API" \
+              | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          for b in d.get('items',[]):
+              if b.get('state') in ('running','pending'): print(b['id'])
+          "); do
+            echo "cancel copr $id"
+            copr-cli cancel "$id" >/dev/null 2>&1 || true
+          done
+
+      - name: Telegram
+        if: always()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          if [ "${{ steps.flip.outputs.state }}" = "off" ]; then
+            MSG=$(printf '☢️ <b>АЗ-5 нажата</b>\nВсе автоматизации остановлены, билды отменены.\nВключить: workflow «AZ-5 аварийная кнопка» → on')
+          else
+            MSG=$(printf '💚 <b>АЗ-5 снята</b>\nАвтоматизации снова работают.')
+          fi
+          curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            -d chat_id="$TG_CHAT_ID" -d parse_mode=HTML \
+            --data-urlencode "text=$MSG" >/dev/null 2>&1 || true

@@ -7,12 +7,29 @@ on:
     types: [created]
 
 jobs:
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      off: ${{ steps.check.outputs.off }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f AZ5 ]; then
+            echo "АЗ-5: проект остановлен — opencode пропущен"
+            echo "off=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "off=false" >> "$GITHUB_OUTPUT"
+          fi
+
   opencode:
+    needs: guard
     if: |
-      contains(github.event.comment.body, ' /oc') ||
+      needs.guard.outputs.off == 'false' &&
+      (contains(github.event.comment.body, ' /oc') ||
       startsWith(github.event.comment.body, '/oc') ||
       contains(github.event.comment.body, ' /opencode') ||
-      startsWith(github.event.comment.body, '/opencode')
+      startsWith(github.event.comment.body, '/opencode'))
     runs-on: ubuntu-latest
     permissions:
       id-token: write
