@@ -41,6 +41,7 @@ export VERGEN_GIT_SHA="copr-build"
 
 %install
 cd yazi-build
+export VERGEN_GIT_SHA="copr-build"
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 
