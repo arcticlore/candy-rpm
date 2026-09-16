@@ -12,12 +12,7 @@ exec 8>"$LOCK"
 flock -n 8 || { echo "[SKIP] $LOCK занят"; exit 0; }
 [ -f ~/.config/gh-token ] && export GITHUB_TOKEN="$(cat ~/.config/gh-token)"
 
-# Use Go binary if available
-if [ -x bin/candy-check ]; then
-    exec bin/candy-check -root "$ROOT" "$@"
-fi
-
-# Fallback to bash implementation
+# Bash-реализация (Go-бинарь candy-check удалён из репозитория)
 PROJ="${CANDY_PROJ:-$(jq -r .project.copr_name pkgs.json)}"
 STATE="state/state.json"
 LOG="logs/update.log"
