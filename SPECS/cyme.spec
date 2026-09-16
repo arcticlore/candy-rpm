@@ -1,5 +1,5 @@
 Name:           cyme
-Version:        3.0.1
+Version:        3.0.2
 Release:        1%{?dist}
 Summary:        lsusb с красивым выводом и фильтрами
 
@@ -53,5 +53,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/cyme
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 3.0.1-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 3.0.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

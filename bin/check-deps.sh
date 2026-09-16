@@ -18,7 +18,7 @@ WOES="no match for argument|problem:|nothing provides|unable to find a match|\
 cannot be installed|could not resolve|not found in the repository|\
 не найдено совпадени|ничего не предоставляет|невозможно установить|не удалось разрешить"
 # инфра-сбои (не «битые зависимости»): SSL/сертификаты — ретраим, а не блокируем
-SSLWOE="ssl|certificate|certificat|verify|verification failed|проверк"
+SSLWOE="ssl.*cert|ssl error|ssl handshake|ssl connect|ssl connection|ssl problem|certificat|сертифик|истек|unable to get local issuer|not authenticat|has expired|verification failed|проверк"
 
 PROB=0
 for SRPM in "$@"; do
@@ -39,9 +39,10 @@ for SRPM in "$@"; do
         break
     done
     if [ "$SSL_FAIL" -gt 0 ]; then
-        echo "[WARN] $NAME: dnf трижды упёрся в SSL/$SSL_FAIL — не блокирую, "
-              "но это не «битые зависимости»:" | tee -a logs/deps.log
-        echo "$OUT" | grep -iE "$SSLWOE" | head -4 | sed 's/^/    /' | tee -a logs/deps.log
+        {
+            echo "[WARN] $NAME: dnf трижды упёрся в SSL-ошибку — не блокирую (это инфра, не «битые зависимости»):"
+            echo "$OUT" | grep -iE "$SSLWOE" | head -4 | sed 's/^/    /'
+        } | tee -a logs/deps.log
         continue
     fi
 

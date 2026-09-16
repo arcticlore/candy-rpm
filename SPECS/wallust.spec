@@ -1,5 +1,5 @@
 Name:           wallust
-Version:        4.0.0~alpha
+Version:        4.1.0~alpha
 Release:        1%{?dist}
 Summary:        Generate colorschemes from images (pywal successor)
 
@@ -48,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/salsort
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 4.0.0~alpha-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 4.1.0~alpha-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

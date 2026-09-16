@@ -1,5 +1,5 @@
 Name:           gum
-Version:        2.0.0
+Version:        2.0.1
 Release:        1%{?dist}
 Summary:        Glamorous tool для шелл-скриптов: спиннеры, выбор, ввод (charm-стиль)
 
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/gum
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 2.0.0-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 2.0.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

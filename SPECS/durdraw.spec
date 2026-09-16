@@ -1,5 +1,5 @@
 Name:           durdraw
-Version:        0.29.0
+Version:        0.30.1
 Release:        1%{?dist}
 Summary:        ANSI/ASCII and Unicode art editor with animation
 
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/durview
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 0.29.0-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 0.30.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

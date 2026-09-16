@@ -1,5 +1,5 @@
 Name:           scc
-Version:        4.0.0
+Version:        4.1.0
 Release:        1%{?dist}
 Summary:        Счётчик строк кода по языкам — быстрее cloc
 
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/scc
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 4.0.0-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 4.1.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

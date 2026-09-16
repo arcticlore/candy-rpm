@@ -1,5 +1,5 @@
 Name:           maze
-Version:        20260829.eb99e65
+Version:        20260916.eb99e65
 Release:        1%{?dist}
 Summary:        Animated maze generator screensaver
 
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/maze.py
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 20260829.eb99e65-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 20260916.eb99e65-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

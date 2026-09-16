@@ -1,5 +1,5 @@
 Name:           tokei
-Version:        14.0.0
+Version:        15.0.0
 Release:        1%{?dist}
 Summary:        Статистика кода по языкам, молниеносная
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/tokei
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 14.0.0-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 15.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

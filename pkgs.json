@@ -2348,7 +2348,7 @@
     "cmake",
     "make",
     "ncurses-devel",
-    "icu-devel"
+    "libicu-devel"
    ],
    "build_cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build && cp build/peaclock .",
    "bins": [
