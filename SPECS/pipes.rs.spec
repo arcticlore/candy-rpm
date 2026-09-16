@@ -46,7 +46,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/pipes
+%{_bindir}/pipes-rs
 
 %changelog
 * Wed Sep 16 2026 candy-bot <candy@localhost> - 1.6.4-1

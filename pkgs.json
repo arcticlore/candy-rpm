@@ -1789,7 +1789,7 @@
    "summary": "Over-engineered pipes.sh на Rust",
    "license": "MIT",
    "bins": [
-    "pipes"
+    "pipes-rs"
    ],
    "gpkg": ".",
    "verify": true,
@@ -2387,7 +2387,11 @@
    ],
    "use": "video-to-ascii -f clip.mp4 — нужны ffmpeg и portaudio",
    "note": "нужны ffmpeg и portaudio в системе",
-   "prio": 6
+   "prio": 6,
+   "pbr_exclude": [
+    "opencv-python",
+    "ffmpeg-python"
+   ]
   },
   {
    "name": "pokete",
@@ -2404,7 +2408,9 @@
    "exp": true,
    "verify": true,
    "use": "pokete.py",
-   "prio": 8
+   "prio": 8,
+   "enabled": false,
+   "note": "апстрим мигрировал на PyPI (src/pokete, scrap_engine>=1.4.3), структура отлична от плёночной — пересборка после стабильного релиза"
   },
   {
    "name": "gittype",

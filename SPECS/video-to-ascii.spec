@@ -14,7 +14,7 @@ BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
 
 %generate_buildrequires
-%pyproject_buildrequires
+%pyproject_buildrequires | grep -vE '(python3dist(opencv-python)|python3dist(ffmpeg-python))( |$)' || :
 
 # NOTE: нужны ffmpeg и portaudio в системе
 
