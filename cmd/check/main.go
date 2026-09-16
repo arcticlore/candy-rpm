@@ -80,6 +80,19 @@ func main() {
 	}
 	latest := copr.LatestByPackage(builds)
 
+	// urgency: возраст last failed/canceled билда (чем больше — тем приоритетнее).
+	// Пакеты, отсутствующие в latest, считаются «никогда не строившимися»
+	// (см. Enabled: для них urgency = MaxInt64) — идут первыми в своей группе prio.
+	urgency := make(map[string]int64)
+	now := time.Now().Unix()
+	for _, b := range latest {
+		if b.State == "failed" || b.State == "canceled" {
+			urgency[b.SourcePackage.Name] = now - b.SubmittedOn
+		} else {
+			urgency[b.SourcePackage.Name] = 0
+		}
+	}
+
 	// Load chroot plan if available
 	chrootPlan := loadChrootPlan(filepath.Join(*rootDir, "logs", "chroot-plan.json"))
 
@@ -103,7 +116,7 @@ func main() {
 	failed := 0
 	skipped := 0
 
-	for _, name := range pkgsFile.Enabled(*skipEco, *shardID, *workers) {
+	for _, name := range pkgsFile.Enabled(*skipEco, *shardID, *workers, urgency) {
 		// Apply filters
 		if len(filterSet) > 0 && !filterSet[name] {
 			continue
@@ -141,11 +154,22 @@ func main() {
 			lastState = b.State
 		}
 
-		// Succeeded — skip
+		// Succeeded at the requested version — skip (как в coprase-status.py: даже
+		// если upstream выпустил новую версию, последний succeeded-билд со старой
+		// версии не считается причиной для скипа — пакет пересобирается).
 		if lastState == "succeeded" {
-			logger.Printf("[SKIP] %s: already built (succeeded)", name)
-			st.Set(name, newVer, true)
-			continue
+			builtVer := latest[name].SourcePackage.Version
+			baseVer := builtVer
+			if idx := strings.Index(baseVer, "-"); idx >= 0 {
+				baseVer = baseVer[:idx]
+			}
+			if newVer != "" && baseVer == newVer {
+				logger.Printf("[SKIP] %s: already built (succeeded at %s)", name, builtVer)
+				st.Set(name, newVer, true)
+				continue
+			}
+			logger.Printf("[UPD] %s: last build succeeded at %s — new version %s, rebuild needed",
+				name, builtVer, newVer)
 		}
 
 		// Running/starting/pending/importing — wait

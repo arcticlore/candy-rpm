@@ -13,7 +13,7 @@ jobs:
     outputs:
       off: ${{ steps.check.outputs.off }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: check
         run: |
           if [ -f AZ5 ]; then
@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 180
     container: fedora:44
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install toolchain
         run: |
@@ -47,7 +47,7 @@ jobs:
         run: python3 bin/gen_specs.py --all
 
       - name: Restore SRPM cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             SRPMS/
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: submit-logs-${{ github.run_number }}
           path: logs/

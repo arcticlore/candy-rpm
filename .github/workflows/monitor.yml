@@ -13,7 +13,7 @@ jobs:
     outputs:
       off: ${{ steps.check.outputs.off }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: check
         run: |
           if [ -f AZ5 ]; then
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: COPR status snapshot + failed list
         run: |

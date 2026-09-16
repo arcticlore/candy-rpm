@@ -4,6 +4,7 @@ package metadata
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"sort"
 )
@@ -99,7 +100,11 @@ func Load(path string) (*PkgsFile, error) {
 }
 
 // Enabled returns enabled package names sorted by priority.
-func (pf *PkgsFile) Enabled(skipEco string, shardID, shardCount int) []string {
+// Второй приоритет — «возраст» провального/отменённого билда (urgency): чем
+// дольше пакет валяется failed/canceled, тем раньше его берут в обработку.
+// urgency задаёт карта pkg -> секунды «возраста»; отсутствующие в карте
+// пакеты считаются «не строившимися вообще» и идут первыми в своей группе prio.
+func (pf *PkgsFile) Enabled(skipEco string, shardID, shardCount int, urgency map[string]int64) []string {
 	type entry struct {
 		name string
 		prio int
@@ -122,7 +127,22 @@ func (pf *PkgsFile) Enabled(skipEco string, shardID, shardCount int) []string {
 	}
 
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].prio < entries[j].prio
+		a, b := entries[i], entries[j]
+		if a.prio != b.prio {
+			return a.prio < b.prio
+		}
+		ua, okA := urgency[a.name]
+		ub, okB := urgency[b.name]
+		if !okA {
+			ua = math.MaxInt64 // никогда не строился — «валяется» дольше всех
+		}
+		if !okB {
+			ub = math.MaxInt64
+		}
+		if ua != ub {
+			return ua > ub // дольше failed/canceled — раньше
+		}
+		return a.name < b.name
 	})
 
 	var result []string

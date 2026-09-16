@@ -65,16 +65,17 @@ def fetch_all_builds(owner: str, project: str) -> list[dict]:
     return all_builds
 
 
-def build_history(all_builds: list[dict]) -> dict[str, list[tuple[str, str]]]:
-    """Build name -> [(state, version)] sorted by ID descending (newest first)."""
-    history: dict[str, list[tuple[str, str]]] = {}
+def build_history(all_builds: list[dict]) -> dict[str, list[tuple[str, str, int]]]:
+    """Build name -> [(state, version, submitted_on)] sorted by ID descending (newest first)."""
+    history: dict[str, list[tuple[str, str, int]]] = {}
     for b in sorted(all_builds, key=lambda x: x.get("id", 0), reverse=True):
         sp = b.get("source_package", {})
         name = sp.get("name", "")
         state = b.get("state", "")
         ver = sp.get("version", "")
+        ts = b.get("submitted_on", 0)
         if name:
-            history.setdefault(name, []).append((state, ver))
+            history.setdefault(name, []).append((state, ver, ts))
     return history
 
 
@@ -87,15 +88,15 @@ def load_versions() -> dict[str, str]:
         return {}
 
 
-def latest_succeeded_ver(history_entry: list[tuple[str, str]]) -> tuple[str, str]:
+def latest_succeeded_ver(history_entry: list[tuple[str, str, int]]) -> tuple[str, str]:
     """Return (version, full_version) of the latest succeeded build."""
-    for state, ver in history_entry:
+    for state, ver, _ in history_entry:
         if state == "succeeded":
             return ver, ver
     return "", ""
 
 
-def needs_submission(name: str, current_ver: str, history_entry: list[tuple[str, str]]) -> bool:
+def needs_submission(name: str, current_ver: str, history_entry: list[tuple[str, str, int]]) -> bool:
     """Determine if a package needs submission.
 
     Returns True if:
@@ -106,7 +107,7 @@ def needs_submission(name: str, current_ver: str, history_entry: list[tuple[str,
     if not history_entry:
         return True  # never built
 
-    for state, build_ver in history_entry:
+    for state, build_ver, _ in history_entry:
         if state == "succeeded":
             # Strip release tag: "0.15.6-1" -> "0.15.6", "1.0.0" -> "1.0.0"
             base_ver = build_ver.split("-", 1)[0] if "-" in build_ver else build_ver
@@ -115,6 +116,46 @@ def needs_submission(name: str, current_ver: str, history_entry: list[tuple[str,
             return True  # version differs, needs rebuild
 
     return True  # no succeeded build at all
+
+
+def load_prio() -> dict[str, int]:
+    """Пакет -> prio из pkgs.json (по умолчанию 5)."""
+    prio: dict[str, int] = {}
+    try:
+        with open("pkgs.json") as f:
+            for p in json.load(f).get("packages", []):
+                prio[p["name"]] = int(p.get("prio") or 5)
+    except Exception:
+        pass
+    return prio
+
+
+def failure_age(history_entry: list[tuple[str, str, int]], now: float | None = None) -> float:
+    """Возраст последнего failed/canceled билда в секундах.
+
+    Приоритетная сортировка: чем дольше пакет валяется в failed/canceled —
+    тем раньше его берут в обработку.
+    """
+    if now is None:
+        now = time.time()
+    for _state, _ver, ts in history_entry:
+        if _state in ("failed", "canceled") and ts:
+            try:
+                age = now - float(ts)
+            except (TypeError, ValueError):
+                continue
+            return max(0.0, age)
+    return 0.0
+
+
+def order_enabled(enabled: set[str], history: dict[str, list[tuple[str, str, int]]]) -> list[str]:
+    """Сортировка: prio (ниже = раньше), затем возраст failed/canceled (дольше = раньше)."""
+    now = time.time()
+    prio_of = load_prio()
+    return sorted(
+        enabled,
+        key=lambda n: (prio_of.get(n, 5), -failure_age(history.get(n, []), now), n),
+    )
 
 
 def get_copr_active() -> dict[str, str]:
@@ -189,7 +230,7 @@ def cmd_check():
     needs = []
     ok = []
     skipped_ver = []
-    for name in sorted(enabled):
+    for name in order_enabled(enabled, history):
         ver = versions.get(name, "")
         hist = history.get(name, [])
         if needs_submission(name, ver, hist):
@@ -237,7 +278,7 @@ def cmd_submit():
 
     # Determine what needs submission
     to_submit: list[str] = []
-    for name in sorted(enabled):
+    for name in order_enabled(enabled, history):
         ver = versions.get(name, "")
         if needs_submission(name, ver, history.get(name, [])):
             srpm = glob.glob(f"SRPMS/{name}-*.src.rpm")

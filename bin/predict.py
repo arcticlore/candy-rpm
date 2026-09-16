@@ -290,9 +290,9 @@ def cmd_fetch() -> None:
 
 
 def cmd_predict_all(results: dict, priors: dict, eco_of: dict) -> None:
-    print(f"{'пакет':<24} {'x86_64':<6} {'aarch64':<7} {'i386':<6} {'ppc64le':<7} "
-          f"{'s390x':<6} {'riscv64':<7} {'18/18%':>7}   указ.")
-    print("-" * 82)
+    hdr_archs = "".join(f" {a:<7}" for a in ARCHS)
+    print(f"{'пакет':<24} {hdr_archs} {'OK%':>7}   указ.")
+    print("-" * (24 + len(hdr_archs) + 12))
     rows = []
     for name in sorted(eco_of):
         infos = results.get(name, {})
@@ -315,8 +315,8 @@ def cmd_predict_all(results: dict, priors: dict, eco_of: dict) -> None:
         rows.append((name, worst, ok_prob * 100, hint))
     for name, worst, okp, hint in rows:
         cells = [worst[a] for a in ARCHS]
-        print(f"{name:<24} {' '.join('%s%s' % (c, ' ' * (6 - len(c))) for c in cells)}"
-              f"   {okp:6.0f}%   {hint}")
+        print(f"{name:<24} {' '.join('%s%s' % (c, ' ' * (7 - len(c))) for c in cells)}"
+              f"  {okp:6.0f}%   {hint}")
 
 
 def cmd_predict_names(results: dict, priors: dict, eco_of: dict, names: list[str]) -> None:

@@ -12,8 +12,6 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 %description
 GPU-accelerated cross-platform terminal emulator and multiplexer
 
-Сборка ~40+ мин, может не собраться на s390x/ppc64le
-
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc

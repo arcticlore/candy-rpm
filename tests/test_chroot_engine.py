@@ -69,9 +69,9 @@ class TestChrootEngine:
             assert "done" in data
 
     def test_chroots_count(self, pkgs_json):
-        """18 чрутов в конфигурации"""
+        """6 чрутов в конфигурации (x86_64/aarch64 × Fedora 43/44/rawhide)"""
         chroots = pkgs_json.get("project", {}).get("chroots", [])
-        assert len(chroots) == 18
+        assert len(chroots) == 6
 
     def test_chroots_format(self, pkgs_json):
         """Чруты в правильном формате fedora-XX-arch"""
