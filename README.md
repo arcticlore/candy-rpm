@@ -5,7 +5,7 @@
 ![candy](assets/banner.svg)
 
 ![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg)
-![packages](https://img.shields.io/badge/packages-153-blueviolet)
+![packages](https://img.shields.io/badge/packages-147-blueviolet)
 ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue)
 ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044%20%7C%2045-294172?logo=fedora)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -15,8 +15,8 @@
 
 **Ежедневно обновляемый COPR-репозиторий с terminal eye-candy для Fedora**
 
-**153 пакета** · 12 экосистем · авто-сборка 2 раза в день · 4 архитектуры  
-_x86_64 · aarch64 · ppc64le · s390x_
+**147 пакетов** · 14 экосистем · авто-сборка 2 раза в день · 2 архитектуры  
+_x86_64 · aarch64_
 
 </div>
 
@@ -127,7 +127,7 @@ dnf search --repo copr:copr.fedorainfracloud.org:arcticlore:candy fetch
 ```
 pkgs.json            единый источник правды: что пакуем и откуда
 bin/api_ver.sh       спрашивает GitHub/Codeberg/GitLab/npm/PyPI о последней версии
-bin/gen_specs.py     генерирует .spec-файлы (12 экосистем)
+bin/gen_specs.py     генерирует .spec-файлы (14 экосистем)
 bin/make-srpm.sh     исходники + vendor-тарболы (cargo/go/node) + rpmbuild -bs
 bin/update-check.sh  сверяет со state/state.json, пересобирает изменившееся, шлёт в COPR
 bin/auto-triage.sh   автоматически лечит известные ошибки сборки

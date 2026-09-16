@@ -5,7 +5,7 @@
 ![candy](assets/banner.svg)
 
 ![build](https://github.com/arcticlore/candy-rpm/actions/workflows/update.yml/badge.svg)
-![packages](https://img.shields.io/badge/packages-153-blueviolet)
+![packages](https://img.shields.io/badge/packages-147-blueviolet)
 ![COPR](https://img.shields.io/badge/COPR-arcticlore%2Fcandy-blue)
 ![fedora](https://img.shields.io/badge/Fedora-43%20%7C%2044%20%7C%2045-294172?logo=fedora)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -15,8 +15,8 @@
 
 **Nightly-updated COPR repository of terminal eye-candy for Fedora**
 
-**153 packages** · 12 ecosystems · auto-build twice a day · 4 architectures  
-*x86_64 · aarch64 · ppc64le · s390x*
+**147 packages** · 14 ecosystems · auto-build twice a day · 2 architectures  
+*x86_64 · aarch64*
 
 </div>
 

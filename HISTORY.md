@@ -4,7 +4,7 @@
 
 ```
 candy — COPR-репозиторий terminal eye-candy для Fedora
-Автоматическая сборка 129 пакетов через 12 экосистем
+Автоматическая сборка 147 пакетов через 14 экосистем
 GitHub Actions → COPR → dnf install
 ```
 
@@ -100,7 +100,7 @@ GitHub Actions → COPR → dnf install
 | Дней разработки | 6 (25–30 авг 2026) |
 | Пакетов в репо | 129 enabled / 146 всего |
 | Экосистем | 12 (script, cargo, go, npm, gem, python-pkg, python-script, c-*, meson, nim) |
-| Архитектур | 4 (x86_64, aarch64, ppc64le, s390x) |
+| Архитектур | 2 (x86_64, aarch64) |
 | Тестов | 112 (unit + integration + security + edge cases) |
 | Языков | 3 (Bash, Python, Go) |
 | Telegram бот | [@tct_fedorabot](https://t.me/tct_fedorabot) |
