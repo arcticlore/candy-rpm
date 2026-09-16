@@ -9,12 +9,6 @@ Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
-%ifarch i386 riscv64
-# Память билд-машин COPR на этих архитектурах ограничена — собираем по одному
-# заданию, чтобы не упираться пиковой памятью LLVM/cc (OOM).
-%global _smp_build_ncpus 1
-%global _smp_mflags -j1
-%endif
 
 BuildArch:      noarch
 BuildRequires:  python3
@@ -48,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/unimatrix
 
 %changelog
-* Tue Sep 15 2026 candy-bot <candy@localhost> - 20260829.dff519f-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 20260829.dff519f-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

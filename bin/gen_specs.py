@@ -230,12 +230,6 @@ def header(m: Package, ver: str) -> list[str]:
     lines.append("%global debug_package %{nil}")
     lines.append("%global _unpackaged_files_terminate_build 0")
     lines.append("")
-    lines.append("%ifarch i386 riscv64")
-    lines.append("# Память билд-машин COPR на этих архитектурах ограничена — собираем по одному")
-    lines.append("# заданию, чтобы не упираться пиковой памятью LLVM/cc (OOM).")
-    lines.append("%global _smp_build_ncpus 1")
-    lines.append("%global _smp_mflags -j1")
-    lines.append("%endif")
 
     return lines
 
@@ -320,10 +314,15 @@ def body_script(m: Package, br: list[str], req: list[str]) -> str:
         out.append(f"install -Dpm0755 {f} %{{buildroot}}%{{_bindir}}/{base}")
 
     if m.share:
-        out += [
-            f"mkdir -p %{{buildroot}}{m.share.dst}",
-            f"cp -r {m.share.src}/. %{{buildroot}}{m.share.dst}/",
-        ]
+        src = m.share.src
+        base = src.rstrip("/").split("/")[-1]
+        if "." in base and not src.endswith("/"):
+            out += [f"install -Dpm0644 {src} %{{buildroot}}{m.share.dst}/{base}"]
+        else:
+            out += [
+                f"mkdir -p %{{buildroot}}{m.share.dst}",
+                f"cp -r {src}/. %{{buildroot}}{m.share.dst}/",
+            ]
 
     out += ["", "%files", "%license LICENSE* COPYRIGHT*", "%doc README*"]
     for f in targets:
@@ -413,10 +412,6 @@ def body_cargo(m: Package, br: list[str], req: list[str]) -> str:
         "%cargo_prep -v vendor",
         "",
         "%build",
-        "%ifarch i386 riscv64",
-        "export CARGO_BUILD_JOBS=1",
-        'export RUSTFLAGS="${RUSTFLAGS:-} -Ccodegen-units=1"',
-        "%endif",
         cd_b + envs + "%cargo_build",
         "",
         "%install",
@@ -696,10 +691,15 @@ def body_custom(m: Package, br: list[str], req: list[str]) -> str:
         out.append(f"install -Dpm0755 {b} %{{buildroot}}%{{_bindir}}/{b}")
 
     if m.share:
-        out += [
-            f"mkdir -p %{{buildroot}}{m.share.dst}",
-            f"cp -r {m.share.src}/. %{{buildroot}}{m.share.dst}/",
-        ]
+        src = m.share.src
+        base = src.rstrip("/").split("/")[-1]
+        if "." in base and not src.endswith("/"):
+            out += [f"install -Dpm0644 {src} %{{buildroot}}{m.share.dst}/{base}"]
+        else:
+            out += [
+                f"mkdir -p %{{buildroot}}{m.share.dst}",
+                f"cp -r {src}/. %{{buildroot}}{m.share.dst}/",
+            ]
 
     out += ["", "%files", "%license LICENSE* COPYRIGHT*", "%doc README*"]
     for b in m.bins or []:

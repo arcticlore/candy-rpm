@@ -10,12 +10,6 @@ Source1:        %{name}-node-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
-%ifarch i386 riscv64
-# Память билд-машин COPR на этих архитектурах ограничена — собираем по одному
-# заданию, чтобы не упираться пиковой памятью LLVM/cc (OOM).
-%global _smp_build_ncpus 1
-%global _smp_mflags -j1
-%endif
 
 BuildRequires:  golang
 
@@ -51,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ctree
 
 %changelog
-* Tue Sep 15 2026 candy-bot <candy@localhost> - 1.0.4-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 1.0.4-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

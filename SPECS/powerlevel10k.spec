@@ -9,12 +9,6 @@ Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
-%ifarch i386 riscv64
-# Память билд-машин COPR на этих архитектурах ограничена — собираем по одному
-# заданию, чтобы не упираться пиковой памятью LLVM/cc (OOM).
-%global _smp_build_ncpus 1
-%global _smp_mflags -j1
-%endif
 
 BuildArch:      noarch
 Requires:       zsh
@@ -37,8 +31,7 @@ Don't throw tomatoes - file issues instead.
 # чистый скрипт, сборка не требуется
 
 %install
-mkdir -p %{buildroot}/usr/share/powerlevel10k
-cp -r ./. %{buildroot}/usr/share/powerlevel10k/
+install -Dpm0644 . %{buildroot}/usr/share/powerlevel10k/.
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
@@ -48,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/powerlevel10k
 
 %changelog
-* Tue Sep 15 2026 candy-bot <candy@localhost> - 1.20.0-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 1.20.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -8,6 +8,12 @@ meta() { jq -c ".packages[] | select(.name==\"$1\")" "$ROOT/pkgs.json"; }
 M="$(meta "$1")"
 [ -n "$M" ] || { echo "нет пакета '$1' в pkgs.json" >&2; exit 1; }
 
+# Если в pkgs.json задана явная версия — используем её (пиннинг, не лезем за latest).
+VER_PIN=$(echo "$M" | jq -r '.version // empty')
+if [ -n "$VER_PIN" ]; then
+    echo "$VER_PIN"; exit 0
+fi
+
 HOST=$(echo "$M" | J .host)
 SLUG=$(echo "$M" | J '.slug // ""')
 PKG=$(echo "$M" | J '.pkg // .name')
