@@ -34,8 +34,8 @@ jobs:
 
       - name: Install toolchain
         run: |
-          dnf install -y jq git rpm-build rpmdevtools python3 golang cargo rust copr-cli \
-            nodejs npm 2>&1 | tail -5
+          dnf install -y jq git rpm-build rpmdevtools dnf-plugins-core python3 golang \
+            cargo rust copr-cli nodejs npm 2>&1 | tail -5
 
       - name: Configure COPR
         run: |
@@ -82,6 +82,21 @@ jobs:
 
           CACHED=$(ls SRPMS/*.src.rpm 2>/dev/null | wc -l)
           echo "=== SRPMs: built=$BUILT failed=$FAILED cached=$CACHED ==="
+
+      - name: Verify BuildRequires resolve (сухой прогон dnf builddep)
+        run: |
+          echo "=== dnf builddep --assumeno для пакетов на сабмит — дозор зависимостей ==="
+          CHECK=$(python3 bin/coprase-status.py check 2>&1)
+          TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM" | awk '{print $1}' || true)
+          [ -n "$TO_SUBMIT" ] || { echo "Нет пакетов на сабмит"; exit 0; }
+          echo "Проверяю: $(echo "$TO_SUBMIT" | tr '\n' ' ')"
+          for name in $TO_SUBMIT; do
+            srpm=$(ls SRPMS/$name-*.src.rpm 2>/dev/null | head -1)
+            [ -n "$srpm" ] || continue
+            bin/check-deps.sh "$srpm" || true
+          done
+          BLOCKED=$(ls SRPMS/blocked/*.src.rpm 2>/dev/null | wc -l)
+          echo "=== Блокировано dnf-дозором: $BLOCKED (в SRPMS/blocked/, в COPR не уйдут) ==="
 
       - name: Submit to COPR (dedup with version comparison)
         run: python3 bin/coprase-status.py submit 2>&1 | tee logs/submit.log
