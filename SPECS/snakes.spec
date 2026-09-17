@@ -1,5 +1,5 @@
 Name:           snakes
-Version:        20260916.57ee34b
+Version:        20260917.57ee34b
 Release:        1%{?dist}
 Summary:        Snakes crawling across your terminal
 
@@ -25,7 +25,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n snakes.pl-57ee34b3283144c236a900c07cbfcca74858f12a
 
 %build
 # чистый скрипт, сборка не требуется
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/snake.pl
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 20260916.57ee34b-1
+* Thu Sep 17 2026 candy-bot <candy@localhost> - 20260917.57ee34b-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

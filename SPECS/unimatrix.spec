@@ -1,5 +1,5 @@
 Name:           unimatrix
-Version:        20260916.dff519f
+Version:        20260917.dff519f
 Release:        1%{?dist}
 Summary:        Матрица из unicode-символов (гибкий аналог cmatrix)
 
@@ -26,7 +26,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n unimatrix-dff519f972103f91384f360f270614184de8aa92
 
 %build
 # интерпретируемый модуль, сборки нет
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/unimatrix
 
 %changelog
-* Wed Sep 16 2026 candy-bot <candy@localhost> - 20260916.dff519f-1
+* Thu Sep 17 2026 candy-bot <candy@localhost> - 20260917.dff519f-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
