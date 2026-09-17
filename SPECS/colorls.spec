@@ -36,6 +36,7 @@ git init -q . && git config user.email b@b.c && git config user.name b && git ad
 # Create missing files referenced by gemspec
 for f in man/*.1 zsh/_*; do [ -f "$f" ] || touch "$f" 2>/dev/null || :; done
 gem build *.gemspec
+%global gem_name colorls
 
 %install
 %gem_install

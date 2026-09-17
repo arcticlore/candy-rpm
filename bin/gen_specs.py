@@ -520,6 +520,7 @@ def body_gem(m: Package, br: list[str], req: list[str]) -> str:
         "# Create missing files referenced by gemspec",
         "for f in man/*.1 zsh/_*; do [ -f \"$f\" ] || touch \"$f\" 2>/dev/null || :; done",
         "gem build *.gemspec",
+        f"%global gem_name {m.name}",
         "",
         "%install",
         "%gem_install",
