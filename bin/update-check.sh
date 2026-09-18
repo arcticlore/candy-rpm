@@ -13,7 +13,9 @@ flock -n 8 || { echo "[SKIP] $LOCK занят"; exit 0; }
 [ -f ~/.config/gh-token ] && export GITHUB_TOKEN="$(cat ~/.config/gh-token)"
 
 # Bash-реализация (Go-бинарь candy-check удалён из репозитория)
+# copr_name может храниться как "owner/name" или "name" — для API нужен только "name"
 PROJ="${CANDY_PROJ:-$(jq -r .project.copr_name pkgs.json)}"
+PROJ="${PROJ##*/}"
 STATE="state/state.json"
 LOG="logs/update.log"
 FORCE=0; DRY=0
@@ -149,7 +151,13 @@ for N in $(enabled_pkgs); do
             BUILD_CHROOTS=$(jq -r --arg n "$N" '.plan[$n] // [] | .[]' "$CHROOT_PLAN" 2>/dev/null | tr '\n' ' ')
         fi
 
-        # читаем креды из ~/.config/copr
+        # читаем креды из ~/.config/copr (basic auth = login; ownername = username)
+        COPR_LOGIN=$(python3 -c "
+import configparser, os
+c = configparser.ConfigParser()
+c.read(os.path.expanduser('~/.config/copr'))
+print(c.get('copr-cli', 'login', fallback=''))
+" 2>/dev/null)
         COPR_USER=$(python3 -c "
 import configparser, os
 c = configparser.ConfigParser()
@@ -178,12 +186,14 @@ print(c.get('copr-cli', 'copr_url', fallback='https://copr.fedorainfracloud.org'
             CHROOT_FORM=""
         fi
 
-        if ! curl -4 --connect-timeout 10 -m 60 -s \
-            -u "$COPR_USER:$COPR_TOKEN" \
-            -F "srpm=@$SRPM" \
+        if ! curl -4 --connect-timeout 10 -m 600 -sS \
+            -u "$COPR_LOGIN:$COPR_TOKEN" \
+            -F "ownername=$COPR_USER" \
+            -F "projectname=$PROJ" \
+            -F "pkgs=@$SRPM" \
             -F "nowait=1" \
             $CHROOT_FORM \
-            "$COPR_URL/api_3/new_build" >>"$LOG" 2>&1; then
+            "$COPR_URL/api_3/build/create/upload" >>"$LOG" 2>&1; then
             log "[FAIL] $N: curl не смог загрузить SRPM"; FAILED=$((FAILED+1)); continue
         fi
     else
