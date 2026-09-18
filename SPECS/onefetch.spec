@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/onefetch
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 2.28.1-1
+* Fri Sep 18 2026 candy-bot <candy@localhost> - 2.28.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

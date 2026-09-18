@@ -1,5 +1,5 @@
 Name:           pridefetch
-Version:        20260917.dc24d03
+Version:        20260918.dc24d03
 Release:        1%{?dist}
 Summary:        Neofetch, but gay
 
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/pridefetch
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 20260917.dc24d03-1
+* Fri Sep 18 2026 candy-bot <candy@localhost> - 20260918.dc24d03-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

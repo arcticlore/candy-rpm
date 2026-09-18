@@ -1,5 +1,5 @@
 Name:           snakes
-Version:        20260917.57ee34b
+Version:        20260918.57ee34b
 Release:        1%{?dist}
 Summary:        Snakes crawling across your terminal
 
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/snake.pl
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 20260917.57ee34b-1
+* Fri Sep 18 2026 candy-bot <candy@localhost> - 20260918.57ee34b-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

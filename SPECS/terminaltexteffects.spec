@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files -f %{pyproject_files}
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 0.15.0-1
+* Fri Sep 18 2026 candy-bot <candy@localhost> - 0.15.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

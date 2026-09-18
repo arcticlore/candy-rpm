@@ -1,5 +1,5 @@
 Name:           unimatrix
-Version:        20260917.dff519f
+Version:        20260918.dff519f
 Release:        1%{?dist}
 Summary:        Матрица из unicode-символов (гибкий аналог cmatrix)
 
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/unimatrix
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 20260917.dff519f-1
+* Fri Sep 18 2026 candy-bot <candy@localhost> - 20260918.dff519f-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
