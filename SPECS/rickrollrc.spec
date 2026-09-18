@@ -25,7 +25,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n rickrollrc-85d6893495ae05f9154fe1528026916ca5354ca4
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # чистый скрипт, сборка не требуется

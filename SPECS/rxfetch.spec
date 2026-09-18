@@ -25,7 +25,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n rxfetch-5eb3582d90a688c8330d1a72c6ac4c1b1ccd3872
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # чистый скрипт, сборка не требуется

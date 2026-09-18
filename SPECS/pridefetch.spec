@@ -26,7 +26,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n pridefetch-dc24d03d5ea320010be7f69e77162156521c4460
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # интерпретируемый модуль, сборки нет

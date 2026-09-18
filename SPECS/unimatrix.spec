@@ -26,7 +26,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n unimatrix-dff519f972103f91384f360f270614184de8aa92
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 # интерпретируемый модуль, сборки нет
