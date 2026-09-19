@@ -1,5 +1,5 @@
 Name:           oh-my-zsh
-Version:        20260918.e785204
+Version:        20260919.157eb03
 Release:        1%{?dist}
 Summary:        Framework for managing zsh configuration with 300+ plugins
 
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/oh-my-zsh
 
 %changelog
-* Fri Sep 18 2026 candy-bot <candy@localhost> - 20260918.e785204-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 20260919.157eb03-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

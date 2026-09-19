@@ -1,5 +1,5 @@
 Name:           diagon
-Version:        0
+Version:        1.1.158
 Release:        1%{?dist}
 Summary:        Interactive ASCII diagram generator (math/tree/table/flow)
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -9,6 +9,7 @@ URL:            https://github.com/ArthurSonzogni/Diagon
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
+
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -29,7 +30,7 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n Diagon-1.1.158
 
 %build
 export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"
@@ -46,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_mandir}/*
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 1.1.158-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           duckpond
-Version:        20260918.00c96ca
+Version:        20260919.00c96ca
 Release:        1%{?dist}
 Summary:        Ducks swimming in a pond, in your terminal
 
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/duckpond.sh
 
 %changelog
-* Fri Sep 18 2026 candy-bot <candy@localhost> - 20260918.00c96ca-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 20260919.00c96ca-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

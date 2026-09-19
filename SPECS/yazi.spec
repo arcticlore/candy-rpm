@@ -54,5 +54,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ya
 
 %changelog
-* Fri Sep 18 2026 candy-bot <candy@localhost> - 26.8.15-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 26.8.15-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
