@@ -1,7 +1,7 @@
 Name:           pokete
 Version:        0.9.2
 Release:        1%{?dist}
-Summary:        Покемон-подобный 2D.5-мир в терминале (пересборка с PyPI)
+Summary:        Покемоны в терминале (полноценная игра)
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
 License:        GPL-3.0-or-later
@@ -11,18 +11,12 @@ Source0:        %{name}-%{version}.tar.gz
 %global _unpackaged_files_terminate_build 0
 
 
-BuildRequires:  python3-devel
-BuildRequires:  pyproject-rpm-macros
-BuildRequires:  python3-devel
-BuildRequires:  python3-scrap-engine
-
-%generate_buildrequires
-%pyproject_buildrequires
-
-# NOTE: ПЕРЕСБОРКА с PyPI: scrap_engine>=1.4.3. eco=python-pkg (опубликовано в решение.txt, подтверждено)
+BuildArch:      noarch
+BuildRequires:  python3
+Requires:       python3
 
 %description
-Покемон-подобный 2D.5-мир в терминале (пересборка с PyPI)
+Покемоны в терминале (полноценная игра)
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -36,16 +30,21 @@ Don't throw tomatoes - file issues instead.
 %autosetup -p1 -n %{name}-%{version}
 
 %build
-%pyproject_wheel
+# интерпретируемый модуль, сборки нет
 
 %install
-%pyproject_install
-%pyproject_save_files -l '*'
+mkdir -p %{buildroot}%{python3_sitelib}
+cp -r pokete_src %{buildroot}%{python3_sitelib}/
+install -Dpm0755 pokete_src/pokete.py %{buildroot}%{_bindir}/pokete.py
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
-%files -f %{pyproject_files}
+%files
+%{_licensedir}/%{name}
+
+%{python3_sitelib}/pokete_src/
+%{_bindir}/pokete.py
 
 %changelog
-* Sat Sep 19 2026 candy-bot <candy@localhost> - 0.9.2-1
+* Wed Sep 16 2026 candy-bot <candy@localhost> - 0.9.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

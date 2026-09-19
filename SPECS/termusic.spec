@@ -17,7 +17,6 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
-BuildRequires:  alsa-lib-devel
 
 # NOTE: воркспейс; тяжёлые зависимости mpv/gstreamer
 

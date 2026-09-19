@@ -13,10 +13,10 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  git-core
-BuildRequires:  ninja-build
+BuildRequires:  cmake
+BuildRequires:  gcc-c++
 
-# NOTE: FetchContent клонит json через git — добавлен BR git-core (2-я попытка)
+# NOTE: cmake FetchContent требует сеть при сборке — отключён до vendored релиза
 
 %description
 Interactive ASCII diagram generator (math/tree/table/flow)

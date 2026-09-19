@@ -8,28 +8,13 @@ License:        MIT
 URL:            https://github.com/wez/wezterm
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
-%global debug_package %{nil}
-%global _unpackaged_files_terminate_build 0
-
-
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  gcc-c++
-BuildRequires:  cargo-rpm-macros
-
-# NOTE: 2-й шанс (вердикт): включено повторно
 
 %description
 GPU-accelerated cross-platform terminal emulator and multiplexer
 
-ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
-Репозиторий в активной разработке — возможны поломки и резкие изменения.
-Помидорами не кидайтесь, лучше заводите issue.
-
-WARNING: this package comes from an UNOFFICIAL third-party repository
-(arcticlore/candy). Work-in-progress: expect breakage and sudden changes.
-Don't throw tomatoes - file issues instead.
+BuildRequires:  cargo
+BuildRequires:  rust
+BuildRequires:  gcc
 
 %prep
 %autosetup -N -a1 -n %{name}-%{version}
@@ -40,15 +25,12 @@ Don't throw tomatoes - file issues instead.
 
 %install
 %cargo_install
-rm -rf %{buildroot}%{_datadir}/cargo
 
-mkdir -p %{buildroot}%{_licensedir}/%{name}
-for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
-%{_licensedir}/%{name}
-
+%license LICENSE* COPYRIGHT*
+%doc README*
 %{_bindir}/wezterm
 
 %changelog
-* Sat Sep 19 2026 candy-bot <candy@localhost> - 0-1
+* Mon Aug 24 2026 candy-bot <candy@localhost> - 0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
