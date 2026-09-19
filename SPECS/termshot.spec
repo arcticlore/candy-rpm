@@ -32,7 +32,7 @@ export GOFLAGS='-mod=vendor'
 export CGO_ENABLED=0
 export GOPATH=$(mktemp -d)
 export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o termshot ./cmd
+go build -trimpath -ldflags '-s -w' -o termshot ./cmd/termshot
 
 %install
 install -Dpm0755 termshot %{buildroot}%{_bindir}/termshot

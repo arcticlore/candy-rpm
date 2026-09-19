@@ -1,27 +1,22 @@
-Name:           WezTerm
+Name:           Ghostty
 Version:        0
 Release:        1%{?dist}
-Summary:        GPU-accelerated cross-platform terminal emulator and multiplexer
+Summary:        Blazing fast native terminal emulator
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
 License:        MIT
-URL:            https://github.com/wez/wezterm
+URL:            https://github.com/ghostty-org/ghostty
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
 
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  gcc-c++
-BuildRequires:  cargo-rpm-macros
+BuildRequires:  zig
 
-# NOTE: 2-й шанс (вердикт): включено повторно
+# NOTE: Вердикт: только если в copr pgdev нет нужных архитетктур — иначе добавить zig любой ценой у нас
 
 %description
-GPU-accelerated cross-platform terminal emulator and multiplexer
+Blazing fast native terminal emulator
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -32,22 +27,21 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -N -a1 -n %{name}-%{version}
-%cargo_prep -v vendor
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-%cargo_build
+zig build -Doptimize=ReleaseSafe
 
 %install
-%cargo_install
-rm -rf %{buildroot}%{_datadir}/cargo
+mkdir -p %{buildroot}%{_bindir}
+cp -r zig-out/bin/. %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/wezterm
+%{_bindir}/%{name}
 
 %changelog
 * Sat Sep 19 2026 candy-bot <candy@localhost> - 0-1

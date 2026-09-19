@@ -19,6 +19,17 @@ SLUG=$(echo "$M" | J '.slug // ""')
 PKG=$(echo "$M" | J '.pkg // .name')
 TAGP=$(echo "$M" | J '.tagp // ""')
 
+# curl с DNS-ретраем: No address == инфраструктурное мигание, а не смерть пакета.
+# 5 попыток с экспоненциальной паузой; парсим JSON из stdout.
+curlr() {
+    local out="" i
+    for i in 1 2 3 4 5; do
+        out=$(curl -sfL --retry 3 --retry-connrefused --retry-all-errors "$@" 2>/dev/null)             && [ -n "$out" ] && { printf "%s" "$out"; return 0; }
+        sleep $((i * 3))
+    done
+    return 1
+}
+
 gh_curl() {
     if [ -n "${GITHUB_TOKEN:-}" ]; then
         curl -sfL --retry 3 -H "Authorization: Bearer $GITHUB_TOKEN" "$@"

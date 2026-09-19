@@ -213,6 +213,8 @@ def header(m: Package, ver: str) -> list[str]:
         srcs.append("Source1:        %{name}-vendor-%{version}.tar.gz")
     elif m.eco in ("go", "npm"):
         srcs.append("Source1:        %{name}-node-vendor-%{version}.tar.gz")
+    elif m.eco == "haskell":
+        srcs.append("Source1:        %{name}-vendor-%{version}.tar.gz")
 
     lines = [
         f"Name:           {m.name}",
@@ -425,7 +427,7 @@ def body_cargo(m: Package, br: list[str], req: list[str]) -> str:
         cd_b + envs + "%cargo_build",
         "",
         "%install",
-        cd_b + envs + "%cargo_install",
+        cd_b + envs + (m.install_cmd if m.install_cmd != "%make_install" else "%cargo_install"),
         "rm -rf %{buildroot}%{_datadir}/cargo",
         "",
         "%files",
@@ -505,11 +507,48 @@ def body_npm(m: Package, br: list[str], req: list[str]) -> str:
     return "\n".join(out) + "\n"
 
 
+def mkdir_bindir() -> str:
+    return "mkdir -p %{buildroot}%{_bindir}"
+
+
+def install_bin(m: Package) -> str:
+    bins = m.bins or ["%{name}"]
+    return "\n".join(
+        f"install -Dpm0755 {b} %{{buildroot}}%{{_bindir}}/{b}"
+        for b in bins
+    )
+
+
+def body_haskell(m: Package, br: list[str], req: list[str]) -> str:
+    """Generate body for Haskell (cabal) ecosystem."""
+    br = ["ghc", "ghc-rpm-macros"] + br
+    out: list[str] = []
+    add_br_req(out, br, req)
+
+    out += ["", prep(m), "", "%build"]
+    cd_b = f"cd {m.cdir}\n" if m.cdir else ""
+    envs = "".join(f"export {e}\n" for e in m.build_env)
+    out += [cd_b + envs + "cabal v2-build --offline --enable-tests 2>/dev/null || cabal v2-build --offline",
+            "", "%install",
+            cd_b + envs + mkdir_bindir(),
+            cd_b + envs + install_bin(m)]
+
+    out += ["", "%files", "%license LICENSE*", "%doc README*"]
+    for b in m.bins or ["%{name}"]:
+        out.append(f"%{{_bindir}}/{b}")
+    return "\n".join(out) + "\n"
+
+
 def body_gem(m: Package, br: list[str], req: list[str]) -> str:
     """Generate body for gem ecosystem."""
     br = ["ruby(release)", "rubygems-devel", "ruby"] + br
     out: list[str] = []
     add_br_req(out, br, req)
+
+    # %global gem_name обязательно в шапке (до %prep): внутри %build
+    # макрос не виден при разворачивании %install, и %gem_install
+    # получает литеральный '%{gem_name}'.
+    out.append(f"%global gem_name {m.name}")
 
     out += ["", prep(m), "", "%build"]
     if m.gem_git:
@@ -721,6 +760,11 @@ def body_custom(m: Package, br: list[str], req: list[str]) -> str:
 
 
 # Ecosystem body generators
+smp_heavies = ("cargo", "go", "npm", "haskell")
+
+def add_smp(m):
+    return ["%global _smp_ncpus_max 2   # крупный вендор: меньше параллелизма = меньше пик диска, квота не рвётся", ""] if m.eco in smp_heavies else []
+
 BODIES: dict[str, Any] = {
     "script": body_script,
     "python-pkg": body_python_pkg,
@@ -736,6 +780,7 @@ BODIES: dict[str, Any] = {
     "meson": body_meson,
     "custom": body_custom,
     "zig": body_zig,
+    "haskell": body_haskell,
 }
 
 

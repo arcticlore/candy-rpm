@@ -15,6 +15,7 @@ BuildRequires:  ruby(release)
 BuildRequires:  rubygems-devel
 BuildRequires:  ruby
 BuildRequires:  git-core
+%global gem_name colorls
 
 %description
 Prettifies ls output with colors and font-awesome icons

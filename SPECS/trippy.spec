@@ -46,7 +46,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/trippy
+%{_bindir}/trip
 
 %changelog
 * Sat Sep 19 2026 candy-bot <candy@localhost> - 0.13.0-1

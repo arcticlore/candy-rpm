@@ -1,11 +1,10 @@
-Name:           WezTerm
+Name:           taskwarrior-tui
 Version:        0
 Release:        1%{?dist}
-Summary:        GPU-accelerated cross-platform terminal emulator and multiplexer
-# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
+Summary:        TUI для taskwarrior
 
 License:        MIT
-URL:            https://github.com/wez/wezterm
+URL:            https://github.com/kdheepak/taskwarrior-tui
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -18,10 +17,10 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 
-# NOTE: 2-й шанс (вердикт): включено повторно
+# NOTE: Популярность: 2047⭐, активен (v0.27.0 2026-04) — выше порога 500, включить
 
 %description
-GPU-accelerated cross-platform terminal emulator and multiplexer
+TUI для taskwarrior
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -47,7 +46,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/wezterm
+%{_bindir}/%{name}
 
 %changelog
 * Sat Sep 19 2026 candy-bot <candy@localhost> - 0-1

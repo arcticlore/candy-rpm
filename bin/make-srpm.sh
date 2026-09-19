@@ -131,6 +131,19 @@ else
 case "$ECO" in
 cargo)
     D=$(extract "$SRC")
+    # обновление крейтов по .cargo_update в pkgs.json (например, из-за OpenSSL 4.0)
+    mapfile -t CU < <(echo "$M" | jq -r '.cargo_update // [] | .[]')
+    if [ "${#CU[@]}" -gt 0 ]; then
+        ARGS=(); for c in "${CU[@]}"; do ARGS+=(-p "$c"); done
+        (cd "$D" && cargo update "${ARGS[@]}" >/dev/null)
+        # Cargo.lock должен совпадать с vendor-тарболом -> перепаковать Source0
+        TOPO=$(tar tzf "$SRC" 2>/dev/null | sed -n '1s#/.*##p')
+        RT=$(mktemp -d "${TMPDIR:-/tmp}/lock-XXXXXX")
+        mkdir -p "$RT/$TOPO"
+        cp -a "$D/." "$RT/$TOPO/"
+        tar -C "$RT" -czf "$SRC" "$TOPO"
+        rm -rf "$RT"
+    fi
     (cd "$D" && cargo vendor vendor >/dev/null)
     tar -C "$D" -czf "SOURCES/$NAME-vendor-$VER.tar.gz" vendor
     rm -rf "$D" ;;
@@ -148,6 +161,13 @@ npm)
         (cd "$D" && npm install --omit=dev)
     fi
     tar -C "$D" -czf "SOURCES/$NAME-node-vendor-$VER.tar.gz" node_modules
+    rm -rf "$D" ;;
+cabal)
+    command -v cabal >/dev/null || { echo "нужен cabal: sudo dnf install cabal-install"; exit 3; }
+    D=$(extract "$SRC")
+    (cd "$D" && CABAL_DIR="$TMPDIR/cabal-home" cabal v2-build --offline >/dev/null 2>&1 || true)
+    (cd "$D" && cabal v2-freeze >/dev/null 2>&1 || true)
+    tar -C "$D" -czf "SOURCES/$NAME-node-vendor-$VER.tar.gz" $(ls -d "$D"/cabal.project.freeze "$D"/dist-newstyle 2>/dev/null | sed 's|^'"$D"'/||') 2>/dev/null || true
     rm -rf "$D" ;;
 esac
 fi
