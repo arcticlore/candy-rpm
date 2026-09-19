@@ -35,14 +35,12 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
-cd yazi-build
 export VERGEN_GIT_SHA="copr-build"
 %cargo_build
 
 %install
-cd yazi-build
 export VERGEN_GIT_SHA="copr-build"
-%cargo_install
+install -Dpm0755 -t %{buildroot}%{_bindir} target/release/yazi target/release/ya
 rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
@@ -54,5 +52,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ya
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 26.8.15-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 26.8.15-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

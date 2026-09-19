@@ -17,6 +17,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  cmake
+BuildRequires:  openssl-devel
 
 %description
 Менеджер рантаймов node/python/ruby — быстрый asdf-killer
@@ -48,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/mise
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 2026.9.10-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 2026.9.10-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

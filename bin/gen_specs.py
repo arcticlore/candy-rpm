@@ -507,6 +507,18 @@ def body_npm(m: Package, br: list[str], req: list[str]) -> str:
     return "\n".join(out) + "\n"
 
 
+def mkdir_bindir() -> str:
+    return "mkdir -p %{buildroot}%{_bindir}"
+
+
+def install_bin(m: Package) -> str:
+    bins = m.bins or ["%{name}"]
+    return "\n".join(
+        f"install -Dpm0755 {b} %{{buildroot}}%{{_bindir}}/{b}"
+        for b in bins
+    )
+
+
 def body_haskell(m: Package, br: list[str], req: list[str]) -> str:
     """Generate body for Haskell (cabal) ecosystem."""
     br = ["ghc", "ghc-rpm-macros"] + br

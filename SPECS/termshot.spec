@@ -32,7 +32,7 @@ export GOFLAGS='-mod=vendor'
 export CGO_ENABLED=0
 export GOPATH=$(mktemp -d)
 export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o termshot ./cmd
+go build -trimpath -ldflags '-s -w' -o termshot ./cmd/termshot
 
 %install
 install -Dpm0755 termshot %{buildroot}%{_bindir}/termshot
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/termshot
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 0.6.1-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 0.6.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           diagon
-Version:        0
+Version:        1.1.158
 Release:        1%{?dist}
 Summary:        Interactive ASCII diagram generator (math/tree/table/flow)
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -10,12 +10,15 @@ Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
-BuildRequires:  cmake
-BuildRequires:  gcc-c++
-BuildRequires:  cmake
-BuildRequires:  gcc-c++
 
-# NOTE: cmake FetchContent требует сеть при сборке — отключён до vendored релиза
+BuildRequires:  cmake
+BuildRequires:  gcc-c++
+BuildRequires:  cmake
+BuildRequires:  gcc-c++
+BuildRequires:  git-core
+BuildRequires:  ninja-build
+
+# NOTE: FetchContent клонит json через git — добавлен BR git-core (2-я попытка)
 
 %description
 Interactive ASCII diagram generator (math/tree/table/flow)
@@ -46,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_mandir}/*
 
 %changelog
-* Sat Aug 29 2026 candy-bot <candy@localhost> - 0-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 1.1.158-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

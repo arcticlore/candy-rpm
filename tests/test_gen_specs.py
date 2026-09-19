@@ -17,7 +17,8 @@ class TestGenSpecs:
         """Все экосистемы в pkgs.json поддерживаются генератором"""
         supported_ecos = {"cargo", "go", "npm", "gem", "nim", "zig",
                          "python-pkg", "python-script", "script",
-                         "c-custom", "c-make", "c-cmake", "c-autotools", "meson", "custom"}
+                         "c-custom", "c-make", "c-cmake", "c-autotools", "meson", "custom",
+                         "haskell"}
         actual_ecos = set(p.get("eco", "") for p in pkgs_json["packages"])
         unsupported = actual_ecos - supported_ecos
         assert not unsupported, f"Неподдерживаемые экосистемы: {unsupported}"

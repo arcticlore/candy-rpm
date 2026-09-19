@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ttysolitaire
 
 %changelog
-* Thu Sep 17 2026 candy-bot <candy@localhost> - 1.4.1-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 1.4.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
