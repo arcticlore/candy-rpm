@@ -1,5 +1,5 @@
 Name:           Rio
-Version:        0.5.27
+Version:        0.5.28
 Release:        1%{?dist}
 Summary:        Hardware-accelerated terminal emulator focused on typography
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -54,5 +54,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/rio
 
 %changelog
-* Sat Sep 19 2026 candy-bot <candy@localhost> - 0.5.27-1
+* Sat Sep 19 2026 candy-bot <candy@localhost> - 0.5.28-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
