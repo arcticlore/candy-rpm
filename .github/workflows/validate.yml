@@ -1,0 +1,54 @@
+name: validate (required PR/push CI)
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: YAML-валидность всех workflow
+        run: |
+          python3 - <<'EOF'
+          import glob, yaml
+          bad = []
+          for p in glob.glob('.github/workflows/*.yml'):
+              try:
+                  yaml.safe_load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  bad.append((p, str(e)))
+          if bad:
+              for p, e in bad:
+                  print(f"BROKEN: {p}: {e}")
+              raise SystemExit(1)
+          print(f"OK: {len(glob.glob('.github/workflows/*.yml'))} workflow yaml-валидны")
+          EOF
+
+      - name: pkgs.json — JSON и базовая схема
+        run: |
+          python3 - <<'EOF'
+          import json
+          d = json.load(open('pkgs.json'))
+          assert isinstance(d, dict), 'pkgs.json должен быть объектом'
+          assert 'packages' in d or isinstance(next(iter(d.values())), dict), 'нет packages'
+          pkgs = d.get('packages', d)
+          if isinstance(pkgs, dict):
+              # допускаем и {"name": {...}} и {"packages": {...}} — просто валидный JSON+структура
+              print(f"OK: pkgs.json — {len(pkgs)} пакетов")
+          else:
+              raise SystemExit('pkgs.json: ожидался dict')
+          EOF
+
+      - name: actionlint (самодозор workflow)
+        uses: raven-actions/actionlint@v2
+        with:
+          path: .github/workflows
+          flags: -pyflakes

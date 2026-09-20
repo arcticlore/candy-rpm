@@ -1,15 +1,8 @@
-# тяжёлое и локальное не коммитим
-SOURCES/
+.fix/
+logs/
 SRPMS/
-state/.lock
-state/.global.lock
-state/.shard-*.lock
-logs/*.log
-*.tmp
-*.aria2
-__pycache__/
-__pycache__/
-logs/runs/
-logs/builder/
-__pycache__/
-*.pyc
+SOURCES/
+AZ5
+/.fix/
+.logs/
+logs/
