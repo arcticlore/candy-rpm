@@ -15,6 +15,7 @@ BuildRequires:  ruby(release)
 BuildRequires:  rubygems-devel
 BuildRequires:  ruby
 BuildRequires:  git-core
+%global gem_name colorls
 
 %description
 Prettifies ls output with colors and font-awesome icons
@@ -48,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %exclude %{gem_cache}
 
 %changelog
-* Sat Sep 19 2026 candy-bot <candy@localhost> - 1.5.0-1
+* Sun Sep 20 2026 candy-bot <candy@localhost> - 1.5.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

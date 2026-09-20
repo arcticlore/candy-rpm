@@ -1,5 +1,5 @@
 Name:           ascsaver
-Version:        20260919.cba337b5
+Version:        20260920.cba337b5
 Release:        1%{?dist}
 Summary:        Collection of ASCII screensavers (dogs/globe/nasa/star_wars)
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/libexec/ascsaver
 
 %changelog
-* Sat Sep 19 2026 candy-bot <candy@localhost> - 20260919.cba337b5-1
+* Sun Sep 20 2026 candy-bot <candy@localhost> - 20260920.cba337b5-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
