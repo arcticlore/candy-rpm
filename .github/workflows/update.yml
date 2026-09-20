@@ -1,7 +1,5 @@
 name: submit to copr
 on:
-  schedule:
-    - cron: "17 2,14 * * *"   # 2 раза/сутки (5:17 и 17:17 MSK) — вежливо к общим билдерам COPR
   workflow_dispatch:
     inputs:
       full_rebuild:
@@ -16,6 +14,7 @@ jobs:
 
   submit:
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 180
     container: fedora:44
     steps:
@@ -146,11 +145,11 @@ jobs:
           echo "Files staged:"
           git diff --cached --stat || true
           if ! git diff --cached --quiet; then
-            git commit -qm "submit sync [skip ci]" || echo "Commit failed"
+            git commit -qm "submit sync " || echo "Commit failed"
             git branch "bot/submit-${{ github.run_number }}"
             git checkout -q "bot/submit-${{ github.run_number }}"
             git push -q origin "bot/submit-${{ github.run_number }}" 2>&1 ||               echo "Push failed (non-critical)"
-            gh pr create --base master --head "bot/submit-${{ github.run_number }}"               --title "submit sync #${{ github.run_number }} [skip ci]"               --body "State sync от scheduled submit (без прямой записи в master). Merge = только если ревьюер подтвердил." 2>&1 ||               echo "PR create failed (non-critical)"
+            gh pr create --base master --head "bot/submit-${{ github.run_number }}"               --title "submit sync #${{ github.run_number }}"               --body "State sync от scheduled submit (без прямой записи в master). Merge = только если ревьюер подтвердил." 2>&1 ||               echo "PR create failed (non-critical)"
           else
             echo "No changes to commit"
           fi

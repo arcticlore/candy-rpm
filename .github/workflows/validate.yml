@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -32,23 +32,26 @@ jobs:
           print(f"OK: {len(glob.glob('.github/workflows/*.yml'))} workflow yaml-валидны")
           EOF
 
-      - name: pkgs.json — JSON и базовая схема
+      - name: pkgs.json — JSON и схема (project + packages list)
         run: |
-          python3 - <<'EOF'
+          python3 - <<'PY'
           import json
           d = json.load(open('pkgs.json'))
-          assert isinstance(d, dict), 'pkgs.json должен быть объектом'
-          assert 'packages' in d or isinstance(next(iter(d.values())), dict), 'нет packages'
-          pkgs = d.get('packages', d)
-          if isinstance(pkgs, dict):
-              # допускаем и {"name": {...}} и {"packages": {...}} — просто валидный JSON+структура
-              print(f"OK: pkgs.json — {len(pkgs)} пакетов")
-          else:
-              raise SystemExit('pkgs.json: ожидался dict')
-          EOF
-
+          assert isinstance(d, dict), 'pkgs.json: top-level должен быть object'
+          assert isinstance(d.get('project'), dict), 'pkgs.json: project должен быть object'
+          pkgs = d.get('packages')
+          assert isinstance(pkgs, list) and pkgs, 'pkgs.json: packages должен быть НЕПУСТЫМ list'
+          names = []
+          for p in pkgs:
+              assert isinstance(p, dict), 'packages[]: каждый элемент должен быть object'
+              n = p.get('name')
+              assert isinstance(n, str) and n.strip(), 'packages[]: требуется непустой string name'
+              names.append(n)
+          assert len(names) == len(set(names)), 'packages[]: имена должны быть уникальны'
+          print(f'OK: pkgs.json — project + {len(pkgs)} packages (имена уникальны)')
+          PY
       - name: actionlint (самодозор workflow)
-        uses: raven-actions/actionlint@v2
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7
         with:
           path: .github/workflows
           flags: -pyflakes

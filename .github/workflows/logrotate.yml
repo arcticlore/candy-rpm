@@ -20,15 +20,17 @@ jobs:
           find logs/runs/ -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} \;
           find SRPMS/ -name "*.src.rpm" -mtime +30 -delete 2>/dev/null || true
 
-      - name: Commit
+      # Ротация логов — runtime state (logs/), НЕ reviewable source change.
+      # Ежедневный reviewable source-PR создавать НЕЛЬЗЯ (лог-спам в PR-лист).
+      # Сохраняем состояние в state-ветку state/logrotate — без gh pr create.
+      - name: Commit (state/logrotate — runtime state, БЕЗ gh pr)
         run: |
           git config user.name  "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git add -A logs/ SRPMS/ || true
+          git add logs/ SRPMS/ || true
           if ! git diff --cached --quiet; then
             git commit -qm "logrotate [skip ci]"
-            git branch "bot/logrotate-${{ github.run_number }}"
-            git checkout -q "bot/logrotate-${{ github.run_number }}"
-            git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "bot/logrotate-${{ github.run_number }}" || true
-            gh pr create --base master --head "bot/logrotate-${{ github.run_number }}"               --title "logrotate state #${{ github.run_number }} [skip ci]"               --body "State sync от logrotate (без прямой записи в master). Merge = только при подтверждении ревьюера." 2>&1 || true
+            git branch -f "state/logrotate" HEAD
+            git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "state/logrotate" || true
+            # gh pr create НЕ вызываем: логи — runtime state, ежедневный source-PR запрещён.
           fi

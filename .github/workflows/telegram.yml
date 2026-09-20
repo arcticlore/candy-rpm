@@ -22,15 +22,18 @@ jobs:
           # Run bot for ~3.5 minutes (long-poll timeout=50s)
           timeout 210 python3 tools/tg-notify.py --listen || true
 
-      - name: Save state
+      # tg-offset — рабочее СОСТОЯНИЕ бота (runtime state), не reviewable
+      # source change. Прямая запись в master запрещена, а gh pr create
+      # каждые 5 минут = бот-спам в PR-лист. Пишем offset в отдельную
+      # state-ветку state/tg-offset (без создания PR).
+      - name: Save state (state/tg-offset — runtime state, БЕЗ gh pr)
         run: |
           git config user.name  "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
           git add state/tg-offset.txt || true
           if ! git diff --cached --quiet; then
-            git commit -qm "tg offset [skip ci]" || true
-            git branch "bot/telegram-${{ github.run_number }}"
-            git checkout -q "bot/telegram-${{ github.run_number }}"
-            git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "bot/telegram-${{ github.run_number }}" || true
-            gh pr create --base master --head "bot/telegram-${{ github.run_number }}"               --title "telegram state #${{ github.run_number }} [skip ci]"               --body "State sync от telegram-бота (без прямой записи в master). Merge = только при подтверждении ревьюера." 2>&1 || true
+            git commit -qm "tg offset [skip ci]"
+            git branch -f "state/tg-offset" HEAD
+            git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "state/tg-offset" || true
+            # gh pr create НЕ вызываем: offset — runtime state, PR-спам каждые 5 мин запрещён.
           fi
