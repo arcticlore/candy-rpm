@@ -1,0 +1,83 @@
+name: diag-candy-engine (read-only evidence)
+
+on:
+  push:
+    branches: ['containment/**']
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: identity + hash
+        run: |
+          file bin/candy-engine
+          ls -l bin/candy-engine
+          sha256sum bin/candy-engine || true
+
+      - name: token strings, with context
+        run: |
+          strings -a -n 4 bin/candy-engine > /tmp/se.txt || true
+          echo "=== count latin-variant matches ==="
+          grep -cE '[Aa][Zz]-?5' /tmp/se.txt || true
+          echo "=== latin matches with context ==="
+          grep -inE -C2 '[Aa][Zz]-?5' /tmp/se.txt | head -200 || true
+          echo "=== cyrillic matches ==="
+          grep -inE -C1 '[Аа][Зз]-?5' /tmp/se.txt | head -80 || true
+          echo "=== related shutdown/guard words ==="
+          grep -inE 'containment|decommission|stop.file|shutdown|guard|kill' /tmp/se.txt | head -40 || true
+
+      - name: raw byte-level probe of token
+        run: |
+          OFF="$(grep -aboE '[Aa][Zz]-?5' bin/candy-engine | head -1 | sed -E 's/:.*//')"
+          echo "=== latin token line-start offset ==="
+          echo "$OFF"
+          if [ -n "$OFF" ]; then
+            S=$((OFF - 48))
+            [ "$S" -lt 0 ] && S=0
+            echo "=== hex+ascii context at offset $OFF ==="
+            xxd -s "$S" -l 128 bin/candy-engine
+          else
+            echo 'no latin token match at byte level'
+          fi
+          echo "=== cyrillic token byte offsets ==="
+          grep -aboP '[Аа][Зз]-?5' bin/candy-engine | head -50 || true
+
+      - name: neighbor strings + section map
+        run: |
+          strings -a -n 3 bin/candy-engine > /tmp/se3.txt || true
+          LINE="$(grep -inE '[Aa][Zz]-?5' /tmp/se3.txt | head -1 | sed -E 's/:.*//')"
+          echo "=== string-number $LINE neighbors ==="
+          sed -n "$((LINE - 8)),$((LINE + 8))p" /tmp/se3.txt
+          echo "=== ELF sections (offsets) covering 0x720A48 ==="
+          readelf -SW bin/candy-engine | sed -n '2,40p'
+
+      - name: strings with min length 3
+        run: |
+          strings -a -n 3 bin/candy-engine > /tmp/se3.txt || true
+          echo "=== occurrence count (n3) ==="
+          grep -cE '[Aa][Zz]-?5' /tmp/se3.txt || true
+          echo "=== occurrences (n3) ==="
+          grep -inE '[Aa][Zz]-?5' /tmp/se3.txt | head -40 || true
+          echo "=== broader probe: single letter pairs a-z / z followed by 5 ==="
+          grep -inE '.{0,30}a.z.?5.{0,30}' /tmp/se3.txt | head -20 || true
+
+      - name: go build info
+        run: |
+          if command -v go >/dev/null 2>&1; then
+            go version -m bin/candy-engine || true
+          else
+            echo 'no go toolchain'
+          fi
+          readelf -S bin/candy-engine 2>/dev/null | grep -E 'go\.buildinfo|gopclntab' || echo 'no go sections via readelf'
+
+      - name: references + source availability in repo
+        run: |
+          git grep -n 'candy-engine' -- . ':(exclude).git' || echo '(no refs)'
+          git grep -n 'engine' -- .github bin tests || true
+          git ls-tree -r --name-only HEAD | grep -E '\.go$|go\.mod' || echo '(no go sources)'
