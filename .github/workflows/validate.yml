@@ -107,11 +107,15 @@ jobs:
           if re.search(r'schedule:.*', up, re.S): bad.append('update.yml: содержит schedule (production-расписание запрещено)')
           # 4) scheduled workflow НЕ должен пушить в master
           for wf in pathlib.Path('.github/workflows').glob('*.yml'):
+                  if wf.name == 'validate.yml':
+                      continue  # сам-дозор: его 'schedule'/'[skip ci]' — текст запрета, не активный код
               t = wf.read_text(encoding='utf-8', errors='ignore')
               if 'schedule' in t and re.search(r'push.*master|master.*push', t, re.I):
                   bad.append(f'{wf.name}: scheduled workflow пушит в master (запрещено)')
           # 5) reviewable source без [skip ci]
           for wf in pathlib.Path('.github/workflows').glob('*.yml'):
+                  if wf.name == 'validate.yml':
+                      continue  # сам-дозор: его 'schedule'/'[skip ci]' — текст запрета, не активный код
               t = wf.read_text(encoding='utf-8', errors='ignore')
               if '[skip ci]' in t and 'state/' not in wf.name:
                   bad.append(f'{wf.name}: reviewable source содержит [skip ci] (запрещено)')
