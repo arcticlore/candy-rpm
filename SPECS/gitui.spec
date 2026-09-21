@@ -49,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/gitui
 
 %changelog
-* Sun Sep 20 2026 candy-bot <candy@localhost> - 0.28.1-1
+* Mon Sep 21 2026 candy-bot <candy@localhost> - 0.28.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
