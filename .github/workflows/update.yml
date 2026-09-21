@@ -75,7 +75,7 @@ jobs:
               SKIPPED=$((SKIPPED+1))
               continue
             fi
-            if ls SRPMS/$name-$target-*.src.rpm >/dev/null 2>&1; then
+            if find SRPMS -maxdepth 1 -name "${name}-${target}-*.src.rpm" 2>/dev/null | grep -q .; then
               echo "  [FINE] $name: SRPM уже на цели $target"
               continue
             fi
@@ -91,7 +91,7 @@ jobs:
             fi
           done
 
-          CACHED=$(ls SRPMS/*.src.rpm 2>/dev/null | wc -l)
+          CACHED=$(find SRPMS -maxdepth 1 -name '*.src.rpm' 2>/dev/null | wc -l)
           echo "=== SRPMs: built=$BUILT failed=$FAILED skipped=$SKIPPED cached=$CACHED (полные логи: logs/srpm-*.log) ==="
 
       - name: Verify BuildRequires resolve (сухой прогон dnf builddep)
@@ -102,11 +102,11 @@ jobs:
           [ -n "$TO_SUBMIT" ] || { echo "Нет пакетов на сабмит"; exit 0; }
           echo "Проверяю: $(echo "$TO_SUBMIT" | tr '\n' ' ')"
           for name in $TO_SUBMIT; do
-            srpm=$(ls SRPMS/$name-*.src.rpm 2>/dev/null | head -1)
+            srpm=$(find SRPMS -maxdepth 1 -name "${name}-*.src.rpm" 2>/dev/null | head -1)
             [ -n "$srpm" ] || continue
             bin/check-deps.sh "$srpm" || true
           done
-          BLOCKED=$(ls SRPMS/blocked/*.src.rpm 2>/dev/null | wc -l)
+          BLOCKED=$(find SRPMS/blocked -maxdepth 1 -name '*.src.rpm' 2>/dev/null | wc -l)
           echo "=== Блокировано dnf-дозором: $BLOCKED (в SRPMS/blocked/, в COPR не уйдут) ==="
 
       - name: Submit to COPR (dedup with version comparison)
