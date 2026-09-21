@@ -60,6 +60,11 @@ jobs:
           az = re.compile(r'\b[Aa][Zz]5\b|\bAZ-5\b|\baz-5\b')
           for p in pathlib.Path('.').rglob('*'):
               if not p.is_file(): continue
+              # дозор не ловит САМ СЕБЯ: validate.yml — текст правил дозора (AZ5
+              # упоминается в нём как запрещаемый токен и в лит-правилах кода),
+              # а не активный код. Аналогично .git/ и state/ выше.
+              if str(p).endswith('.github/workflows/validate.yml'):
+                  continue
               if any(x in str(p) for x in ('.git/', 'SRPMS/', 'SOURCES/', 'state/')):
                   continue
               try:
