@@ -74,6 +74,14 @@ jobs:
               scan += list(pathlib.Path('.').glob(pat))
           for p in sorted(set(scan)):
               if not p.is_file(): continue
+              if str(p) == '.github/workflows/validate.yml':
+                  # сам файл-дозор: литералы AZ5 здесь — это ПРАВИЛА скана (текст guard),
+                  # а не активный код AZ5. Пропускаем, чтобы дозор не ловил сам себя.
+                  continue
+              # сам файл-дозор validate.yml исключаем из семантики: внутри guard-текста
+              # живут литералы-правила 'AZ5'/'az5' с пометкой "AZ5 decommissioned" —
+              # это runtime-история дозора, а не активный ядерный код.
+              if str(p).endswith('.github/workflows/validate.yml'): continue
               t = p.read_text(encoding='utf-8', errors='ignore')
               for m in az.finditer(t):
                   # контекст строки
