@@ -53,5 +53,5 @@ jobs:
       - name: actionlint (самодозор workflow)
         uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7
         with:
-          path: .github/workflows
+          files: .github/workflows/validate.yml .github/workflows/monitor.yml .github/workflows/telegram.yml .github/workflows/logrotate.yml .github/workflows/update.yml
           flags: -pyflakes
