@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
       - name: Rotate logs
         run: |
@@ -19,7 +19,5 @@ jobs:
           find logs/runs/ -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} \;
           find SRPMS/ -name "*.src.rpm" -mtime +30 -delete 2>/dev/null || true
 
-      # Ротация логов — runtime state (logs/), НЕ reviewable source change.
-      # Ежедневный reviewable source-PR создавать НЕЛЬЗЯ (лог-спам в PR-лист).
-      # Сохраняем состояние в state-ветку state/logrotate — без gh pr create.
+      # Ротация read-only: логи — runtime state на runner, в источник не пишем.
 

@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
 
@@ -19,7 +18,7 @@ jobs:
     timeout-minutes: 180
     container: fedora:44
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
       - name: Install toolchain
         run: |
@@ -146,11 +145,14 @@ jobs:
           echo "Files staged:"
           git diff --cached --stat || true
           if ! git diff --cached --quiet; then
-            git commit -qm "submit sync " || echo "Commit failed"
-            git branch "bot/submit-${{ github.run_number }}"
-            git checkout -q "bot/submit-${{ github.run_number }}" 2>/dev/null || git checkout -qb "bot/submit-${{ github.run_number }}"
-            git push -q origin "bot/submit-${{ github.run_number }}" 2>&1 
-            gh pr create --base master --head "bot/submit-${{ github.run_number }}"               --title "submit sync #${{ github.run_number }}"               --body "State sync от scheduled submit (без прямой записи в master). Merge = только если ревьюер подтвердил." 2>&1 
+            git commit -qm "submit sync state"
+            # State-ветка (runtime state), НЕ source-PR и НЕ запись в master:
+            # полностью автоматический source-bot-PR отложен до owner-approved
+            # credential design (GITHUB_TOKEN не порождает follow-up runs).
+            BASE=$(git rev-parse origin/state/submit 2>/dev/null || echo none)
+            if [ "$(git rev-parse HEAD)" != "$BASE" ]; then
+              git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:state/submit 2>&1 || echo "push state failed (non-critical)"
+            fi
           else
             echo "No changes to commit"
           fi
