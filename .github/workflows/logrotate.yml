@@ -1,11 +1,10 @@
 name: logrotate
 on:
-  schedule:
-    - cron: "0 4 * * *"   # каждый день в 04:00 UTC
+
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   rotate:
@@ -23,14 +22,4 @@ jobs:
       # Ротация логов — runtime state (logs/), НЕ reviewable source change.
       # Ежедневный reviewable source-PR создавать НЕЛЬЗЯ (лог-спам в PR-лист).
       # Сохраняем состояние в state-ветку state/logrotate — без gh pr create.
-      - name: Commit (state/logrotate — runtime state, БЕЗ gh pr)
-        run: |
-          git config user.name  "candy-bot"
-          git config user.email "candy-bot@users.noreply.github.com"
-          git add logs/ SRPMS/ || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "logrotate [skip ci]"
-            git branch -f "state/logrotate" HEAD
-            git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "state/logrotate" || true
-            # gh pr create НЕ вызываем: логи — runtime state, ежедневный source-PR запрещён.
-          fi
+

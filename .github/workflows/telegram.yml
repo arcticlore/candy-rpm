@@ -5,6 +5,11 @@ on:
   workflow_dispatch:
 
 permissions:
+
+concurrency:
+  group: tg-listen
+  cancel-in-progress: false
+
   contents: write
 
 jobs:
@@ -13,6 +18,12 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v5
+
+      - name: Restore offset (state/tg-offset — runtime state, fetch до старта)
+        run: |
+          git fetch -q origin "state/tg-offset:refs/remotes/origin/state/tg-offset" 2>/dev/null || true
+          OFFSET=$(git show "origin/state/tg-offset:state/tg-offset.txt" 2>/dev/null || true)
+          [ -n "$OFFSET" ] && { echo "$OFFSET" > state/tg-offset.txt; echo "offset restored: $OFFSET"; } || echo "offset не найден — стартуем с нуля"
 
       - name: Run bot
         env:
@@ -34,6 +45,8 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -qm "tg offset [skip ci]"
             git branch -f "state/tg-offset" HEAD
-            git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "state/tg-offset" || true
+            CUR=$(git rev-parse HEAD)
+            BASE=$(git rev-parse origin/state/tg-offset 2>/dev/null || echo none)
+            if [ "$CUR" != "$BASE" ]; then git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" state/tg-offset || exit 1; fi
             # gh pr create НЕ вызываем: offset — runtime state, PR-спам каждые 5 мин запрещён.
           fi

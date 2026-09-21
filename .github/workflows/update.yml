@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
 
@@ -147,9 +148,9 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -qm "submit sync " || echo "Commit failed"
             git branch "bot/submit-${{ github.run_number }}"
-            git checkout -q "bot/submit-${{ github.run_number }}"
-            git push -q origin "bot/submit-${{ github.run_number }}" 2>&1 ||               echo "Push failed (non-critical)"
-            gh pr create --base master --head "bot/submit-${{ github.run_number }}"               --title "submit sync #${{ github.run_number }}"               --body "State sync от scheduled submit (без прямой записи в master). Merge = только если ревьюер подтвердил." 2>&1 ||               echo "PR create failed (non-critical)"
+            git checkout -q "bot/submit-${{ github.run_number }}" 2>/dev/null || git checkout -qb "bot/submit-${{ github.run_number }}"
+            git push -q origin "bot/submit-${{ github.run_number }}" 2>&1 
+            gh pr create --base master --head "bot/submit-${{ github.run_number }}"               --title "submit sync #${{ github.run_number }}"               --body "State sync от scheduled submit (без прямой записи в master). Merge = только если ревьюер подтвердил." 2>&1 
           else
             echo "No changes to commit"
           fi
