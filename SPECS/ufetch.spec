@@ -1,5 +1,5 @@
 Name:           ufetch
-Version:        20260920.19a71dc8
+Version:        20260921.19a71dc8
 Release:        1%{?dist}
 Summary:        Tiny system info for Unix-like operating systems
 
@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ufetch-alpine
 
 %changelog
-* Sun Sep 20 2026 candy-bot <candy@localhost> - 20260920.19a71dc8-1
+* Mon Sep 21 2026 candy-bot <candy@localhost> - 20260921.19a71dc8-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

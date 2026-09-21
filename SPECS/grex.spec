@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/grex
 
 %changelog
-* Sun Sep 20 2026 candy-bot <candy@localhost> - 1.4.6-1
+* Mon Sep 21 2026 candy-bot <candy@localhost> - 1.4.6-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
