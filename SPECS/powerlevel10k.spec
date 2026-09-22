@@ -42,5 +42,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/powerlevel10k
 
 %changelog
-* Mon Sep 21 2026 candy-bot <candy@localhost> - 1.20.0-1
+* Tue Sep 22 2026 candy-bot <candy@localhost> - 1.20.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           tspace
-Version:        20260921.19d4e89
+Version:        20260922.19d4e89
 Release:        1%{?dist}
 Summary:        Fly a little spaceship around your terminal
 
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/tspace.c
 
 %changelog
-* Mon Sep 21 2026 candy-bot <candy@localhost> - 20260921.19d4e89-1
+* Tue Sep 22 2026 candy-bot <candy@localhost> - 20260922.19d4e89-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

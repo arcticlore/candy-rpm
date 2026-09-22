@@ -49,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %exclude %{gem_cache}
 
 %changelog
-* Mon Sep 21 2026 candy-bot <candy@localhost> - 1.5.0-1
+* Tue Sep 22 2026 candy-bot <candy@localhost> - 1.5.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

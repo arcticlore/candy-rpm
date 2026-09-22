@@ -1,5 +1,5 @@
 Name:           rickrollrc
-Version:        20260921.85d6893
+Version:        20260922.85d6893
 Release:        1%{?dist}
 Summary:        Rick Astley rickrolls your terminal
 
@@ -41,5 +41,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/roll.sh
 
 %changelog
-* Mon Sep 21 2026 candy-bot <candy@localhost> - 20260921.85d6893-1
+* Tue Sep 22 2026 candy-bot <candy@localhost> - 20260922.85d6893-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
