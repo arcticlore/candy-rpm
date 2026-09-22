@@ -50,64 +50,84 @@ class TestEnabledSemantics(unittest.TestCase):
 
 
 class TestAllowlistParsing(unittest.TestCase):
-    """B2: fail-closed comma-separated allowlist parser."""
+    """A2: strict fail-closed allowlist boundary."""
 
-    def test_empty_and_whitespace(self):
+    def test_empty_and_whitespace_only_normal(self):
+        # только пустое / целиком-whitespace значение => normal mode
         self.assertEqual(cs.parse_package_allowlist(""), [])
         self.assertEqual(cs.parse_package_allowlist("   "), [])
-        self.assertEqual(cs.parse_package_allowlist(" , , "), [])   # comma-only == empty
+        self.assertEqual(cs.parse_package_allowlist(None), [])
 
-    def test_trim_and_order(self):
-        self.assertEqual(cs.parse_package_allowlist(" mise , ttysvr "),
-                         ["mise", "ttysvr"])
+    def test_comma_only_rejected(self):
+        for bad in (",", " , , "):
+            with self.assertRaises(SystemExit, msg=bad):
+                cs.parse_package_allowlist(bad)
 
-    def test_duplicates_normalized(self):
-        self.assertEqual(cs.parse_package_allowlist("mise,mise,ttysvr,mise"),
-                         ["mise", "ttysvr"])
+    def test_empty_token_rejected(self):
+        for bad in ("mise,", ",mise", "mise,,termusic", "mise, ,ttysvr", ",,,"):
+            with self.assertRaises(SystemExit, msg=bad):
+                cs.parse_package_allowlist(bad)
 
-    def test_malformed_name_rejected(self):
-        for bad in ("mise;ttysvr", "mis e", "mi!se", "-bad", "a/b", ".hidden", "a b"):
+    def test_duplicates_rejected(self):
+        for bad in ("mise,mise", "mise, mise", "mise,mise,ttysvr", " termusic ,termusic"):
+            with self.assertRaises(SystemExit, msg=bad):
+                cs.parse_package_allowlist(bad)
+
+    def test_trimmed_valid_bounded_preserved(self):
+        self.assertEqual(cs.parse_package_allowlist(" mise , ttysvr , termusic "),
+                         ["mise", "ttysvr", "termusic"])
+        self.assertEqual(cs.parse_package_allowlist("mise"), ["mise"])
+
+    def test_malformed_rejected(self):
+        for bad in ("mise;ttysvr", "mis e", "mi!se", "-bad", ".hidden", "a/b", "a b"):
             with self.assertRaises(SystemExit, msg=bad):
                 cs.parse_package_allowlist(bad)
 
     def test_real_package_names_accepted(self):
         # граница [A-Za-z0-9][A-Za-z0-9+._-]* допускает реальные имена и внутренние
         # точки (pipes.rs), дефисы (video-to-ascii), подчёркивания (oh-my-zsh).
-        self.assertEqual(cs.parse_package_allowlist("pipes.rs,video-to-ascii,a..b"),
-                         ["pipes.rs", "video-to-ascii", "a..b"])
+        self.assertEqual(cs.parse_package_allowlist("pipes.rs,video-to-ascii,oh-my-zsh"),
+                         ["pipes.rs", "video-to-ascii", "oh-my-zsh"])
 
 
 class TestEffectiveSelection(unittest.TestCase):
-    """B1+B2: fail-closed effective set policy."""
+    """A2: fail-closed effective set from pkgs.json + allowlist."""
 
-    def test_empty_allowlist_returns_only_enabled(self):
+    def test_empty_whitespace_returns_only_enabled(self):
         self.assertEqual(cs.select_effective(PKGS, ""), ENABLED_ONLY)
+        self.assertEqual(cs.select_effective(PKGS, "   "), ENABLED_ONLY)
+        self.assertEqual(cs.select_effective(PKGS, None), ENABLED_ONLY)
 
     def test_diagon_string_false_excluded(self):
         eff = cs.select_effective(PKGS, "")
         self.assertNotIn("diagon", eff)
         self.assertNotIn("pinned", eff)
 
-    def test_exact_subset_preserved(self):
-        eff = cs.select_effective(PKGS, "mise,ttysvr,termusic")
-        self.assertEqual(eff, {"mise", "ttysvr", "termusic"})
+    def test_comma_only_rejected_at_selection(self):
+        with self.assertRaises(SystemExit):
+            cs.select_effective(PKGS, " ,, ")
+        with self.assertRaises(SystemExit):
+            cs.select_effective(PKGS, "mise,termusic,")
 
-    def test_comma_only_matches_empty(self):
-        self.assertEqual(cs.select_effective(PKGS, " ,, "), ENABLED_ONLY)
+    def test_exact_subset_preserved(self):
+        self.assertEqual(cs.select_effective(PKGS, "mise,ttysvr,termusic"),
+                         {"mise", "ttysvr", "termusic"})
+        self.assertEqual(cs.select_effective(PKGS, " mise , ttysvr , termusic "),
+                         {"mise", "ttysvr", "termusic"})
 
     def test_unknown_rejected(self):
         with self.assertRaises(SystemExit):
             cs.select_effective(PKGS, "not-a-real-pkg")
 
     def test_disabled_requested_rejected(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(SystemExit):   # bool false
             cs.select_effective(PKGS, "pinned")
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(SystemExit):   # строковый "false"
             cs.select_effective(PKGS, "diagon")
 
 
 class TestSubmitCandidates(unittest.TestCase):
-    """B2 (force cannot widen) + existing needs_submission behavior."""
+    """A2 (force cannot widen) + existing needs_submission behavior."""
 
     def test_force_cannot_widen_bounded_set(self):
         eff = cs.select_effective(PKGS, "mise,termusic")

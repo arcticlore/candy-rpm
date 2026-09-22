@@ -55,35 +55,45 @@ def is_package_enabled(enabled: object) -> bool:
 
 
 def parse_package_allowlist(raw: str) -> list[str]:
-    """Parse a comma-separated package allowlist into canonical unique names.
+    """Parse an explicit package allowlist, fail-closed (strict boundary).
 
-    - empty / whitespace-only / comma-only -> [] (normal enabled semantics);
-    - non-empty: split on ',', trim each, drop empty entries, deduplicate;
-    - a syntactically malformed name -> hard failure (SystemExit);
+    - raw that is None, empty or ENTIRELY whitespace -> [] (normal enabled mode);
+    - any other raw value is EXPLICIT bounded intent and must pass every check:
+      every comma-split token must be non-empty after trim and fullmatch the
+      package-name grammar [A-Za-z0-9][A-Za-z0-9+._-]*; an exact duplicate
+      (after trim) is a hard non-zero failure;
+    - NO normalization: empty tokens and duplicates are NEVER dropped or merged
+      — a visibly non-empty but ambiguous input can never widen to the normal set;
     - ordering is preserved; caller may sort for canonical logging.
     """
     if raw is None:
         return []
-    chunks = [c.strip() for c in str(raw).split(",")]
+    s = str(raw)
+    if s.strip() == "":
+        return []
     names: list[str] = []
     seen: set[str] = set()
-    for c in chunks:
-        if not c:
-            continue
-        if not PACKAGE_NAME_RE.fullmatch(c):
-            raise SystemExit(f"[SELECTION-FAIL] malformed package name in allowlist: {c!r}")
-        if c not in seen:
-            seen.add(c)
-            names.append(c)
+    for token in s.split(","):
+        token = token.strip()
+        if not token:
+            raise SystemExit("[SELECTION-FAIL] empty package token in allowlist")
+        if not PACKAGE_NAME_RE.fullmatch(token):
+            raise SystemExit(f"[SELECTION-FAIL] malformed package name in allowlist: {token!r}")
+        if token in seen:
+            raise SystemExit(f"[SELECTION-FAIL] duplicate package name in allowlist: '{token}'")
+        seen.add(token)
+        names.append(token)
     return names
 
 
 def select_effective(packages: list[dict], allowlist_raw: str) -> set[str]:
     """Fail-closed effective package set from pkgs.json + optional allowlist.
 
-    - empty allowlist -> the robust enabled set only (missing/bool/legacy-string policy);
-    - non-empty allowlist -> exactly the requested subset; unknown or disabled
-      package name is a hard non-zero failure, never a silent fallback to all.
+    - None / empty / whitespace-only allowlist -> the robust enabled set only
+      (missing/bool/legacy-string policy);
+    - any non-empty raw value -> EXPLICIT bounded intent: exactly the requested
+      subset; unknown, disabled, malformed or duplicated package name is a hard
+      non-zero failure, never a silent fallback to all/normal.
     """
     by_name: dict[str, dict] = {}
     for p in packages:
