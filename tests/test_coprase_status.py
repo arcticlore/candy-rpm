@@ -66,9 +66,15 @@ class TestAllowlistParsing(unittest.TestCase):
                          ["mise", "ttysvr"])
 
     def test_malformed_name_rejected(self):
-        for bad in ("mise;ttysvr", "mis e", "mi!se", "-bad", "a..b", "a/b"):
+        for bad in ("mise;ttysvr", "mis e", "mi!se", "-bad", "a/b", ".hidden", "a b"):
             with self.assertRaises(SystemExit, msg=bad):
                 cs.parse_package_allowlist(bad)
+
+    def test_real_package_names_accepted(self):
+        # граница [A-Za-z0-9][A-Za-z0-9+._-]* допускает реальные имена и внутренние
+        # точки (pipes.rs), дефисы (video-to-ascii), подчёркивания (oh-my-zsh).
+        self.assertEqual(cs.parse_package_allowlist("pipes.rs,video-to-ascii,a..b"),
+                         ["pipes.rs", "video-to-ascii", "a..b"])
 
 
 class TestEffectiveSelection(unittest.TestCase):
