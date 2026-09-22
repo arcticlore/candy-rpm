@@ -1,5 +1,5 @@
 Name:           ghfetch
-Version:        20260921.4b44a4f
+Version:        20260922.4b44a4f
 Release:        1%{?dist}
 Summary:        Neofetch-like utility to fetch GitHub info in the terminal
 
@@ -48,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ghfetch
 
 %changelog
-* Mon Sep 21 2026 candy-bot <candy@localhost> - 20260921.4b44a4f-1
+* Tue Sep 22 2026 candy-bot <candy@localhost> - 20260922.4b44a4f-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

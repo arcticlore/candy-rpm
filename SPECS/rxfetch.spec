@@ -1,5 +1,5 @@
 Name:           rxfetch
-Version:        20260921.5eb3582
+Version:        20260922.5eb3582
 Release:        1%{?dist}
 Summary:        Custom system fetching tool written in bash
 
@@ -44,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 /usr/share/rxfetch
 
 %changelog
-* Mon Sep 21 2026 candy-bot <candy@localhost> - 20260921.5eb3582-1
+* Tue Sep 22 2026 candy-bot <candy@localhost> - 20260922.5eb3582-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
