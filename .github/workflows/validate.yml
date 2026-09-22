@@ -172,3 +172,6 @@ jobs:
         with:
           version: 1.7.12
           files: .github/workflows/*.yml
+
+      - name: coprase-status selection unit tests (stdlib, no network/COPR)
+        run: python3 -m unittest -v tests/test_coprase_status.py

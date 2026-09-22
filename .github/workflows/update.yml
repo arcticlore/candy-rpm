@@ -6,6 +6,11 @@ on:
         description: "Полный ребилд всех пакетов (напр. после добавления чрута F45)"
         type: boolean
         default: false
+      packages:
+        description: "Optional comma-separated package allowlist for bounded manual run; empty = normal enabled set"
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -17,6 +22,8 @@ jobs:
     environment: production
     timeout-minutes: 180
     container: fedora:44
+    env:
+      CANDY_PACKAGE_ALLOWLIST: ${{ inputs.packages }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
@@ -114,13 +121,33 @@ jobs:
 
       - name: Auto-triage (fix known failures)
         if: always()
-        run: bin/auto-triage.sh || true
+        run: |
+          if ! SEL=$(python3 bin/coprase-status.py selection 2>&1); then
+            echo "audit: selection failed - Auto-triage NO-OP (fail-closed)"
+            exit 0
+          fi
+          MODE=$(echo "$SEL" | grep '^SELECTION_MODE:' | cut -d' ' -f2 || true)
+          if [ "$MODE" = "BOUNDED" ]; then
+            echo "audit: bounded package validation run - Auto-triage NO-OP (остальные пакеты не трогаем)"
+            exit 0
+          fi
+          bin/auto-triage.sh || true
 
       - name: Auto-issue (report failures)
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bin/auto-issue.sh || true
+        run: |
+          if ! SEL=$(python3 bin/coprase-status.py selection 2>&1); then
+            echo "audit: selection failed - Auto-issue NO-OP (fail-closed)"
+            exit 0
+          fi
+          MODE=$(echo "$SEL" | grep '^SELECTION_MODE:' | cut -d' ' -f2 || true)
+          if [ "$MODE" = "BOUNDED" ]; then
+            echo "audit: bounded package validation run - Auto-issue NO-OP (без отчётов по остальным пакетам)"
+            exit 0
+          fi
+          bin/auto-issue.sh || true
 
       - name: Commit state
         if: always()
