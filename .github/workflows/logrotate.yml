@@ -1,35 +1,17 @@
 name: logrotate
 on:
-  schedule:
-    - cron: "0 4 * * *"   # каждый день в 04:00 UTC
+
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  guard:
-    runs-on: ubuntu-latest
-    outputs:
-      off: ${{ steps.check.outputs.off }}
-    steps:
-      - uses: actions/checkout@v5
-      - id: check
-        run: |
-          if [ -f AZ5 ]; then
-            echo "АЗ-5: проект остановлен — ротация пропущена"
-            echo "off=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "off=false" >> "$GITHUB_OUTPUT"
-          fi
-
   rotate:
-    needs: guard
-    if: needs.guard.outputs.off == 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
       - name: Rotate logs
         run: |
@@ -37,12 +19,5 @@ jobs:
           find logs/runs/ -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} \;
           find SRPMS/ -name "*.src.rpm" -mtime +30 -delete 2>/dev/null || true
 
-      - name: Commit
-        run: |
-          git config user.name  "candy-bot"
-          git config user.email "candy-bot@users.noreply.github.com"
-          git add -A logs/ SRPMS/ || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "logrotate [skip ci]"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:master
-          fi
+      # Ротация read-only: логи — runtime state на runner, в источник не пишем.
+

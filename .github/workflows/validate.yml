@@ -1,0 +1,174 @@
+name: validate (required PR/push CI)
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:   # ручная валидация exact ref при инциденте — только read-only проверки
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: YAML-валидность всех workflow
+        run: |
+          python3 - <<'EOF'
+          import glob, yaml
+          files = sorted(glob.glob('.github/workflows/*.yml') + glob.glob('.github/workflows/*.yaml'))
+          bad = []
+          for p in files:
+              try:
+                  yaml.safe_load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  bad.append((p, str(e)))
+          if bad:
+              for p, e in bad:
+                  print(f"BROKEN: {p}: {e}")
+              raise SystemExit(1)
+          print(f"OK: {len(files)} workflow yaml-валидны")
+          EOF
+
+      - name: pkgs.json — JSON и схема (project + packages list)
+        run: |
+          python3 - <<'PY'
+          import json
+          d = json.load(open('pkgs.json'))
+          assert isinstance(d, dict), 'pkgs.json: top-level должен быть object'
+          assert isinstance(d.get('project'), dict), 'pkgs.json: project должен быть object'
+          pkgs = d.get('packages')
+          assert isinstance(pkgs, list) and pkgs, 'pkgs.json: packages должен быть НЕПУСТЫМ list'
+          names = []
+          for p in pkgs:
+              assert isinstance(p, dict), 'packages[]: каждый элемент должен быть object'
+              n = p.get('name')
+              assert isinstance(n, str) and n.strip(), 'packages[]: требуется непустой string name'
+              names.append(n)
+          assert len(names) == len(set(names)), 'packages[]: имена должны быть уникальны'
+          print(f'OK: pkgs.json — project + {len(pkgs)} packages (имена уникальны)')
+          PY
+
+      - name: containment guard (статический дозор)
+        run: |
+          python3 - <<'PY'
+          import os, re, pathlib, subprocess, yaml
+
+          ROOT = pathlib.Path('.')
+          SELF = '.github/workflows/validate.yml'
+          # build/cache/artifact и неактивные каталоги не сканируются (история commits не проверяется)
+          EXCLUDE_DIRS = {'.git', 'SOURCES', 'SRPMS', 'RPMS', 'BUILD', 'logs',
+                          '__pycache__', '.pytest_cache', '.ruff_cache', '.mypy_cache'}
+          EXCLUDE_SUFFIX = {'.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2',
+                            '.ttf', '.eot', '.gz', '.xz', '.zst', '.zip', '.tar', '.rpm',
+                            '.cpio', '.pyc', '.so', '.a', '.o'}
+          az_b = re.compile(rb'\b(?:[Aa][Zz]-?5)\b')
+          skip = re.compile(r'\[(?:skip\s+(?:ci|action|actions)|ci\s+skip)\]', re.I)
+          push_refs = re.compile(r'HEAD\s*:\s*master|HEAD\s*->\s*master|refs/heads/master')
+          bad = []
+
+          def triggers(doc):
+              # PyYAML (YAML 1.1) читает 'on'/'off' как bool True/False
+              if not isinstance(doc, dict):
+                  return {}
+              tr = doc.get('on') or doc.get(True)
+              return tr if isinstance(tr, dict) else {}
+
+          # 1+4+5+7: ОДИН проход по активным файлам. Сам файл-дозор исключён
+          # ровно один раз, в одном месте: его литералы 'AZ5'/'schedule'/'master'
+          # — это текст правил скана, а не активный код.
+          for p in sorted(ROOT.rglob('*')):
+              if not p.is_file():
+                  continue
+              rel = str(p)
+              if rel == SELF:
+                  continue
+              parts = pathlib.Path(rel).parts
+              if any(d in EXCLUDE_DIRS for d in parts[:-1]):
+                  continue
+              if p.suffix in EXCLUDE_SUFFIX:
+                  continue
+              try:
+                  data = p.read_bytes()
+              except OSError:
+                  continue
+              text = data.decode('utf-8', errors='ignore')
+              # 3) единственное разрешённое историческое упоминание — HISTORY.md
+              if p.name == 'HISTORY.md':
+                  continue
+              # 5) активный AZ-5 workflow/script/guard. Токен ищется в СЫРЫХ байтах
+              #    файла, а не только в декодированном тексте: NUL-байты больше не
+              #    исключают файл из дозора, поэтому бинарные исполняемые файлы
+              #    не могут молча удерживать токен только за счёт своей двоичности.
+              is_bin = b'\0' in data
+              for m in az_b.finditer(data):
+                  line = data[:m.start()].count(b'\n') + 1
+                  if is_bin:
+                      lo = max(0, m.start() - 8)
+                      snippet = data[lo:m.start() + 8].hex(' ')
+                      bad.append(f'{rel}:{line} [BIN]: 0x{snippet}')
+                  else:
+                      rows = text.splitlines()
+                      snippet = rows[line - 1].strip()[:100] if line - 1 < len(rows) else '?'
+                      bad.append(f'{rel}:{line}: {snippet}')
+              # 7) никакой workflow не пушит в master/не использует прямые refs
+              if p.parent.name == 'workflows' and p.suffix in ('.yml', '.yaml'):
+                  for i, ln in enumerate(text.splitlines(), 1):
+                      if push_refs.search(ln):
+                          bad.append(f'{rel}:{i}: прямая запись в master/ref запрещена')
+                      if re.search(r'\bgit push\b', ln) and re.search(r'\bmaster\b', ln):
+                          bad.append(f'{rel}:{i}: git push в master запрещён')
+                  try:
+                      doc = yaml.safe_load(text) or {}
+                  except Exception:
+                      continue  # битый YAML ловит отдельный шаг
+                  on = triggers(doc)
+                  if isinstance(on, dict) and 'schedule' in on:
+                      # scheduled workflow может писать только в state/bot ветки
+                      for i, ln in enumerate(text.splitlines(), 1):
+                          if 'git push' in ln and not re.search(r'\b(?:state/|bot/)', ln):
+                              bad.append(f'{rel}:{i}: scheduled workflow пушит вне state/bot (запрещено)')
+
+          # 2) корневой marker-файл AZ5
+          for mk in ROOT.glob('AZ5*'):
+              if mk.is_file():
+                  bad.append(f'MARKER: {mk}')
+
+          # 6) update.yml (production mutation): только вручную, без schedule
+          up_file = ROOT / '.github/workflows/update.yml'
+          if up_file.is_file():
+              on = triggers(yaml.safe_load(up_file.read_text(encoding='utf-8')))
+              if isinstance(on, dict) and 'schedule' in on:
+                  bad.append('update.yml: содержит schedule (production-расписание запрещено)')
+              if not (isinstance(on, dict) and 'workflow_dispatch' in on):
+                  bad.append('update.yml: должен запускаться только вручную (workflow_dispatch)')
+
+          # 8) reviewable head-commit и PR-заголовок — без native CI-skip маркеров
+          head = subprocess.run(['git', 'log', '-1', '--pretty=%s'],
+                                capture_output=True, text=True).stdout.strip()
+          for label, value in (('HEAD commit', head), ('PR title', os.getenv('PR_TITLE', ''))):
+              if skip.search(value):
+                  bad.append(f'{label}: содержит CI-skip маркер: {value[:80]}')
+
+          # 9) runtime state-ветка (state/*, bot/*) — рабочие данные, не источник
+          #    и не механизм остановки. Прямых записей в master выше нет.
+
+          if bad:
+              print('CONTAINMENT VIOLATION:')
+              for b in bad[:30]:
+                  print('  -', b)
+              raise SystemExit(1)
+          print('OK: AZ5-кода нет, маркеров нет, прямых записей в master нет, update manual-only, reviewable без skip-маркеров')
+          PY
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+
+      - name: actionlint (самодозор workflow)
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7
+        with:
+          version: 1.7.12
+          files: .github/workflows/*.yml

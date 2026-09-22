@@ -5,31 +5,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  guard:
-    runs-on: ubuntu-latest
-    outputs:
-      off: ${{ steps.check.outputs.off }}
-    steps:
-      - uses: actions/checkout@v5
-      - id: check
-        run: |
-          if [ -f AZ5 ]; then
-            echo "АЗ-5: проект остановлен — мониторинг пропущен"
-            echo "off=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "off=false" >> "$GITHUB_OUTPUT"
-          fi
-
   check:
-    needs: guard
-    if: needs.guard.outputs.off == 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
       - name: COPR status snapshot + failed list
         run: |
