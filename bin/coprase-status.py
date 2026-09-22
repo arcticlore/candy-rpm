@@ -12,6 +12,7 @@ from __future__ import annotations
 import glob
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -30,6 +31,113 @@ MAX_WAIT = 7200  # 2 hours total
 # copr-cli resilience: network flakes shouldn't kill the whole batch
 SUBMIT_TIMEOUT = 180
 SUBMIT_ATTEMPTS = 3
+
+# Bounded-manual-run selection policy (fail-closed).
+PACKAGE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9+._-]*")
+ALLOWLIST_ENV = "CANDY_PACKAGE_ALLOWLIST"
+
+
+def is_package_enabled(enabled: object) -> bool:
+    """Robust enabled semantics, compatible with gen_specs.Package.is_enabled().
+
+    missing/None -> enabled; bool passthrough; legacy string "false"/"0" -> disabled;
+    any other string -> enabled. Raw Python truthiness of a string is NEVER used
+    for enablement, so a JSON `"enabled": "false"` cannot leak a package into
+    the effective set (historical diagon bug, build 11022104).
+    """
+    if enabled is None:
+        return True
+    if isinstance(enabled, bool):
+        return enabled
+    if isinstance(enabled, str):
+        return enabled not in ("false", "0")
+    return True
+
+
+def parse_package_allowlist(raw: str) -> list[str]:
+    """Parse a comma-separated package allowlist into canonical unique names.
+
+    - empty / whitespace-only / comma-only -> [] (normal enabled semantics);
+    - non-empty: split on ',', trim each, drop empty entries, deduplicate;
+    - a syntactically malformed name -> hard failure (SystemExit);
+    - ordering is preserved; caller may sort for canonical logging.
+    """
+    if raw is None:
+        return []
+    chunks = [c.strip() for c in str(raw).split(",")]
+    names: list[str] = []
+    seen: set[str] = set()
+    for c in chunks:
+        if not c:
+            continue
+        if not PACKAGE_NAME_RE.fullmatch(c):
+            raise SystemExit(f"[SELECTION-FAIL] malformed package name in allowlist: {c!r}")
+        if c not in seen:
+            seen.add(c)
+            names.append(c)
+    return names
+
+
+def select_effective(packages: list[dict], allowlist_raw: str) -> set[str]:
+    """Fail-closed effective package set from pkgs.json + optional allowlist.
+
+    - empty allowlist -> the robust enabled set only (missing/bool/legacy-string policy);
+    - non-empty allowlist -> exactly the requested subset; unknown or disabled
+      package name is a hard non-zero failure, never a silent fallback to all.
+    """
+    by_name: dict[str, dict] = {}
+    for p in packages:
+        if isinstance(p, dict) and p.get("name"):
+            by_name[p["name"]] = p
+
+    allowed = parse_package_allowlist(allowlist_raw)
+    if not allowed:
+        return {n for n, p in by_name.items() if is_package_enabled(p.get("enabled"))}
+
+    effective: set[str] = set()
+    for name in allowed:
+        p = by_name.get(name)
+        if p is None:
+            raise SystemExit(f"[SELECTION-FAIL] allowlist: unknown package '{name}'")
+        if not is_package_enabled(p.get("enabled")):
+            raise SystemExit(f"[SELECTION-FAIL] allowlist: package '{name}' is disabled")
+        effective.add(name)
+    return effective
+
+
+def load_pkg_list() -> list[dict]:
+    """Load the packages list from pkgs.json (no filtering)."""
+    return json.loads(Path("pkgs.json").read_text()).get("packages", [])
+
+
+def current_effective_set() -> set[str]:
+    """Effective package set from CANDY_PACKAGE_ALLOWLIST + pkgs.json."""
+    return select_effective(load_pkg_list(), os.environ.get(ALLOWLIST_ENV, ""))
+
+
+def audit_effective(effective: set[str]) -> None:
+    """Log the canonical effective package set (no secrets)."""
+    raw = os.environ.get(ALLOWLIST_ENV, "")
+    if parse_package_allowlist(raw):
+        print(f"  [SEL] BOUNDED: {','.join(sorted(effective))}")
+    else:
+        print(f"  [SEL] allowlist empty: normal enabled set ({len(effective)} packages)")
+
+
+def submit_candidates(effective: set[str],
+                      history: dict[str, list[tuple[str, str, int]]],
+                      versions: dict[str, str], force: bool) -> list[str]:
+    """Candidate packages to submit, strictly within the effective set.
+
+    `force` reorders selection (bypasses needs_submission()) but can NEVER
+    widen beyond the effective (already fail-closed) set.
+    """
+    candidates: list[str] = []
+    for name in order_enabled(effective, history):
+        ver = versions.get(name, "")
+        if force or needs_submission(name, ver, history.get(name, [])):
+            candidates.append(name)
+    return candidates
 
 
 def copr_api(endpoint: str, extra: str = "") -> dict:
@@ -229,11 +337,14 @@ def cmd_versions():
     except Exception:
         st = {}
 
+    effective = current_effective_set()
+    audit_effective(effective)
+
     updated = same = failed = 0
     for p in pkgs:
-        if not p.get("enabled", True):
-            continue
         name = p["name"]
+        if name not in effective:
+            continue
         if p.get("version"):  # пин — цель фиксирована
             continue
         try:
@@ -267,11 +378,8 @@ def cmd_check():
     history = build_history(all_builds)
     versions = load_versions()
 
-    enabled = set()
-    with open("pkgs.json") as f:
-        for p in json.load(f).get("packages", []):
-            if p.get("enabled", True):
-                enabled.add(p["name"])
+    enabled = current_effective_set()
+    audit_effective(enabled)
 
     needs = []
     ok = []
@@ -324,11 +432,8 @@ def cmd_submit():
     history = build_history(all_builds)
     versions = load_versions()
 
-    enabled = set()
-    with open("pkgs.json") as f:
-        for p in json.load(f).get("packages", []):
-            if p.get("enabled", True):
-                enabled.add(p["name"])
+    enabled = current_effective_set()
+    audit_effective(enabled)
 
     if not all_builds:
         print("[ABORT] COPR API вернул 0 билдов (сеть/API недоступны) — "
@@ -338,13 +443,7 @@ def cmd_submit():
 
     # Determine what needs submission
     force = "--force" in sys.argv
-    to_submit: list[str] = []
-    for name in order_enabled(enabled, history):
-        ver = versions.get(name, "")
-        if force or needs_submission(name, ver, history.get(name, [])):
-            srpm = glob.glob(f"SRPMS/{name}-*.src.rpm")
-            if srpm:
-                to_submit.append(name)
+    to_submit = submit_candidates(enabled, history, versions, force)
 
     print(f"Packages to submit: {len(to_submit)}")
 
@@ -406,6 +505,22 @@ def cmd_submit():
         print(f"Remaining packages: {', '.join(to_submit[:30])}")
 
 
+def cmd_selection():
+    """Report the effective package selection (fail-closed, machine-readable).
+
+    Used by update.yml to gate post-submit helpers identically to the parser
+    policy: BOUNDED when the allowlist is non-empty, ALL otherwise.
+    """
+    effective = current_effective_set()
+    raw = os.environ.get(ALLOWLIST_ENV, "")
+    bounded = bool(parse_package_allowlist(raw))
+    print(f"SELECTION_MODE: {'BOUNDED' if bounded else 'ALL'}")
+    if bounded:
+        print("EFFECTIVE NAMES: " + ",".join(sorted(effective)))
+    else:
+        print(f"EFFECTIVE NAMES: {len(effective)}")
+
+
 def cmd_clean():
     """List duplicate builds (informational)."""
     all_builds = fetch_all_builds(OWNER, PROJECT)
@@ -437,6 +552,8 @@ if __name__ == "__main__":
         cmd_versions()
     elif cmd == "submit":
         cmd_submit()
+    elif cmd == "selection":
+        cmd_selection()
     elif cmd == "clean":
         cmd_clean()
     else:
