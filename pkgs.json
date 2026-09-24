@@ -1783,8 +1783,9 @@
    "br": [
     "alsa-lib-devel"
    ],
+   "rustflags": "--cfg rustix_use_libc",
    "prio": 7,
-   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer"
+   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer; vendored rustix 0.37.27 несовместим с rustc>=1.97 — forced --cfg rustix_use_libc"
   },
   {
    "name": "pipes.rs",
