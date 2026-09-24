@@ -1763,7 +1763,8 @@
    "fallback": "commit",
    "verify": true,
    "br": [
-    "alsa-lib-devel"
+    "alsa-lib-devel",
+    "systemd-devel"
    ],
    "prio": 3
   },

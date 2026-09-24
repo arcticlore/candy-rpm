@@ -17,6 +17,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  alsa-lib-devel
+BuildRequires:  systemd-devel
 
 %description
 Набор скринсейверов для терминала
@@ -48,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/ttysvr
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0.3.4-1
+* Thu Sep 24 2026 candy-bot <candy@localhost> - 0.3.4-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
