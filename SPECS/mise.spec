@@ -19,6 +19,8 @@ BuildRequires:  cargo-rpm-macros
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 
+# NOTE: огромный воркспейс; codegen-units ЦПЕ 256 против дефолтного 1
+
 %description
 Менеджер рантаймов node/python/ruby — быстрый asdf-killer
 
@@ -35,9 +37,11 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
+export CARGO_PROFILE_RPM_CODEGEN_UNITS=256
 %cargo_build
 
 %install
+export CARGO_PROFILE_RPM_CODEGEN_UNITS=256
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 
@@ -49,5 +53,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/mise
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 2026.9.12-1
+* Thu Sep 24 2026 candy-bot <candy@localhost> - 2026.9.12-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

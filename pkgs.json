@@ -2223,7 +2223,11 @@
    "br": [
     "cmake",
     "openssl-devel"
-   ]
+   ],
+   "build_env": [
+    "CARGO_PROFILE_RPM_CODEGEN_UNITS=256"
+   ],
+   "note": "огромный воркспейс; codegen-units ЦПЕ 256 против дефолтного 1"
   },
   {
    "name": "bandwhich",
