@@ -43,7 +43,7 @@ Don't throw tomatoes - file issues instead.
 %cargo_build
 
 %install
-%cargo_install
+install -Dpm0755 -t %{buildroot}%{_bindir} target/release/termusic target/release/termusic-server
 rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
@@ -52,6 +52,7 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_licensedir}/%{name}
 
 %{_bindir}/termusic
+%{_bindir}/termusic-server
 
 %changelog
 * Fri Sep 25 2026 candy-bot <candy@localhost> - 0.13.2-1

@@ -1777,7 +1777,8 @@
    "summary": "TUI музыкальный плеер (mpv/ytdlp)",
    "license": "MIT",
    "bins": [
-    "termusic"
+    "termusic",
+    "termusic-server"
    ],
    "exp": true,
    "verify": true,
@@ -1787,7 +1788,8 @@
    ],
    "rustflags": "--cfg rustix_use_libc",
    "prio": 7,
-   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer; vendored rustix 0.37.27 несовместим с rustc>=1.97 — forced --cfg rustix_use_libc"
+   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer; vendored rustix 0.37.27 несовместим с rustc>=1.97 — forced --cfg rustix_use_libc",
+   "install_cmd": "install -Dpm0755 -t %{buildroot}%{_bindir} target/release/termusic target/release/termusic-server"
   },
   {
    "name": "pipes.rs",
