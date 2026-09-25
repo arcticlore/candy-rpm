@@ -2227,10 +2227,8 @@
     "cmake",
     "openssl-devel"
    ],
-   "build_env": [
-    "CARGO_PROFILE_RPM_CODEGEN_UNITS=256"
-   ],
-   "note": "огромный воркспейс; codegen-units ЦПЕ 256 против дефолтного 1"
+   "rustflags": "-Cdebuginfo=0 -Ccodegen-units=16",
+   "note": "финальный крейт огромен: cgu=1+debuginfo=2 из %{build_rustflags} не укладываются в COPR timeout (11033755, 8/8); RUSTFLAGS идёт последним — наши флаги перекрывают его, debuginfo всё равно вырезается из rpm"
   },
   {
    "name": "bandwhich",

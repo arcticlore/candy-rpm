@@ -1,5 +1,5 @@
 Name:           mise
-Version:        2026.9.12
+Version:        2026.9.13
 Release:        1%{?dist}
 Summary:        Менеджер рантаймов node/python/ruby — быстрый asdf-killer
 
@@ -11,6 +11,8 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 %global _unpackaged_files_terminate_build 0
 
 
+%global __cargo /usr/bin/env CARGO_HOME=.cargo RUSTC_BOOTSTRAP=1 RUSTFLAGS='%{build_rustflags} -Cdebuginfo=0 -Ccodegen-units=16' /usr/bin/cargo
+
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
@@ -19,7 +21,7 @@ BuildRequires:  cargo-rpm-macros
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 
-# NOTE: огромный воркспейс; codegen-units ЦПЕ 256 против дефолтного 1
+# NOTE: финальный крейт огромен: cgu=1+debuginfo=2 из %%{build_rustflags} не укладываются в COPR timeout (11033755, 8/8); RUSTFLAGS идёт последним — наши флаги перекрывают его, debuginfo всё равно вырезается из rpm
 
 %description
 Менеджер рантаймов node/python/ruby — быстрый asdf-killer
@@ -37,11 +39,9 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
-export CARGO_PROFILE_RPM_CODEGEN_UNITS=256
 %cargo_build
 
 %install
-export CARGO_PROFILE_RPM_CODEGEN_UNITS=256
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 
@@ -53,5 +53,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/mise
 
 %changelog
-* Thu Sep 24 2026 candy-bot <candy@localhost> - 2026.9.12-1
+* Fri Sep 25 2026 candy-bot <candy@localhost> - 2026.9.13-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
