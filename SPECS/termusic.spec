@@ -12,14 +12,17 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 %global _unpackaged_files_terminate_build 0
 
 
+%global __cargo /usr/bin/env CARGO_HOME=.cargo RUSTC_BOOTSTRAP=1 RUSTFLAGS='%{build_rustflags} --cfg rustix_use_libc' /usr/bin/cargo
+
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  alsa-lib-devel
+BuildRequires:  protobuf-compiler
 
-# NOTE: воркспейс; тяжёлые зависимости mpv/gstreamer
+# NOTE: воркспейс; тяжёлые зависимости mpv/gstreamer; vendored rustix 0.37.27 несовместим с rustc>=1.97 — forced --cfg rustix_use_libc
 
 %description
 TUI музыкальный плеер (mpv/ytdlp)
@@ -40,7 +43,7 @@ Don't throw tomatoes - file issues instead.
 %cargo_build
 
 %install
-%cargo_install
+install -Dpm0755 -t %{buildroot}%{_bindir} target/release/termusic target/release/termusic-server
 rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
@@ -49,7 +52,8 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_licensedir}/%{name}
 
 %{_bindir}/termusic
+%{_bindir}/termusic-server
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0.13.2-1
+* Fri Sep 25 2026 candy-bot <candy@localhost> - 0.13.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

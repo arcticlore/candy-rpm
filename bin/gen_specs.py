@@ -64,6 +64,7 @@ class Package:
     share: Share | None = None
     build_cmd: str = "true"
     build_env: list[str] = field(default_factory=list)
+    rustflags: str = ""
     install_cmd: str = "%make_install"
     script_src: dict[str, str] = field(default_factory=dict)
     pbr_exclude: list[str] = field(default_factory=list)
@@ -149,6 +150,7 @@ def load_pkgs(path: Path) -> PkgsFile:
                 share=share,
                 build_cmd=p.get("build_cmd", "true"),
                 build_env=p.get("build_env", []),
+                rustflags=p.get("rustflags", ""),
                 install_cmd=p.get("install_cmd", "%make_install"),
                 script_src=p.get("script_src", {}),
                 pbr_exclude=p.get("pbr_exclude", []),
@@ -413,6 +415,15 @@ def body_cargo(m: Package, br: list[str], req: list[str]) -> str:
     """Generate body for cargo ecosystem."""
     br = ["cargo", "rust", "gcc", "gcc-c++", "cargo-rpm-macros"] + br
     out: list[str] = []
+    if m.rustflags:
+        # cargo-rpm-macros заставляет %{__cargo} ставить RUSTFLAGS='%{build_rustflags}',
+        # поэтому build_env RUSTFLAGS бесполезен; добавляем флаги через переопределение
+        # %{__cargo} (расширение %{build_rustflags} остаётся нетронутым).
+        out.append(
+            "%global __cargo /usr/bin/env CARGO_HOME=.cargo "
+            f"RUSTC_BOOTSTRAP=1 RUSTFLAGS='%{{build_rustflags}} {m.rustflags}' /usr/bin/cargo"
+        )
+        out.append("")
     add_br_req(out, br, req)
 
     cd_b = f"cd {m.cdir}\n" if m.cdir else ""

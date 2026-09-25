@@ -1763,7 +1763,8 @@
    "fallback": "commit",
    "verify": true,
    "br": [
-    "alsa-lib-devel"
+    "alsa-lib-devel",
+    "systemd-devel"
    ],
    "prio": 3
   },
@@ -1776,15 +1777,19 @@
    "summary": "TUI музыкальный плеер (mpv/ytdlp)",
    "license": "MIT",
    "bins": [
-    "termusic"
+    "termusic",
+    "termusic-server"
    ],
    "exp": true,
    "verify": true,
    "br": [
-    "alsa-lib-devel"
+    "alsa-lib-devel",
+    "protobuf-compiler"
    ],
+   "rustflags": "--cfg rustix_use_libc",
    "prio": 7,
-   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer"
+   "note": "воркспейс; тяжёлые зависимости mpv/gstreamer; vendored rustix 0.37.27 несовместим с rustc>=1.97 — forced --cfg rustix_use_libc",
+   "install_cmd": "install -Dpm0755 -t %{buildroot}%{_bindir} target/release/termusic target/release/termusic-server"
   },
   {
    "name": "pipes.rs",
@@ -2221,7 +2226,9 @@
    "br": [
     "cmake",
     "openssl-devel"
-   ]
+   ],
+   "rustflags": "-Cdebuginfo=0 -Ccodegen-units=16",
+   "note": "финальный крейт огромен: cgu=1+debuginfo=2 из %{build_rustflags} не укладываются в COPR timeout (11033755, 8/8); RUSTFLAGS идёт последним — наши флаги перекрывают его, debuginfo всё равно вырезается из rpm"
   },
   {
    "name": "bandwhich",
