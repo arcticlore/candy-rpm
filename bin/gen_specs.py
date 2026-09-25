@@ -569,13 +569,18 @@ def body_gem(m: Package, br: list[str], req: list[str]) -> str:
         "gem build *.gemspec",
         "",
         "%install",
-        "%gem_install",
+        # Без -d макрос кладёт файлы в ./usr (cwd-relative) и НЕ переносит их
+        # в %{buildroot} → %files падает с "Directory not found".
+        "%gem_install -d %{buildroot}",
         "",
         "%files",
+        "%license LICENSE*",
         "%dir %{gem_dir}",
         "%{gem_dir}/**",
         "%exclude %{gem_cache}",
     ]
+    for b in m.bins or [m.name]:
+        out.append(f"%{{_bindir}}/{b}")
 
     return "\n".join(out) + "\n"
 
