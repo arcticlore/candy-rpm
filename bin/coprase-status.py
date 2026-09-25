@@ -170,11 +170,23 @@ def fetch_all_builds(owner: str, project: str) -> list[dict]:
     """Fetch ALL builds with pagination."""
     all_builds: list[dict] = []
     offset = 0
+    errors = 0
     while True:
         data = copr_api(
             "build/list",
             f"ownername={owner}&projectname={project}&limit={PAGE_LIMIT}&offset={offset}",
         )
+        if not data:
+            # Транзиентная ошибка API (пустой dict) — не обрезаем историю молча:
+            # truncated history переворачивает needs_submission в обе стороны.
+            errors += 1
+            if errors >= 3:
+                print(f"[WARN] fetch_all_builds: API error at offset {offset} "
+                      f"— history truncated at {len(all_builds)}", file=sys.stderr)
+                return all_builds
+            time.sleep(2 * errors)
+            continue
+        errors = 0
         items = data.get("items", [])
         all_builds.extend(items)
         if len(items) < PAGE_LIMIT:
