@@ -1782,7 +1782,8 @@
    "exp": true,
    "verify": true,
    "br": [
-    "alsa-lib-devel"
+    "alsa-lib-devel",
+    "protobuf-compiler"
    ],
    "rustflags": "--cfg rustix_use_libc",
    "prio": 7,

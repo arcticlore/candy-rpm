@@ -20,6 +20,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
 BuildRequires:  alsa-lib-devel
+BuildRequires:  protobuf-compiler
 
 # NOTE: воркспейс; тяжёлые зависимости mpv/gstreamer; vendored rustix 0.37.27 несовместим с rustc>=1.97 — forced --cfg rustix_use_libc
 
@@ -53,5 +54,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/termusic
 
 %changelog
-* Thu Sep 24 2026 candy-bot <candy@localhost> - 0.13.2-1
+* Fri Sep 25 2026 candy-bot <candy@localhost> - 0.13.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
