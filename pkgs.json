@@ -300,6 +300,9 @@
    "br": [
     "openssl-devel"
    ],
+   "cargo_update": [
+    "openssl-sys"
+   ],
    "verify": true,
    "prio": 2,
    "use": "ghfetch <логин-github>",
