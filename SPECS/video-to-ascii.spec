@@ -16,6 +16,7 @@ BuildRequires:  pyproject-rpm-macros
 %generate_buildrequires
 %pyproject_patch_dependency opencv-python:ignore
 %pyproject_patch_dependency ffmpeg-python:ignore
+%pyproject_patch_dependency xtermcolor:ignore
 %pyproject_buildrequires
 
 # NOTE: нужны ffmpeg и portaudio в системе
