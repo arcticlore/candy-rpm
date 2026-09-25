@@ -95,10 +95,11 @@
     "git-core"
    ],
    "build_env": [
-    "VERGEN_GIT_SHA=\"copr-build\""
+    "VERGEN_GIT_SHA=\"copr-build\"",
+    "YAZI_NO_GITCL=\"1\""
    ],
    "alt": "cargo install yazi-cli или бинарники Releases",
-   "cdir": "yazi-build",
+   "install_cmd": "install -Dpm0755 -t %{buildroot}%{_bindir} target/release/yazi target/release/ya",
    "version": "26.8.15"
   },
   {
@@ -2282,7 +2283,7 @@
    "summary": "Гибрид mtr/traceroute с живым TUI",
    "license": "Apache-2.0 OR MIT",
    "bins": [
-    "trippy"
+    "trip"
    ],
    "gpkg": ".",
    "use": "sudo trip example.com",
