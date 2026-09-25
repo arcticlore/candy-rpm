@@ -14,7 +14,10 @@ BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
 
 %generate_buildrequires
-%pyproject_buildrequires | grep -vE '(python3dist(opencv-python)|python3dist(ffmpeg-python))( |$)' || :
+%pyproject_patch_dependency opencv-python:ignore
+%pyproject_patch_dependency ffmpeg-python:ignore
+%pyproject_patch_dependency xtermcolor:ignore
+%pyproject_buildrequires
 
 # NOTE: нужны ffmpeg и portaudio в системе
 
@@ -45,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/video-to-ascii
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 1.3.1-1
+* Fri Sep 25 2026 candy-bot <candy@localhost> - 1.3.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

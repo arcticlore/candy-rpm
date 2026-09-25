@@ -39,15 +39,17 @@ for f in man/*.1 zsh/_*; do [ -f "$f" ] || touch "$f" 2>/dev/null || :; done
 gem build *.gemspec
 
 %install
-%gem_install
+%gem_install -d %{buildroot}
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files
+%{_licensedir}/%{name}
 %dir %{gem_dir}
 %{gem_dir}/**
 %exclude %{gem_cache}
+%{_bindir}/colorls
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 1.5.0-1
+* Fri Sep 25 2026 candy-bot <candy@localhost> - 1.5.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
