@@ -301,7 +301,8 @@
     "openssl-devel"
    ],
    "cargo_update": [
-    "openssl-sys"
+    "openssl-sys",
+    "openssl"
    ],
    "verify": true,
    "prio": 2,
