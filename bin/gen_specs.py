@@ -73,6 +73,8 @@ class Package:
     prep_extra: str = ""
     release: str | int = 1
     license_files: list[str] = field(default_factory=list)
+    noarch: bool = False
+    provides: list[str] = field(default_factory=list)
 
     def is_enabled(self) -> bool:
         """Check if package is enabled."""
@@ -161,6 +163,8 @@ def load_pkgs(path: Path) -> PkgsFile:
                 prep_extra=p.get("prep_extra", ""),
                 release=p.get("release", 1),
                 license_files=p.get("license_files", []),
+                noarch=p.get("noarch", False),
+                provides=p.get("provides", []),
             )
         )
 
@@ -363,6 +367,12 @@ def body_python_pkg(m: Package, br: list[str], req: list[str]) -> str:
         prep(m),
         "",
         "%build",
+    ]
+    if m.build_env:
+        out += [f"export {e}" for e in m.build_env]
+    if m.build_cmd != "true":
+        out.append(m.build_cmd)
+    out += [
         "%pyproject_wheel",
         "",
         "%install",
@@ -850,6 +860,15 @@ def render(name: str, ver: str, meta: dict[str, Package]) -> str:
         secs = "%prep" + secs
     else:
         tags, secs = body, ""
+
+    # Дополнительные теги из pkgs.json: noarch (BuildArch) и provides.
+    # body уже может содержать BuildArch (python-script) — не дублируем.
+    extra_tags = []
+    if m.noarch and "BuildArch" not in tags:
+        extra_tags.append("BuildArch:      noarch")
+    extra_tags += [f"Provides:       {p}" for p in m.provides]
+    if extra_tags:
+        tags = "\n".join(extra_tags) + "\n" + tags
 
     parts = ["\n".join(head_lines), "", tags.strip()]
 
