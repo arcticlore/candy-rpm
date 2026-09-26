@@ -1242,14 +1242,12 @@
    "summary": "Interactive ASCII diagram generator (math/tree/table/flow)",
    "license": "MIT",
    "br": [
-    "cmake",
-    "gcc-c++"
+    "git-core"
    ],
+   "topdir": "Diagon-1.1.158",
    "exp": true,
    "prio": 9,
-   "use": "diagon math — интерактивные ASCII-диаграммы",
-   "enabled": "false",
-   "note": "cmake FetchContent требует сеть при сборке — отключён до vendored релиза"
+   "use": "diagon math — интерактивные ASCII-диаграммы"
   },
   {
    "name": "tulizu",
