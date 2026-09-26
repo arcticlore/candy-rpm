@@ -41,6 +41,7 @@
 | **bunnyfetch** | Tiny system info fetch utility | `bunnyfetch` | github.com/Rosettea/bunnyfetch |
 | **CrabFetch** | Extremely fast and featureful command-line fetcher | `crabfetch` | github.com/LivacoNew/CrabFetch |
 | **ctop** | top для контейнеров (docker/podman) | `ctop — живой монитор контейнеров` | github.com/bcicen/ctop |
+| **diagon** | Interactive ASCII diagram generator (math/tree/table/flow) | `diagon math — интерактивные ASCII-диаграммы` | github.com/ArthurSonzogni/Diagon |
 | **disfetch** | Yet another *nix distro fetching program, less complex | `disfetch` | github.com/q60/disfetch |
 | **dua** | Анализ места на диске + интерактивное удаление | `dua i — интерактивный режим` | github.com/Byron/dua-cli |
 | **dysk** | df для людей: диски человекочитаемо | `dysk — все точки монтирования` | github.com/Canop/dysk |
@@ -153,7 +154,6 @@
 - ~~termdvd~~ — Апстрим недоступен (404) / пакет удалён из registry
 - ~~fireworks~~ — Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети
 - ~~bb~~ — Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети
-- ~~diagon~~ — cmake FetchContent требует сеть при сборке — отключён до vendored релиза
 - ~~cli-visualizer~~ — Апстрим недоступен (404) / пакет удалён из registry
 - ~~chucknorris~~ — Апстрим-слаг не найден, пакет отключён до уточнения
 - ~~hack~~ — Апстрим-слаг не найден, пакет отключён до уточнения

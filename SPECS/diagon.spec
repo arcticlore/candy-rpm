@@ -13,10 +13,7 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  cmake
-BuildRequires:  gcc-c++
-
-# NOTE: cmake FetchContent требует сеть при сборке — отключён до vendored релиза
+BuildRequires:  git-core
 
 %description
 Interactive ASCII diagram generator (math/tree/table/flow)
@@ -47,5 +44,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_mandir}/*
 
 %changelog
-* Sun Sep 20 2026 candy-bot <candy@localhost> - 1.1.158-1
+* Sat Sep 26 2026 candy-bot <candy@localhost> - 1.1.158-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
