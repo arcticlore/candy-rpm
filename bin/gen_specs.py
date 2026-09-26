@@ -71,6 +71,8 @@ class Package:
     extra_files: list[str] = field(default_factory=list)
     topdir: str = ""
     prep_extra: str = ""
+    release: str | int = 1
+    license_files: list[str] = field(default_factory=list)
 
     def is_enabled(self) -> bool:
         """Check if package is enabled."""
@@ -157,6 +159,8 @@ def load_pkgs(path: Path) -> PkgsFile:
                 extra_files=p.get("extra_files", []),
                 topdir=p.get("topdir", ""),
                 prep_extra=p.get("prep_extra", ""),
+                release=p.get("release", 1),
+                license_files=p.get("license_files", []),
             )
         )
 
@@ -221,7 +225,7 @@ def header(m: Package, ver: str) -> list[str]:
     lines = [
         f"Name:           {m.name}",
         f"Version:        {ver}",
-        "Release:        1%{?dist}",
+        f"Release:        {m.release}%{{?dist}}",
         f"Summary:        {esc(m.summary or m.name)}",
     ]
 
@@ -871,6 +875,21 @@ def render(name: str, ver: str, meta: dict[str, Package]) -> str:
     ]
 
     parts += ["", "%description"] + desc_block
+
+    if secs and m.license_files:
+        # Упаковка лицензии по текущей схеме репо: файл уже скопирован в
+        # %{_licensedir}/%{name} ручным циклом в %install (lic_inst), а %files
+        # указывает на скопированный файл через директиву %license. Вставляется
+        # после regex-замены %license, чтобы директива не была перезаписана.
+        sec_lines = secs.split("\n")
+        for idx, ln in enumerate(sec_lines):
+            if ln.startswith("%files"):
+                sec_lines[idx + 1:idx + 1] = [
+                    f"%license %{{_licensedir}}/%{{name}}/{fn}"
+                    for fn in m.license_files
+                ]
+                break
+        secs = "\n".join(sec_lines)
 
     if secs:
         parts += ["", secs.rstrip()]
