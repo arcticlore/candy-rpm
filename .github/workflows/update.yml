@@ -67,10 +67,15 @@ jobs:
       - name: Build SRPMs for packages needing submission
         run: |
           set -o pipefail
+          mkdir -p SRPMS logs
           echo "=== Building/rebuilding SRPMs for packages needing submission ==="
           CHECK=$(python3 bin/coprase-status.py check 2>&1)
           echo "$CHECK" | tee logs/check.log
-          TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM|no SRPM" | awk '{print $1}' || true)
+          if [ "${{ inputs.full_rebuild }}" = "true" ] && [ -n "$CANDY_PACKAGE_ALLOWLIST" ]; then
+            TO_SUBMIT=$(echo "$CANDY_PACKAGE_ALLOWLIST" | tr ',' ' ')
+          else
+            TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM|no SRPM" | awk '{print $1}' || true)
+          fi
 
           BUILT=0
           FAILED=0
@@ -105,7 +110,11 @@ jobs:
         run: |
           echo "=== dnf builddep --assumeno для пакетов на сабмит — дозор зависимостей ==="
           CHECK=$(python3 bin/coprase-status.py check 2>&1)
-          TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM" | awk '{print $1}' || true)
+          if [ "${{ inputs.full_rebuild }}" = "true" ] && [ -n "$CANDY_PACKAGE_ALLOWLIST" ]; then
+            TO_SUBMIT=$(echo "$CANDY_PACKAGE_ALLOWLIST" | tr ',' ' ')
+          else
+            TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM" | awk '{print $1}' || true)
+          fi
           [ -n "$TO_SUBMIT" ] || { echo "Нет пакетов на сабмит"; exit 0; }
           echo "Проверяю: $(echo "$TO_SUBMIT" | tr '\n' ' ')"
           for name in $TO_SUBMIT; do
