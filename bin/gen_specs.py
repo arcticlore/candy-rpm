@@ -75,6 +75,7 @@ class Package:
     license_files: list[str] = field(default_factory=list)
     noarch: bool = False
     provides: list[str] = field(default_factory=list)
+    cmake_args: str = ""
 
     def is_enabled(self) -> bool:
         """Check if package is enabled."""
@@ -165,6 +166,7 @@ def load_pkgs(path: Path) -> PkgsFile:
                 license_files=p.get("license_files", []),
                 noarch=p.get("noarch", False),
                 provides=p.get("provides", []),
+                cmake_args=p.get("cmake_args", ""),
             )
         )
 
@@ -634,13 +636,16 @@ def body_c(m: Package, br: list[str], req: list[str]) -> str:
         br = ["cmake", "gcc-c++"] + br
         out = []
         add_br_req(out, br, req)
+        cmake_line = "%cmake"
+        if m.cmake_args.strip():
+            cmake_line += " " + m.cmake_args.strip()
         out += [
             "",
             prep(m),
             "",
             "%build",
             'export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"',
-            "%cmake",
+            cmake_line,
             "%cmake_build",
             "",
             "%install",
