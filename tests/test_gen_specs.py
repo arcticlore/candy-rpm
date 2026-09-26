@@ -130,16 +130,33 @@ class TestGenSpecs:
         assert "\n%cmake\n" in spec2
 
     def test_diagon_reenabled_cmake_policy(self, pkgs_json):
-        """diagon: включён, git-core, cmake_args policy fix, topdir из архива"""
+        """diagon: включён, git-core, cmake policy fix, antlr source override"""
         by_name = {p["name"]: p for p in pkgs_json["packages"]}
         d = by_name.get("diagon")
         assert d, "нет записи diagon"
         assert d.get("enabled") not in (False, "false")
         assert "git-core" in d.get("br", [])
+        assert "curl" in d.get("br", [])
         assert "CMAKE_POLICY_VERSION_MINIMUM" in d.get("cmake_args", "")
+        assert "FETCHCONTENT_SOURCE_DIR_ANTLR" in d.get("cmake_args", "")
+        pe = d.get("prep_extra", "")
+        assert "archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz" in pe
+        assert "antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt" in pe
+        assert "CMAKE_POLICY" in pe and "OLD" in pe
         assert d.get("topdir") == "Diagon-1.1.158"
         assert d.get("eco") == "c-cmake"
         assert d.get("license") == "MIT"
+
+    def test_diagon_spec_content(self):
+        """Сгенерированный спек diagon содержит git-core, policy fix, antlr override"""
+        import gen_specs
+        pkgs = gen_specs.load_pkgs(gen_specs.Path(gen_specs.__file__).resolve().parent.parent / "pkgs.json")
+        meta = {p.name: p for p in pkgs.packages}
+        spec = gen_specs.render("diagon", "1.1.158", meta)
+        assert "BuildRequires:  git-core" in spec
+        assert "%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=" in spec
+        assert "curl -sL https://github.com/antlr/antlr4/archive/" in spec
+        assert "sed -i -E '/CMAKE_POLICY" in spec
 
     def test_pokete_and_scrap_engine_entries(self, pkgs_json):
         """Новые пакеты pokete и scrap-engine присутствуют и валидны"""

@@ -14,6 +14,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  git-core
+BuildRequires:  curl
 
 %description
 Interactive ASCII diagram generator (math/tree/table/flow)
@@ -28,10 +29,12 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -p1 -n Diagon-1.1.158
+curl -sL https://github.com/antlr/antlr4/archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz | tar xz
+sed -i -E '/CMAKE_POLICY\(SET +CMP[0-9]+ +OLD\)/d' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt
 
 %build
 export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"
-%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=%{_builddir}/Diagon-1.1.158/antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9
 %cmake_build
 
 %install
