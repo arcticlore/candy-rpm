@@ -623,6 +623,10 @@
    "tagp": "v",
    "summary": "Lava lamp in the terminal",
    "license": "MIT",
+   "license_files": [
+    "LICENSE"
+   ],
+   "release": 2,
    "br": [
     "ncurses-devel"
    ],
