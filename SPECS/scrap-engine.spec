@@ -1,31 +1,27 @@
-Name:           pokete
-Version:        0.10.0~rc4
+Name:           scrap-engine
+Version:        1.5.4
 Release:        1%{?dist}
-Summary:        Покемоны в терминале (полноценная игра)
-# ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
+Summary:        A 2D ascii game engine for the terminal
 
 License:        GPL-3.0-only
-URL:            https://github.com/lxgr-linux/pokete
+URL:            https://pypi.org/project/scrap-engine
 Source0:        %{name}-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
 
+BuildArch:      noarch
+Provides:       python3-scrap-engine
 BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
-BuildRequires:  golang
-BuildRequires:  gcc
-BuildRequires:  pkgconfig(alsa)
-Requires:       python3-scrap-engine
 
 %generate_buildrequires
-%pyproject_patch_dependency scrap_engine:ignore
 %pyproject_buildrequires
 
-# NOTE: rc-пин 0.10.0~rc4 до стабильного 0.10.0: libplaysound собирается из src/pokete/playsound (go c-shared, ALSA) до сборки колеса, чужие prebuilt-библиотеки удаляются; scrap_engine ставится отдельным noarch-пакетом
+# NOTE: noarch, сборится из sdist PyPI; Provides python3-scrap-engine для Requires у pokete
 
 %description
-Покемоны в терминале (полноценная игра)
+A 2D ascii game engine for the terminal
 
 ВНИМАНИЕ: пакет из неофициального стороннего репозитория arcticlore/candy.
 Репозиторий в активной разработке — возможны поломки и резкие изменения.
@@ -36,12 +32,10 @@ WARNING: this package comes from an UNOFFICIAL third-party repository
 Don't throw tomatoes - file issues instead.
 
 %prep
-%autosetup -p1 -n pokete-0.10.0-rc4
+%autosetup -p1 -n scrap_engine-1.5.4
 rm -rf src/tests
-rm -f src/pokete/playsound/libplaysound.*
 
 %build
-(cd src/pokete/playsound && export GOPATH=$(mktemp -d) && export GOCACHE=$GOPATH/cache && go build -buildmode=c-shared -o libplaysound.$(uname -m).so .)
 %pyproject_wheel
 
 %install
@@ -51,9 +45,7 @@ rm -f src/pokete/playsound/libplaysound.*
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
 %files -f %{pyproject_files}
-%{_bindir}/pokete
-%{_bindir}/pokete-util
 
 %changelog
-* Sat Sep 26 2026 candy-bot <candy@localhost> - 0.10.0~rc4-1
+* Sat Sep 26 2026 candy-bot <candy@localhost> - 1.5.4-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

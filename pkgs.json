@@ -2418,23 +2418,57 @@
    ]
   },
   {
+   "name": "scrap-engine",
+   "eco": "python-pkg",
+   "host": "pypi",
+   "pkg": "scrap-engine",
+   "topdir": "scrap_engine-1.5.4",
+   "prep_extra": "rm -rf src/tests",
+   "summary": "A 2D ascii game engine for the terminal",
+   "license": "GPL-3.0-only",
+   "enabled": true,
+   "noarch": true,
+   "provides": [
+    "python3-scrap-engine"
+   ],
+   "verify": true,
+   "prio": 4,
+   "use": "import scrap_engine — терминальный 2D ascii-движок (нужен pokete)",
+   "note": "noarch, сборится из sdist PyPI; Provides python3-scrap-engine для Requires у pokete"
+  },
+  {
    "name": "pokete",
-   "eco": "python-script",
+   "eco": "python-pkg",
    "host": "github",
    "slug": "lxgr-linux/pokete",
    "tagp": "",
    "summary": "Покемоны в терминале (полноценная игра)",
-   "license": "GPL-3.0-or-later",
-   "moddir": "pokete_src",
-   "bins": [
-    "pokete.py"
+   "license": "GPL-3.0-only",
+   "version": "0.10.0~rc4",
+   "topdir": "pokete-0.10.0-rc4",
+   "enabled": true,
+   "req": [
+    "python3-scrap-engine"
+   ],
+   "br": [
+    "golang",
+    "gcc",
+    "pkgconfig(alsa)"
+   ],
+   "pbr_exclude": [
+    "scrap_engine"
+   ],
+   "build_cmd": "(cd src/pokete/playsound && export GOPATH=$(mktemp -d) && export GOCACHE=$GOPATH/cache && go build -buildmode=c-shared -o libplaysound.$(uname -m).so .)",
+   "prep_extra": "rm -rf src/tests\nrm -f src/pokete/playsound/libplaysound.*",
+   "extra_files": [
+    "%{_bindir}/pokete",
+    "%{_bindir}/pokete-util"
    ],
    "exp": true,
    "verify": true,
-   "use": "pokete.py",
+   "use": "pokete",
    "prio": 8,
-   "enabled": false,
-   "note": "апстрим мигрировал на PyPI (src/pokete, scrap_engine>=1.4.3), структура отлична от плёночной — пересборка после стабильного релиза"
+   "note": "rc-пин 0.10.0~rc4 до стабильного 0.10.0: libplaysound собирается из src/pokete/playsound (go c-shared, ALSA) до сборки колеса, чужие prebuilt-библиотеки удаляются; scrap_engine ставится отдельным noarch-пакетом"
   },
   {
    "name": "gittype",
