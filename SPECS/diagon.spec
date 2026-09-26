@@ -31,6 +31,7 @@ Don't throw tomatoes - file issues instead.
 %autosetup -p1 -n Diagon-1.1.158
 curl -sL https://github.com/antlr/antlr4/archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz | tar xz
 sed -i -E '/CMAKE_POLICY\(SET +CMP[0-9]+ +OLD\)/d' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt
+sed -i 's|typename Allocator = typename std::unordered_map<Key, Value>::allocator_type>|typename Allocator = std::allocator<std::pair<const Key, Value>>>|' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/runtime/src/FlatHashMap.h
 
 %build
 export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"

@@ -143,6 +143,9 @@ class TestGenSpecs:
         assert "archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz" in pe
         assert "antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt" in pe
         assert "CMAKE_POLICY" in pe and "OLD" in pe
+        assert "runtime/src/FlatHashMap.h" in pe
+        assert 'typename Allocator = typename std::unordered_map<Key, Value>::allocator_type>' in pe
+        assert "std::allocator<std::pair<const Key, Value>>>" in pe
         assert d.get("topdir") == "Diagon-1.1.158"
         assert d.get("eco") == "c-cmake"
         assert d.get("license") == "MIT"
@@ -157,6 +160,8 @@ class TestGenSpecs:
         assert "%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=" in spec
         assert "curl -sL https://github.com/antlr/antlr4/archive/" in spec
         assert "sed -i -E '/CMAKE_POLICY" in spec
+        assert "runtime/src/FlatHashMap.h" in spec
+        assert "std::allocator<std::pair<const Key, Value>>>" in spec
 
     def test_pokete_and_scrap_engine_entries(self, pkgs_json):
         """Новые пакеты pokete и scrap-engine присутствуют и валидны"""
