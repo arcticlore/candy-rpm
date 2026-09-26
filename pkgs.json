@@ -1245,6 +1245,7 @@
     "git-core"
    ],
    "topdir": "Diagon-1.1.158",
+   "cmake_args": "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
    "exp": true,
    "prio": 9,
    "use": "diagon math — интерактивные ASCII-диаграммы"

@@ -102,18 +102,44 @@ class TestGenSpecs:
         assert spec.index("%build") < spec.index("%pyproject_wheel")
 
     def test_load_pkgs_new_fields(self, tmp_path):
-        """load_pkgs читает noarch/provides/build_cmd"""
+        """load_pkgs читает noarch/provides/build_cmd/cmake_args"""
         import gen_specs
         data = {"project": {}, "packages": [
             {"name": "a", "eco": "python-pkg",
-             "noarch": True, "provides": ["python3-a"], "build_cmd": "echo hi"}
+             "noarch": True, "provides": ["python3-a"], "build_cmd": "echo hi"},
+            {"name": "b", "eco": "c-cmake",
+             "cmake_args": "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"}
         ]}
         f = tmp_path / "pkgs.json"
         f.write_text(json.dumps(data))
-        p = gen_specs.load_pkgs(f).packages[0]
-        assert p.noarch is True
-        assert p.provides == ["python3-a"]
-        assert p.build_cmd == "echo hi"
+        pkgs = gen_specs.load_pkgs(f).packages
+        assert pkgs[0].noarch is True
+        assert pkgs[0].provides == ["python3-a"]
+        assert pkgs[0].build_cmd == "echo hi"
+        assert pkgs[1].cmake_args == "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+
+    def test_cmake_args_rendered_in_c_cmake(self):
+        """cmake_args попадает в строку %cmake eco c-cmake"""
+        import gen_specs
+        m = gen_specs.Package(name="d", eco="c-cmake", host="github",
+                              cmake_args="-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
+        spec = gen_specs.render("d", "1", {"d": m})
+        assert "%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5\n" in spec
+        m2 = gen_specs.Package(name="d", eco="c-cmake", host="github")
+        spec2 = gen_specs.render("d", "1", {"d": m2})
+        assert "\n%cmake\n" in spec2
+
+    def test_diagon_reenabled_cmake_policy(self, pkgs_json):
+        """diagon: включён, git-core, cmake_args policy fix, topdir из архива"""
+        by_name = {p["name"]: p for p in pkgs_json["packages"]}
+        d = by_name.get("diagon")
+        assert d, "нет записи diagon"
+        assert d.get("enabled") not in (False, "false")
+        assert "git-core" in d.get("br", [])
+        assert "CMAKE_POLICY_VERSION_MINIMUM" in d.get("cmake_args", "")
+        assert d.get("topdir") == "Diagon-1.1.158"
+        assert d.get("eco") == "c-cmake"
+        assert d.get("license") == "MIT"
 
     def test_pokete_and_scrap_engine_entries(self, pkgs_json):
         """Новые пакеты pokete и scrap-engine присутствуют и валидны"""

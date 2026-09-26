@@ -31,7 +31,7 @@ Don't throw tomatoes - file issues instead.
 
 %build
 export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"
-%cmake
+%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 %cmake_build
 
 %install
