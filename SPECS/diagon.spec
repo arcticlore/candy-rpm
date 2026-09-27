@@ -15,6 +15,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  git-core
 BuildRequires:  curl
+BuildRequires:  java-25-openjdk-headless
 
 %description
 Interactive ASCII diagram generator (math/tree/table/flow)
@@ -48,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_mandir}/*
 
 %changelog
-* Sat Sep 26 2026 candy-bot <candy@localhost> - 1.1.158-1
+* Sun Sep 27 2026 candy-bot <candy@localhost> - 1.1.158-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
