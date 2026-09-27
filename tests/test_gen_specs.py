@@ -159,6 +159,7 @@ class TestGenSpecs:
         assert "java-25-openjdk-headless" in d.get("br", [])
         assert "CMAKE_POLICY_VERSION_MINIMUM" in d.get("cmake_args", "")
         assert "FETCHCONTENT_SOURCE_DIR_ANTLR" in d.get("cmake_args", "")
+        assert "-DBUILD_SHARED_LIBS=OFF" in d.get("cmake_args", "")
         pe = d.get("prep_extra", "")
         assert "archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz" in pe
         assert "antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt" in pe
@@ -183,6 +184,7 @@ class TestGenSpecs:
         assert "%{_mandir}/*" not in spec
         assert "%license %{_licensedir}/%{name}/LICENSE" in spec
         assert "%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=" in spec
+        assert "-DBUILD_SHARED_LIBS=OFF" in spec
         assert "curl -sL https://github.com/antlr/antlr4/archive/" in spec
         assert "sed -i -E '/CMAKE_POLICY" in spec
         assert "runtime/src/FlatHashMap.h" in spec
