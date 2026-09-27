@@ -137,6 +137,7 @@ class TestGenSpecs:
         assert d.get("enabled") not in (False, "false")
         assert "git-core" in d.get("br", [])
         assert "curl" in d.get("br", [])
+        assert "java-25-openjdk-headless" in d.get("br", [])
         assert "CMAKE_POLICY_VERSION_MINIMUM" in d.get("cmake_args", "")
         assert "FETCHCONTENT_SOURCE_DIR_ANTLR" in d.get("cmake_args", "")
         pe = d.get("prep_extra", "")
@@ -157,6 +158,7 @@ class TestGenSpecs:
         meta = {p.name: p for p in pkgs.packages}
         spec = gen_specs.render("diagon", "1.1.158", meta)
         assert "BuildRequires:  git-core" in spec
+        assert "BuildRequires:  java-25-openjdk-headless" in spec
         assert "%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=" in spec
         assert "curl -sL https://github.com/antlr/antlr4/archive/" in spec
         assert "sed -i -E '/CMAKE_POLICY" in spec
