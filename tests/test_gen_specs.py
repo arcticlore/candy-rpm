@@ -129,6 +129,25 @@ class TestGenSpecs:
         spec2 = gen_specs.render("d", "1", {"d": m2})
         assert "\n%cmake\n" in spec2
 
+    def test_c_cmake_noman(self):
+        """c-cmake: noman=True убирает %{_mandir}/*, по умолчанию оставляет"""
+        import gen_specs
+        m = gen_specs.Package(name="d", eco="c-cmake", host="github", noman=True)
+        spec = gen_specs.render("d", "1", {"d": m})
+        assert "%{_bindir}/*" in spec
+        assert "%{_mandir}/*" not in spec
+        m2 = gen_specs.Package(name="d", eco="c-cmake", host="github")
+        spec2 = gen_specs.render("d", "1", {"d": m2})
+        assert "%{_mandir}/*" in spec2
+
+    def test_c_cmake_license_files(self):
+        """c-cmake: license_files добавляет %license-строку в %files"""
+        import gen_specs
+        m = gen_specs.Package(name="d", eco="c-cmake", host="github",
+                              license_files=["LICENSE"])
+        spec = gen_specs.render("d", "1", {"d": m})
+        assert "%license %{_licensedir}/%{name}/LICENSE" in spec
+
     def test_diagon_reenabled_cmake_policy(self, pkgs_json):
         """diagon: включён, git-core, cmake policy fix, antlr source override"""
         by_name = {p["name"]: p for p in pkgs_json["packages"]}
@@ -148,6 +167,8 @@ class TestGenSpecs:
         assert 'typename Allocator = typename std::unordered_map<Key, Value>::allocator_type>' in pe
         assert "std::allocator<std::pair<const Key, Value>>>" in pe
         assert d.get("topdir") == "Diagon-1.1.158"
+        assert d.get("noman") is True
+        assert d.get("license_files") == ["LICENSE"]
         assert d.get("eco") == "c-cmake"
         assert d.get("license") == "MIT"
 
@@ -159,6 +180,8 @@ class TestGenSpecs:
         spec = gen_specs.render("diagon", "1.1.158", meta)
         assert "BuildRequires:  git-core" in spec
         assert "BuildRequires:  java-25-openjdk-headless" in spec
+        assert "%{_mandir}/*" not in spec
+        assert "%license %{_licensedir}/%{name}/LICENSE" in spec
         assert "%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=" in spec
         assert "curl -sL https://github.com/antlr/antlr4/archive/" in spec
         assert "sed -i -E '/CMAKE_POLICY" in spec

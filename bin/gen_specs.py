@@ -653,8 +653,9 @@ def body_c(m: Package, br: list[str], req: list[str]) -> str:
             "",
             "%files",
             "%{_bindir}/*",
-            "%{_mandir}/*",
         ]
+        if not m.noman:
+            out.append("%{_mandir}/*")
 
     else:  # c-make
         br = ["gcc", "make"] + br
