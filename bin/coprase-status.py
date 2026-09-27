@@ -5,6 +5,8 @@ Usage:
     coprase-status.py check       — print list of packages needing submission
     coprase-status.py versions    — refresh target versions from upstream (state.json)
     coprase-status.py submit      — slot-managed submit loop
+    coprase-status.py selection   — machine-readable effective selection mode
+    coprase-status.py plan        — fail-closed input plan for update.yml (guard)
     coprase-status.py clean       — list duplicate builds (informational)
 """
 
@@ -132,6 +134,42 @@ def audit_effective(effective: set[str]) -> None:
         print(f"  [SEL] BOUNDED: {','.join(sorted(effective))}")
     else:
         print(f"  [SEL] allowlist empty: normal enabled set ({len(effective)} packages)")
+
+
+def compute_plan(full_rebuild: bool, force_resubmit: bool, allowlist_raw: str,
+                 packages: list[dict] | None = None) -> dict:
+    """Fail-closed input plan for update.yml (pure; no network / no COPR).
+
+    Policy:
+    - full_rebuild=true is disabled: abort BEFORE any SRPM build or submit
+      (use force_resubmit=true with an explicit packages allowlist instead);
+    - force_resubmit=true is allowed only with a non-empty, strict-parsed,
+      BOUNDED allowlist; the resulting effective set IS the whole scope:
+      needs_submission() is bypassed only for that exact set and force can
+      never widen it (select_effective raises on unknown/disabled names);
+    - force_resubmit=false keeps the current dedup behavior untouched:
+      force=0 and TO_SUBMIT is deferred to the check-based workflow logic.
+
+    Returns {"force": 0|1, "mode": "BOUNDED"|"ALL", "to_submit": [names...]}.
+    Policy violations raise SystemExit (non-zero abort for the guard step).
+    """
+    if full_rebuild:
+        raise SystemExit(
+            "[GUARD-ABORT] full_rebuild=true is fail-closed (disabled); "
+            "use force_resubmit=true with a non-empty packages allowlist")
+    allowed = parse_package_allowlist(allowlist_raw)
+    if not force_resubmit:
+        return {"force": 0, "mode": "BOUNDED" if allowed else "ALL", "to_submit": []}
+    if not allowed:
+        raise SystemExit(
+            "[GUARD-ABORT] force_resubmit=true requires a non-empty packages "
+            "allowlist (BOUNDED selection only)")
+    if packages is None:
+        packages = load_pkg_list()
+    effective = select_effective(packages, allowlist_raw)
+    if not effective:
+        raise SystemExit("[GUARD-ABORT] force_resubmit: empty effective set")
+    return {"force": 1, "mode": "BOUNDED", "to_submit": sorted(effective)}
 
 
 def submit_candidates(effective: set[str],
@@ -543,6 +581,31 @@ def cmd_selection():
         print(f"EFFECTIVE NAMES: {len(effective)}")
 
 
+def cmd_plan():
+    """Print the fail-closed machine-readable plan for update.yml (abort on violations).
+
+    stdout carries exactly three lines consumed by the workflow guard step:
+        FORCE=0|1
+        MODE=BOUNDED|ALL
+        TO_SUBMIT=name [name ...]
+    Policy violations raise SystemExit -> non-zero exit, no submit.
+    """
+    def flag(name: str) -> bool:
+        return os.environ.get(name, "").strip().lower() == "true"
+
+    plan = compute_plan(
+        flag("PLAN_FULL_REBUILD"),
+        flag("PLAN_FORCE_RESUBMIT"),
+        os.environ.get(ALLOWLIST_ENV, ""),
+    )
+    print(f"[PLAN] force={plan['force']} mode={plan['mode']} "
+          f"to_submit={','.join(plan['to_submit']) or '(deferred to check)'}",
+          file=sys.stderr)
+    print(f"FORCE={plan['force']}")
+    print(f"MODE={plan['mode']}")
+    print(f"TO_SUBMIT={' '.join(plan['to_submit'])}")
+
+
 def cmd_clean():
     """List duplicate builds (informational)."""
     all_builds = fetch_all_builds(OWNER, PROJECT)
@@ -564,7 +627,7 @@ def cmd_clean():
 if __name__ == "__main__":
     os.chdir(Path(__file__).resolve().parent.parent)
     if len(sys.argv) < 2:
-        print("Usage: coprase-status.py {check|submit|clean}")
+        print("Usage: coprase-status.py {check|versions|submit|selection|plan|clean}")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -576,6 +639,8 @@ if __name__ == "__main__":
         cmd_submit()
     elif cmd == "selection":
         cmd_selection()
+    elif cmd == "plan":
+        cmd_plan()
     elif cmd == "clean":
         cmd_clean()
     else:

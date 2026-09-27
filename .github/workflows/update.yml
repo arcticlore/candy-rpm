@@ -3,7 +3,11 @@ on:
   workflow_dispatch:
     inputs:
       full_rebuild:
-        description: "Полный ребилд всех пакетов (напр. после добавления чрута F45)"
+        description: "Полный ребилд (fail-closed, отключён) — для повторного submit той же версии используй force_resubmit + packages"
+        type: boolean
+        default: false
+      force_resubmit:
+        description: "Force resubmit ровно для allowlist из packages (BOUNDED; без packages или с невалидным — guard abort)"
         type: boolean
         default: false
       packages:
@@ -35,6 +39,16 @@ jobs:
             || { echo "dnf install failed:"; tail -20 logs/dnf-install.log; exit 1; }
           tail -5 logs/dnf-install.log
           mv logs/dnf-install.log logs/dnf-install-full.log
+
+      - name: "Guard: fail-closed input plan (до SRPM и submit)"
+        id: plan
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          export PLAN_FULL_REBUILD="${{ inputs.full_rebuild }}"
+          export PLAN_FORCE_RESUBMIT="${{ inputs.force_resubmit }}"
+          python3 bin/coprase-status.py plan 2>&1 | tee logs/plan.log
+          grep -E '^(FORCE|MODE|TO_SUBMIT)=' logs/plan.log >> "$GITHUB_OUTPUT"
 
       - name: Configure COPR
         run: |
@@ -71,8 +85,8 @@ jobs:
           echo "=== Building/rebuilding SRPMs for packages needing submission ==="
           CHECK=$(python3 bin/coprase-status.py check 2>&1)
           echo "$CHECK" | tee logs/check.log
-          if [ "${{ inputs.full_rebuild }}" = "true" ] && [ -n "$CANDY_PACKAGE_ALLOWLIST" ]; then
-            TO_SUBMIT=$(echo "$CANDY_PACKAGE_ALLOWLIST" | tr ',' ' ')
+          if [ "${{ steps.plan.outputs.force }}" = "1" ]; then
+            TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"
           else
             TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM|no SRPM" | awk '{print $1}' || true)
           fi
@@ -110,8 +124,8 @@ jobs:
         run: |
           echo "=== dnf builddep --assumeno для пакетов на сабмит — дозор зависимостей ==="
           CHECK=$(python3 bin/coprase-status.py check 2>&1)
-          if [ "${{ inputs.full_rebuild }}" = "true" ] && [ -n "$CANDY_PACKAGE_ALLOWLIST" ]; then
-            TO_SUBMIT=$(echo "$CANDY_PACKAGE_ALLOWLIST" | tr ',' ' ')
+          if [ "${{ steps.plan.outputs.force }}" = "1" ]; then
+            TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"
           else
             TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM" | awk '{print $1}' || true)
           fi
@@ -126,7 +140,7 @@ jobs:
           echo "=== Блокировано dnf-дозором: $BLOCKED (в SRPMS/blocked/, в COPR не уйдут) ==="
 
       - name: Submit to COPR (dedup with version comparison)
-        run: python3 bin/coprase-status.py submit ${{ inputs.full_rebuild == true && '--force' || '' }} 2>&1 | tee logs/submit.log
+        run: python3 bin/coprase-status.py submit ${{ steps.plan.outputs.force == '1' && '--force' || '' }} 2>&1 | tee logs/submit.log
 
       - name: Auto-triage (fix known failures)
         if: always()
