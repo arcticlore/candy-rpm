@@ -36,7 +36,7 @@ sed -i 's|typename Allocator = typename std::unordered_map<Key, Value>::allocato
 
 %build
 export CFLAGS="${CFLAGS:-$RPM_OPT_FLAGS} -Wno-error=format-security"
-%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=%{_builddir}/Diagon-1.1.158/antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9
+%cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=%{_builddir}/Diagon-1.1.158/antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9 -DBUILD_SHARED_LIBS=OFF
 %cmake_build
 
 %install
