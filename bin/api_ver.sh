@@ -3,6 +3,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 J() { jq -r "$1"; }
+iso_date() { printf '%s' "${1:-}" | tr -cd '0-9' | cut -c1-8; }
 
 meta() { jq -c ".packages[] | select(.name==\"$1\")" "$ROOT/pkgs.json"; }
 M="$(meta "$1")"
@@ -48,14 +49,22 @@ codeberg)
     T=$(curl -sfL "https://codeberg.org/api/v1/repos/$SLUG/tags?limit=1" | J '.[0].name // empty') || T=""
     if [ -z "${T:-}" ] && [ "$(echo "$M" | jq -r '.fallback // ""')" = "commit" ]; then
         C=$(curl -sfL "https://codeberg.org/api/v1/repos/$SLUG/commits?limit=1") || C=""
-        [ -n "$C" ] && T="$(date -u +%Y%m%d).$(echo "$C" | J '.[0].sha[0:7]')"
+        if [ -n "$C" ]; then
+            D=$(iso_date "$(echo "$C" | J '.[0].commit.committer.date // .[0].commit.author.date')")
+            S=$(echo "$C" | J '.[0].sha[0:7]')
+            if [ -n "$D" ] && [ -n "$S" ]; then T="$D.$S"; fi
+        fi
     fi ;;
 gitlab)
     ENC=$(printf '%s' "$SLUG" | jq -sRr @uri)
     T=$(curl -sfL "https://gitlab.com/api/v4/projects/$ENC/releases" | J '.[0].tag_name // empty') || T=""
     if [ -z "${T:-}" ] && [ "$(echo "$M" | jq -r '.fallback // ""')" = "commit" ]; then
         C=$(curl -sfL "https://gitlab.com/api/v4/projects/$ENC/repository/commits?per_page=1") || C=""
-        [ -n "$C" ] && T="$(date -u +%Y%m%d).$(echo "$C" | J '.[0].short_id')"
+        if [ -n "$C" ]; then
+            D=$(iso_date "$(echo "$C" | J '.[0].committed_date')")
+            S=$(echo "$C" | J '.[0].short_id')
+            if [ -n "$D" ] && [ -n "$S" ]; then T="$D.$S"; fi
+        fi
     fi ;;
 npm)
     V=$(curl -sfL "https://registry.npmjs.org/$PKG/latest" | J '.version // empty') || V=""
@@ -83,8 +92,9 @@ if [ -z "$T" ]; then
     if [ "$FB" = "commit" ]; then
         C=$(gh_curl "https://api.github.com/repos/$SLUG/commits?per_page=1") || C=""
         if [ -n "$C" ]; then
-            SHA=$(echo "$C" | J '.[0].sha[0:7]')
-            T="$(date -u +%Y%m%d).${SHA}"
+            D=$(iso_date "$(echo "$C" | J '.[0].commit.committer.date // .[0].commit.author.date')")
+            S=$(echo "$C" | J '.[0].sha[0:7]')
+            if [ -n "$D" ] && [ -n "$S" ]; then T="$D.$S"; fi
         fi
     fi
 fi

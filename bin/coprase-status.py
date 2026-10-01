@@ -37,6 +37,7 @@ SUBMIT_ATTEMPTS = 3
 # Bounded-manual-run selection policy (fail-closed).
 PACKAGE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9+._-]*")
 ALLOWLIST_ENV = "CANDY_PACKAGE_ALLOWLIST"
+COMMIT_VER_RE = re.compile(r"^(\d{8})\.([0-9A-Za-z]+)$")
 
 
 def is_package_enabled(enabled: object) -> bool:
@@ -381,6 +382,18 @@ def submit_build(srpm_path: str, dry_run: bool = False) -> bool:
     return False
 
 
+def same_commit_version(old: str, new: str) -> bool:
+    """Один и тот же коммит при формате YYYYMMDD.<hash> — unchanged.
+
+    Дата в версии — производная от момента прогона (старый баг ложных NEW):
+    одинаковый hash означает, что upstream-HEAD не двигался, даже если дата
+    в строке отличается. state.json при этом не трогаем.
+    """
+    mo = COMMIT_VER_RE.match(old or "")
+    mn = COMMIT_VER_RE.match(new or "")
+    return bool(mo and mn and mo.group(2) == mn.group(2))
+
+
 def cmd_versions():
     """Обновить целевые версии (state.json) из апстрима — «штука» про обновления.
 
@@ -419,6 +432,10 @@ def cmd_versions():
             continue
         old = st.get(name, {}).get("ver", "") if isinstance(st.get(name), dict) else ""
         if old == up:
+            same += 1
+            continue
+        if same_commit_version(old, up):
+            print(f"  [SAME]  {name}: тот же коммит — {old} -> {up} (дата игнорируется)")
             same += 1
             continue
         st.setdefault(name, {})["ver"] = up
