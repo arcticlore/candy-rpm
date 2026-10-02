@@ -63,7 +63,7 @@
 | **rxfetch** | Custom system fetching tool written in bash | `rxfetch` | github.com/mngshm/rxfetch |
 | **slides** | Презентации прямо в терминале из markdown | `slides deck.md — презентация` | github.com/maaslalani/slides |
 | **ufetch** | Tiny system info for Unix-like operating systems | `ufetch` | gitlab.com/jschx/ufetch |
-| **wtfutil** | Личный дашборд-терминал из модулей (ops-style) | `wtfutil — дашборд модулей` | github.com/wtfutil/wtfutil |
+| **wtfutil** | Личный дашборд-терминал из модулей (ops-style) | `wtfutil — дашборд модулей` | github.com/wtfutil/wtf |
 | **zk** | Zettelkasten-заметки в терминале | `zk new; zk list` | github.com/zk-org/zk |
 | **arttime** | ASCII art, clock, timer and time manager for the terminal | `arttime — ASCII-арт+часы; arttime -m сообщение` | github.com/poetaman/arttime |
 | **ascii-image-converter** | Конвертация изображений в ASCII-art прямо в терминале | `ascii-image-converter photo.jpg --color` | github.com/TheZoraiz/ascii-image-converter |
@@ -74,7 +74,7 @@
 | **ctree** | A Christmas tree right from your terminal | `ctree — новогодняя ёлка` | github.com/gleich/ctree |
 | **cyme** | lsusb с красивым выводом и фильтрами | `cyme` | github.com/tuna-f1sh/cyme |
 | **duckpond** | Ducks swimming in a pond, in your terminal | `duckpond.sh — утки на пруду` | github.com/gsobell/duckpond.sh |
-| **fend** | Калькулятор произвольной точности | `echo '1+2' | fend` | github.com/printf/fend |
+| **fend** | Калькулятор произвольной точности | `echo '1+2' \| fend` | github.com/printfn/fend |
 | **genact** | Генератор безумной активности — притворись хакером | `genact — Ctrl+C остановить` | github.com/svenstaro/genact |
 | **gh-screensaver** | Screensaver extension for gh (fireworks/starfield/pipes) | `gh screensaver -e fireworks (нужен GitHub CLI)` | github.com/vilmibm/gh-screensaver |
 | **gtop** | Панель мониторинга системы для терминала | `gtop — CPU/RAM/network в одном окне` | github.com/aksakalli/gtop |
@@ -88,7 +88,7 @@
 | **PyBonsai** | Procedural ASCII bonsai tree generator | `pybonsai — растит бонсай` | pypi.org/project/pybonsai |
 | **snakes** | Snakes crawling across your terminal | `snakes.pl — змейки` | github.com/pipeseroni/snakes.pl |
 | **snowmachine** | Snow in your terminal | `snowmachine — снегопад` | pypi.org/project/snowmachine |
-| **tabiew** | TUI-просмотр csv/parquet/json датасетов | `tabiew data.csv` | github.com/fathulfahmy/tabiew |
+| **tabiew** | TUI-просмотр csv/parquet/json датасетов | `tabiew data.csv` | github.com/shshemi/tabiew |
 | **terminal-parrot** | Party parrot time, in your terminal | `terminal-parrot — танцующий попугай` | github.com/jmhobbs/terminal-parrot |
 | **terminaltexteffects** | Terminal text effects engine — анимации печати и эффектов в терминале | `tte "твой текст" — эффекты печати; tte --list-effects` | pypi.org/project/terminaltexteffects |
 | **termshot** | Скриншот команды в виде терминального окна | `termshot --out shot.png -- ls -la` | github.com/homeport/termshot |
@@ -134,7 +134,7 @@
 | **rmpc** | Красивый TUI клиент MPD | `rmpc — нужен запущенный mpd` | github.com/mierak/rmpc |
 | **systeroid** | sysctl(8) с TUI-графикой | `systeroid --tui` | github.com/orhun/systeroid |
 | **termusic** | TUI музыкальный плеер (mpv/ytdlp) | `—` | github.com/tramhao/termusic |
-| **zenith** | Системный дашборд: CPU/GPU/сеть/диски графиками | `zenith` | github.com/bvaisnard/zenith |
+| **zenith** | Системный дашборд: CPU/GPU/сеть/диски графиками | `zenith` | github.com/bvaisvil/zenith |
 | **colorls** | Prettifies ls output with colors and font-awesome icons | `colorls — красивый ls (нужен Nerd Font)` | github.com/athityakumar/colorls |
 | **musikcube** | Terminal-based music player, library and streaming server | `musikcube — консольный плеер` | github.com/clangen/musikcube |
 | **peaclock** | Часы/секундомер/таймер с цветными цифрами | `peaclock` | github.com/octobanana/peaclock |

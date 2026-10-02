@@ -442,7 +442,8 @@ def cmd_versions():
         st[name]["ts"] = time.time()
         print(f"  [NEW]  {name}: {old or '(нет цели)'} -> {up}")
         updated += 1
-    st_path.write_text(json.dumps(st, ensure_ascii=False, indent=2))
+    # indent=1 — формат файла в git (indent=2 переписал бы state.json целиком)
+    st_path.write_text(json.dumps(st, ensure_ascii=False, indent=1))
     print(f"\nЦели обновлены: {updated}, без изменений: {same}, не проверилось: {failed}")
 
 
