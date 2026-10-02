@@ -1,5 +1,5 @@
 Name:           himalaya
-Version:        2.1.0
+Version:        2.2.1
 Release:        1%{?dist}
 Summary:        Email-клиент целиком в CLI
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
@@ -50,5 +50,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/himalaya
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 2.1.0-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 2.2.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,11 +1,11 @@
 Name:           zenith
-Version:        0
+Version:        0.15.1
 Release:        1%{?dist}
 Summary:        Системный дашборд: CPU/GPU/сеть/диски графиками
 # ВНИМАНИЕ: экспериментальная сборка, может падать на отдельных архитектурах
 
 License:        MIT
-URL:            https://github.com/bvaisnard/zenith
+URL:            https://github.com/bvaisvil/zenith
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -48,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/zenith
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 0.15.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

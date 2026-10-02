@@ -1,10 +1,10 @@
 Name:           fend
-Version:        0
+Version:        1.5.8
 Release:        1%{?dist}
 Summary:        Калькулятор произвольной точности
 
 License:        MIT
-URL:            https://github.com/printf/fend
+URL:            https://github.com/printfn/fend
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/fend
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 1.5.8-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
