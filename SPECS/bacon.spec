@@ -1,5 +1,5 @@
 Name:           bacon
-Version:        3.25.0
+Version:        3.26.0
 Release:        1%{?dist}
 Summary:        Фоновый компилятор/тестер Rust-проектов на лету
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/bacon
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 3.25.0-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 3.26.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           mise
-Version:        2026.9.13
+Version:        2026.9.18
 Release:        1%{?dist}
 Summary:        Менеджер рантаймов node/python/ruby — быстрый asdf-killer
 
@@ -53,5 +53,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/mise
 
 %changelog
-* Fri Sep 25 2026 candy-bot <candy@localhost> - 2026.9.13-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 2026.9.18-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
