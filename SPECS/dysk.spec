@@ -1,5 +1,5 @@
 Name:           dysk
-Version:        3.7.0
+Version:        3.7.1
 Release:        1%{?dist}
 Summary:        df для людей: диски человекочитаемо
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/dysk
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 3.7.0-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 3.7.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
