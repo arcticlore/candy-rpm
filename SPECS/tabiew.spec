@@ -1,17 +1,21 @@
 Name:           tabiew
-Version:        0
+Version:        0.15.1
 Release:        1%{?dist}
 Summary:        TUI-просмотр csv/parquet/json датасетов
 
 License:        MIT
-URL:            https://github.com/fathulfahmy/tabiew
+URL:            https://github.com/shshemi/tabiew
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}-node-vendor-%{version}.tar.gz
+Source1:        %{name}-vendor-%{version}.tar.gz
 %global debug_package %{nil}
 %global _unpackaged_files_terminate_build 0
 
 
-BuildRequires:  golang
+BuildRequires:  cargo
+BuildRequires:  rust
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  cargo-rpm-macros
 
 %description
 TUI-просмотр csv/parquet/json датасетов
@@ -26,16 +30,14 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -N -a1 -n %{name}-%{version}
+%cargo_prep -v vendor
 
 %build
-export GOFLAGS='-mod=vendor'
-export CGO_ENABLED=0
-export GOPATH=$(mktemp -d)
-export GOCACHE=$GOPATH/cache
-go build -trimpath -ldflags '-s -w' -o tabiew .
+%cargo_build
 
 %install
-install -Dpm0755 tabiew %{buildroot}%{_bindir}/tabiew
+%cargo_install
+rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
 for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && cp -p "$f" %{buildroot}%{_licensedir}/%{name}/ || true; done
@@ -45,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/tabiew
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0-1
+* Fri Oct 02 2026 candy-bot <candy@localhost> - 0.15.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
