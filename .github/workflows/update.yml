@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
 
@@ -177,35 +178,70 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd "$GITHUB_WORKSPACE" 2>/dev/null || cd "$(pwd)" || exit 0
+          set -o pipefail
+          cd "$GITHUB_WORKSPACE" 2>/dev/null || cd "$(pwd)" || exit 1
           git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
-          echo "=== Commit state step ==="
-          if [ ! -d ".git" ]; then
-            echo "нет .git — поднимаю репозиторий и сохраняю локальные изменения"
+          echo "=== Commit state step (bounded staging + bot-branch PR) ==="
+          REMOTE_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if ! git rev-parse --verify -q HEAD >/dev/null 2>&1; then
+            echo "нет HEAD — поднимаю репозиторий из origin"
             git init -q
-            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            git remote add origin "$REMOTE_URL" 2>/dev/null || git remote set-url origin "$REMOTE_URL"
             git -c protocol.version=2 fetch -q --depth=50 origin master
-            git reset --mixed FETCH_HEAD 2>&1 | tail -2 || true
-            git checkout -qb master 2>/dev/null || true
-            echo "=== Коммит локальных изменений (state.json) ==="
+            git reset -q FETCH_HEAD
+          else
+            git remote set-url origin "$REMOTE_URL" 2>/dev/null || git remote add origin "$REMOTE_URL"
+            git fetch -q origin master 2>/dev/null || true
           fi
           git config user.name "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-          git add state/state.json pkgs.json SPECS/ 2>&1 || true
-          echo "Files staged:"
-          git diff --cached --stat || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "submit sync state"
-            # State-ветка (runtime state), НЕ source-PR и НЕ запись в master:
-            # полностью автоматический source-bot-PR отложен до owner-approved
-            # credential design (GITHUB_TOKEN не порождает follow-up runs).
-            BASE=$(git rev-parse origin/state/submit 2>/dev/null || echo none)
-            if [ "$(git rev-parse HEAD)" != "$BASE" ]; then
-              git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:state/submit 2>&1 || echo "push state failed (non-critical)"
-            fi
-          else
-            echo "No changes to commit"
+
+          # Повторная генерация спек под актуальные цели state.json: в этом шаге
+          # versions-стадж уже обновил цели, а первый gen --all работал до них.
+          # Благодаря этому спека и state-цель всегда согласованы (helper иначе abort).
+          mkdir -p logs
+          if ! python3 bin/gen_specs.py --all 2>&1 | tee logs/gen-specs-realign.log; then
+            echo "gen_specs --all (re-align) failed — state не сохраняется"
+            exit 1
           fi
+
+          # Гейт: bounded-стейджинг (selection ⊆ пакетов прогона), откат датового
+          # churn чужих спек, abort при неожиданных диффах (никаких 132 specs).
+          if ! python3 bin/stage_state_sync.py 2>&1 | tee logs/stage-state.log; then
+            echo "stage_state_sync: ABORT — неожиданный/грязный дифф, PR не создаётся"
+            exit 1
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            echo "=== Commit state done ==="
+            exit 0
+          fi
+
+          BRANCH="bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git commit -qm "submit sync state (run ${GITHUB_RUN_ID})"
+          if ! git push -q "$REMOTE_URL" "HEAD:refs/heads/${BRANCH}"; then
+            echo "push ${BRANCH} failed — состояние не сохранено"
+            exit 1
+          fi
+          echo "pushed: ${BRANCH}"
+
+          jq -n --arg head "$BRANCH" \
+                --arg title "submit sync state (run ${GITHUB_RUN_ID})" \
+                --arg body "Автоматический PR состояния от run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Стейджинг прошёл bounded-гейт bin/stage_state_sync.py (см. logs/stage-state.log в артефактах прогона). Нота: PR создан через GITHUB_TOKEN, поэтому pull_request-CI на него GitHub не запускает — ревью/merge вручную." \
+                > /tmp/pr.json
+          HTTP=$(curl -sS -o /tmp/pr-response.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            --data @/tmp/pr.json \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls") || true
+          PR_URL=$(jq -r '.html_url // empty' /tmp/pr-response.json 2>/dev/null || true)
+          if [ "$HTTP" != "201" ] || [ -z "$PR_URL" ]; then
+            echo "PR create failed (HTTP ${HTTP}):"
+            cat /tmp/pr-response.json 2>/dev/null || true
+            exit 1
+          fi
+          echo "PR created: ${PR_URL}"
           echo "=== Commit state done ==="
 
       - name: Telegram notification
