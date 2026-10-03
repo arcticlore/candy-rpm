@@ -12,6 +12,8 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 %global _unpackaged_files_terminate_build 0
 
 
+%global __cargo /usr/bin/env CARGO_HOME=.cargo RUSTC_BOOTSTRAP=1 RUSTFLAGS='%{build_rustflags} --cfg rustix_use_libc' /usr/bin/cargo
+
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
@@ -48,5 +50,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/zenith
 
 %changelog
-* Fri Oct 02 2026 candy-bot <candy@localhost> - 0.15.1-1
+* Sat Oct 03 2026 candy-bot <candy@localhost> - 0.15.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

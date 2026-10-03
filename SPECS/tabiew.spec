@@ -16,6 +16,7 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  perl
 
 %description
 TUI-просмотр csv/parquet/json датасетов
@@ -44,8 +45,8 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files
 %{_licensedir}/%{name}
 
-%{_bindir}/tabiew
+%{_bindir}/tw
 
 %changelog
-* Fri Oct 02 2026 candy-bot <candy@localhost> - 0.15.1-1
+* Sat Oct 03 2026 candy-bot <candy@localhost> - 0.15.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

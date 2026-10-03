@@ -14,7 +14,8 @@ BuildRequires:  python3-devel
 BuildRequires:  pyproject-rpm-macros
 
 %generate_buildrequires
-%pyproject_buildrequires | grep -vE '(python3dist(streamlink))( |$)' || :
+%pyproject_patch_dependency streamlink:ignore
+%pyproject_buildrequires
 
 %description
 Procedural ASCII bonsai tree generator
@@ -42,5 +43,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %files -f %{pyproject_files}
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 3.0.0-1
+* Sat Oct 03 2026 candy-bot <candy@localhost> - 3.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
