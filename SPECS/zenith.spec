@@ -41,7 +41,7 @@ Don't throw tomatoes - file issues instead.
 %cargo_build
 
 %install
-%cargo_install
+%cargo_install --locked
 rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
