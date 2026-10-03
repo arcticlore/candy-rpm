@@ -88,7 +88,7 @@
 | **PyBonsai** | Procedural ASCII bonsai tree generator | `pybonsai — растит бонсай` | pypi.org/project/pybonsai |
 | **snakes** | Snakes crawling across your terminal | `snakes.pl — змейки` | github.com/pipeseroni/snakes.pl |
 | **snowmachine** | Snow in your terminal | `snowmachine — снегопад` | pypi.org/project/snowmachine |
-| **tabiew** | TUI-просмотр csv/parquet/json датасетов | `tabiew data.csv` | github.com/shshemi/tabiew |
+| **tabiew** | TUI-просмотр csv/parquet/json датасетов | `tw data.csv` | github.com/shshemi/tabiew |
 | **terminal-parrot** | Party parrot time, in your terminal | `terminal-parrot — танцующий попугай` | github.com/jmhobbs/terminal-parrot |
 | **terminaltexteffects** | Terminal text effects engine — анимации печати и эффектов в терминале | `tte "твой текст" — эффекты печати; tte --list-effects` | pypi.org/project/terminaltexteffects |
 | **termshot** | Скриншот команды в виде терминального окна | `termshot --out shot.png -- ls -la` | github.com/homeport/termshot |

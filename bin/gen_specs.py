@@ -442,10 +442,17 @@ def body_cargo(m: Package, br: list[str], req: list[str]) -> str:
     cd_b = f"cd {m.cdir}\n" if m.cdir else ""
     envs = "".join(f"export {e}\n" for e in m.build_env)
 
+    # git-зависимости: make-srpm сохранил git+ source-блоки из `cargo vendor`,
+    # %cargo_prep пишет .cargo/config.toml только под crates.io — дописываем
+    out += ["", prep(m), "%cargo_prep -v vendor"]
+    import os
+
+    gc = os.environ.get("CANDY_CARGO_GITCONF", "")
+    if gc and Path(gc).is_file():
+        frag = Path(gc).read_text().strip()
+        if frag:
+            out += ["cat >> .cargo/config.toml <<'CANDY_CARGO_EOF'", frag, "CANDY_CARGO_EOF"]
     out += [
-        "",
-        prep(m),
-        "%cargo_prep -v vendor",
         "",
         "%build",
         cd_b + envs + "%cargo_build",

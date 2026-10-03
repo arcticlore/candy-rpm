@@ -123,10 +123,12 @@ RUNDIR="logs/runs/$(date +%Y%m%d-%H%M%S)-$NAME"
 mkdir -p "$RUNDIR"
 exec > >(tee -a "$RUNDIR/full.log") 2>&1
 
-VT=""; [ "$ECO" = "cargo" ] && VT="SOURCES/$NAME-vendor-$VER.tar.gz"
+VT=""; CONF=""
+[ "$ECO" = "cargo" ] && VT="SOURCES/$NAME-vendor-$VER.tar.gz" && CONF="SOURCES/$NAME-cargo-gitconf-$VER.toml"
 [ "$ECO" = "go" ] || [ "$ECO" = "npm" ] && VT="SOURCES/$NAME-node-vendor-$VER.tar.gz"
 if [ -n "$VT" ] && [ -f "$VT" ]; then
     echo ">> $VT уже существует — вендоринг пропущен" >&2
+    [ -n "$CONF" ] && [ -f "$CONF" ] && export CANDY_CARGO_GITCONF="$CONF"
 else
 case "$ECO" in
 cargo)
@@ -144,7 +146,14 @@ cargo)
         tar -C "$RT" -czf "$SRC" "$TOPO"
         rm -rf "$RT"
     fi
-    (cd "$D" && cargo vendor vendor >/dev/null)
+    # stdout cargo vendor = конфиг source-replacement; git-зависимости (git+)
+    # иначе не доезжают: %cargo_prep пишет .cargo/config.toml только под crates.io
+    VCFG=$(mktemp "${TMPDIR:-/tmp}/vendcfg-XXXXXX")
+    (cd "$D" && cargo vendor vendor > "$VCFG")
+    awk '/^\[source\."git\+/{p=1} /^\[/{if ($0 !~ /^\[source\."git\+/) p=0} p' "$VCFG" > "$CONF" || true
+    [ -s "$CONF" ] || rm -f "$CONF"
+    [ -f "$CONF" ] && export CANDY_CARGO_GITCONF="$CONF"
+    rm -f "$VCFG"
     tar -C "$D" -czf "SOURCES/$NAME-vendor-$VER.tar.gz" vendor
     rm -rf "$D" ;;
 go)

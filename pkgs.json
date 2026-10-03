@@ -1924,6 +1924,7 @@
     "zenith"
    ],
    "exp": true,
+   "rustflags": "--cfg rustix_use_libc",
    "use": "zenith",
    "prio": 7
   },
@@ -1996,11 +1997,14 @@
    "summary": "TUI-просмотр csv/parquet/json датасетов",
    "license": "MIT",
    "bins": [
-    "tabiew"
+    "tw"
+   ],
+   "br": [
+    "perl"
    ],
    "fallback": "commit",
    "verify": true,
-   "use": "tabiew data.csv",
+   "use": "tw data.csv",
    "prio": 3
   },
   {
@@ -2193,6 +2197,7 @@
    "bins": [
     "fend"
    ],
+   "cdir": "cli",
    "use": "echo '1+2' | fend",
    "verify": true,
    "prio": 3
