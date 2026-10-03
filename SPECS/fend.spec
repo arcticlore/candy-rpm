@@ -33,9 +33,11 @@ Don't throw tomatoes - file issues instead.
 %cargo_prep -v vendor
 
 %build
+cd cli
 %cargo_build
 
 %install
+cd cli
 %cargo_install
 rm -rf %{buildroot}%{_datadir}/cargo
 
@@ -47,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/fend
 
 %changelog
-* Fri Oct 02 2026 candy-bot <candy@localhost> - 1.5.8-1
+* Sat Oct 03 2026 candy-bot <candy@localhost> - 1.5.8-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
