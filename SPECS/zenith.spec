@@ -19,6 +19,8 @@ BuildRequires:  rust
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cargo-rpm-macros
+BuildRequires:  clang-devel
+BuildRequires:  kernel-headers
 
 %description
 Системный дашборд: CPU/GPU/сеть/диски графиками

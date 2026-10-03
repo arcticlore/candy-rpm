@@ -1923,6 +1923,10 @@
    "bins": [
     "zenith"
    ],
+   "br": [
+    "clang-devel",
+    "kernel-headers"
+   ],
    "exp": true,
    "rustflags": "--cfg rustix_use_libc",
    "use": "zenith",
