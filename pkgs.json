@@ -1929,7 +1929,7 @@
    ],
    "exp": true,
    "rustflags": "--cfg rustix_use_libc",
-   "install_cmd": "%cargo_install --locked",
+   "install_cmd": "%{__cargo} install %{__cargo_common_opts} --profile rpm --no-track --path . --locked",
    "use": "zenith",
    "prio": 7
   },

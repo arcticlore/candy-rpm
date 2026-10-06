@@ -41,7 +41,7 @@ Don't throw tomatoes - file issues instead.
 %cargo_build
 
 %install
-%cargo_install --locked
+%{__cargo} install %{__cargo_common_opts} --profile rpm --no-track --path . --locked
 rm -rf %{buildroot}%{_datadir}/cargo
 
 mkdir -p %{buildroot}%{_licensedir}/%{name}
@@ -52,5 +52,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/zenith
 
 %changelog
-* Sat Oct 03 2026 candy-bot <candy@localhost> - 0.15.1-1
+* Tue Oct 06 2026 candy-bot <candy@localhost> - 0.15.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
