@@ -11,6 +11,8 @@ Source1:        %{name}-vendor-%{version}.tar.gz
 %global _unpackaged_files_terminate_build 0
 
 
+%global __cargo /usr/bin/env CARGO_HOME=.cargo RUSTC_BOOTSTRAP=1 RUSTFLAGS='%{build_rustflags} -Cdebuginfo=0 -Ccodegen-units=16' /usr/bin/cargo
+
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
@@ -31,6 +33,7 @@ Don't throw tomatoes - file issues instead.
 
 %prep
 %autosetup -N -a1 -n %{name}-%{version}
+sed -i '/^\[profile\.release\]/,${s/^lto = "fat"$/lto = false/}' Cargo.toml
 %cargo_prep -v vendor
 
 %build
@@ -48,5 +51,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/tw
 
 %changelog
-* Sat Oct 03 2026 candy-bot <candy@localhost> - 0.15.1-1
+* Tue Oct 06 2026 candy-bot <candy@localhost> - 0.15.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

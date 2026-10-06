@@ -2010,6 +2010,8 @@
    "fallback": "commit",
    "verify": true,
    "use": "tw data.csv",
+   "prep_extra": "sed -i '/^\\[profile\\.release\\]/,${s/^lto = \"fat\"$/lto = false/}' Cargo.toml",
+   "rustflags": "-Cdebuginfo=0 -Ccodegen-units=16",
    "prio": 3
   },
   {
