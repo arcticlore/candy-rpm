@@ -302,6 +302,15 @@ class TgOffsetSaveTest(unittest.TestCase):
         self.assertIn("unchanged", proc.stdout)
         self.assertEqual(self._bare_tip().stdout.strip(), old_tip)
 
+    def test_newline_only_difference_is_noop(self):
+        """restore пишет через echo (с \\n), бот — без: разный только перевод
+        строки при том же значении offset → коммита быть не должно."""
+        old_tip = self._create_remote_state_branch("101")  # как бот: без \n
+        proc = self._run_save("101\n")                     # как restore: с \n
+        self.assertEqual(proc.returncode, 0, proc.stderr + proc.stdout)
+        self.assertIn("unchanged", proc.stdout)
+        self.assertEqual(self._bare_tip().stdout.strip(), old_tip)
+
     def test_initial_branch_creation(self):
         """Ветки state/tg-offset ещё нет → она создаётся обычным push."""
         proc = self._run_save("105")

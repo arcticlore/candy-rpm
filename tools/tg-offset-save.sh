@@ -45,6 +45,16 @@ else
 fi
 
 mkdir -p "$(dirname "$NEW_OFFSET_FILE")"
+
+# Изменение = ДРУГОЕ значение offset. Переводы строк игнорируем: restore пишет
+# через echo (с \n), бот — без него; байтовый дифф давал бы пустые коммиты.
+old_offset="$(tr -d '\r\n' < "$NEW_OFFSET_FILE" 2>/dev/null || true)"
+new_offset="$(tr -d '\r\n' < "$TMP")"
+if [ "$old_offset" = "$new_offset" ]; then
+  echo "offset unchanged ($NEW_OFFSET_FILE) — коммит не нужен"
+  exit 0
+fi
+
 cp "$TMP" "$NEW_OFFSET_FILE"
 git add "$NEW_OFFSET_FILE"
 
