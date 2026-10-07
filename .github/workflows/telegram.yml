@@ -34,18 +34,11 @@ jobs:
 
       # tg-offset — рабочее СОСТОЯНИЕ бота (runtime state), не reviewable
       # source change. Прямая запись в master запрещена, а gh pr create
-      # каждые 5 минут = бот-спам в PR-лист. Пишем offset в отдельную
-      # state-ветку state/tg-offset (без создания PR).
+      # каждые 5 минут = бот-спам в PR-лист. tools/tg-offset-save.sh
+      # сохраняет новый offset во временный файл, fetch'ит origin/state/tg-offset,
+      # делает commit поверх remote-ветки и пушит HEAD:state/tg-offset —
+      # обычный push, fast-forward, без force и без PR.
       - name: Save state (state/tg-offset — runtime state, БЕЗ gh pr)
-        run: |
-          git config user.name  "candy-bot"
-          git config user.email "candy-bot@users.noreply.github.com"
-          git add state/tg-offset.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -qm "tg offset [skip ci]"
-            git branch -f "state/tg-offset" HEAD
-            CUR=$(git rev-parse HEAD)
-            BASE=$(git rev-parse origin/state/tg-offset 2>/dev/null || echo none)
-            if [ "$CUR" != "$BASE" ]; then git push -q "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" state/tg-offset || exit 1; fi
-            # gh pr create НЕ вызываем: offset — runtime state, PR-спам каждые 5 мин запрещён.
-          fi
+        env:
+          TG_OFFSET_PUSH_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        run: bash tools/tg-offset-save.sh state/tg-offset.txt
