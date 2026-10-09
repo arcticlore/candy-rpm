@@ -1,24 +1,27 @@
 name: submit to copr
 on:
+  # Единственный ежедневный schedule (off-peak). Реальный production-submit
+  # происходит ТОЛЬКО здесь, bounded changed-only (см. bin/update-plan.py).
+  schedule:
+    - cron: "17 3 * * *"
+  # Ручной запуск — ТОЛЬКО plan_only (обязательное true). У него нет пути к
+  # COPR submit, commit, push или PR: мутирующие шаги гейтятся по event_name.
   workflow_dispatch:
     inputs:
-      full_rebuild:
-        description: "Полный ребилд (fail-closed, отключён) — для повторного submit той же версии используй force_resubmit + packages"
+      plan_only:
+        description: "Только план (mandatory true): API/repodata/changed-only без submit/commit/push/PR"
         type: boolean
-        default: false
-      force_resubmit:
-        description: "Force resubmit ровно для allowlist из packages (BOUNDED; без packages или с невалидным — guard abort)"
-        type: boolean
-        default: false
-      packages:
-        description: "Optional comma-separated package allowlist for bounded manual run; empty = normal enabled set"
-        type: string
-        required: false
-        default: ""
+        default: true
 
 permissions:
   contents: write
   pull-requests: write
+  actions: write
+
+# Один прогон за раз, без отмены: два параллельных submit запрещены.
+concurrency:
+  group: candy-update-production
+  cancel-in-progress: false
 
 jobs:
 
@@ -28,9 +31,28 @@ jobs:
     timeout-minutes: 180
     container: fedora:44
     env:
-      CANDY_PACKAGE_ALLOWLIST: ${{ inputs.packages }}
+      CANDY_PACKAGE_ALLOWLIST: ""
+      CANDY_MAX_WAVE: "5"
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Resolve run mode (fail-closed)
+        id: mode
+        run: |
+          mkdir -p logs
+          MUTATE=false
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            MUTATE=true
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.plan_only }}" != "true" ]; then
+              echo "[MODE-FAIL] plan_only=false запрещён: production submit только по schedule"
+              exit 1
+            fi
+            MUTATE=false
+          fi
+          echo "MUTATE=${MUTATE}" >> "$GITHUB_OUTPUT"
+          echo "event=${{ github.event_name }} mutate=${MUTATE}"
 
       - name: Install toolchain
         run: |
@@ -41,57 +63,61 @@ jobs:
           tail -5 logs/dnf-install.log
           mv logs/dnf-install.log logs/dnf-install-full.log
 
-      - name: "Guard: fail-closed input plan (до SRPM и submit)"
+      - name: Changed-only plan (fail-closed; no mutation)
         id: plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail
           mkdir -p logs
-          export PLAN_FULL_REBUILD="${{ inputs.full_rebuild }}"
-          export PLAN_FORCE_RESUBMIT="${{ inputs.force_resubmit }}"
-          python3 bin/coprase-status.py plan 2>&1 | tee logs/plan.log
-          grep -E '^(FORCE|MODE|TO_SUBMIT)=' logs/plan.log >> "$GITHUB_OUTPUT"
+          if ! python3 bin/update-plan.py plan 2>&1 | tee logs/update-plan.log; then
+            echo "[PLAN-FAIL] changed-only plan aborted (fail-closed) — submit/commit не выполняются"
+            exit 1
+          fi
+          grep -E '^(TO_SUBMIT|ALLOWLIST_CSV|PLAN_EMPTY)=' logs/update-plan.log >> "$GITHUB_OUTPUT" || true
+
+      - name: Upload changed-only plan artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: update-plan-${{ github.run_number }}
+          path: logs/update-plan.log
 
       - name: Configure COPR
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
         run: |
           mkdir -p ~/.config
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
       - name: Generate specs
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
         run: python3 bin/gen_specs.py --all
 
-      - name: Refresh upstream versions (цели для сабмита)
+      - name: Refresh upstream versions (bounded to plan)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 bin/coprase-status.py versions 2>&1 | tee logs/versions.log
 
       - name: Restore SRPM cache
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
         uses: actions/cache@v5
         with:
           path: |
             SRPMS/
             SOURCES/
-          # Ключ = хэш источников правды, от которых зависит содержимое SRPM:
-          # pkgs.json (версии/BR/bins), генератор spec и скрипт сборки SRPM.
-          # Любое их изменение инвалидирует кэш и форсирует пересборку SRPM
-          # для пакетов со статусом submission. restore-keys намеренно НЕТ:
-          # префикс подтянул бы стейл-SRPM (собранные до фикса perl/noman/install)
-          # и снова отправил бы их в COPR.
           key: srpm-cache-${{ hashFiles('pkgs.json', 'bin/gen_specs.py', 'bin/make-srpm.sh') }}
 
-      - name: Build SRPMs for packages needing submission
+      - name: Build SRPMs for planned packages
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
         run: |
           set -o pipefail
           mkdir -p SRPMS logs
-          echo "=== Building/rebuilding SRPMs for packages needing submission ==="
-          CHECK=$(python3 bin/coprase-status.py check 2>&1)
-          echo "$CHECK" | tee logs/check.log
-          if [ "${{ steps.plan.outputs.force }}" = "1" ]; then
-            TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"
-          else
-            TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM|no SRPM" | awk '{print $1}' || true)
-          fi
-
+          echo "=== Building SRPMs for planned packages ==="
+          TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"
           BUILT=0
           FAILED=0
           SKIPPED=0
@@ -117,118 +143,117 @@ jobs:
               FAILED=$((FAILED+1))
             fi
           done
-
           CACHED=$(find SRPMS -maxdepth 1 -name '*.src.rpm' 2>/dev/null | wc -l)
-          echo "=== SRPMs: built=$BUILT failed=$FAILED skipped=$SKIPPED cached=$CACHED (полные логи: logs/srpm-*.log) ==="
+          echo "=== SRPMs: built=$BUILT failed=$FAILED skipped=$SKIPPED cached=$CACHED ==="
 
-      - name: Verify BuildRequires resolve (сухой прогон dnf builddep)
+      - name: Verify BuildRequires resolve (дозор)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
         run: |
-          echo "=== dnf builddep --assumeno для пакетов на сабмит — дозор зависимостей ==="
-          CHECK=$(python3 bin/coprase-status.py check 2>&1)
-          if [ "${{ steps.plan.outputs.force }}" = "1" ]; then
-            TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"
-          else
-            TO_SUBMIT=$(echo "$CHECK" | grep -E "has SRPM" | awk '{print $1}' || true)
-          fi
-          [ -n "$TO_SUBMIT" ] || { echo "Нет пакетов на сабмит"; exit 0; }
-          echo "Проверяю: $(echo "$TO_SUBMIT" | tr '\n' ' ')"
-          for name in $TO_SUBMIT; do
+          echo "=== dnf builddep --assumeno — дозор зависимостей ==="
+          for name in ${{ steps.plan.outputs.to_submit }}; do
             srpm=$(find SRPMS -maxdepth 1 -name "${name}-*.src.rpm" 2>/dev/null | head -1)
             [ -n "$srpm" ] || continue
             bin/check-deps.sh "$srpm" || true
           done
           BLOCKED=$(find SRPMS/blocked -maxdepth 1 -name '*.src.rpm' 2>/dev/null | wc -l)
-          echo "=== Блокировано dnf-дозором: $BLOCKED (в SRPMS/blocked/, в COPR не уйдут) ==="
+          echo "=== Блокировано dnf-дозором: $BLOCKED ==="
 
-      - name: Submit to COPR (dedup with version comparison)
-        run: python3 bin/coprase-status.py submit ${{ steps.plan.outputs.force == '1' && '--force' || '' }} 2>&1 | tee logs/submit.log
+      - name: Submit to COPR (bounded, no force)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          if ! python3 bin/coprase-status.py submit 2>&1 | tee logs/submit.log; then
+            echo "[SUBMIT-FAIL] submit loop failed — run красный"
+            exit 1
+          fi
 
-      - name: Auto-triage (fix known failures)
-        if: always()
+      - name: Auto-triage (bounded → NO-OP)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
         run: |
           if ! SEL=$(python3 bin/coprase-status.py selection 2>&1); then
             echo "audit: selection failed - Auto-triage NO-OP (fail-closed)"
             exit 0
           fi
           MODE=$(echo "$SEL" | grep '^SELECTION_MODE:' | cut -d' ' -f2 || true)
-          if [ "$MODE" = "BOUNDED" ]; then
-            echo "audit: bounded package validation run - Auto-triage NO-OP (остальные пакеты не трогаем)"
+          if [ "$MODE" != "ALL" ]; then
+            echo "audit: bounded run - Auto-triage NO-OP"
             exit 0
           fi
           bin/auto-triage.sh || true
 
-      - name: Auto-issue (report failures)
-        if: always()
+      - name: Publish gate (exact all-chroots; fail-closed)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
         run: |
-          if ! SEL=$(python3 bin/coprase-status.py selection 2>&1); then
-            echo "audit: selection failed - Auto-issue NO-OP (fail-closed)"
-            exit 0
+          set -o pipefail
+          mkdir -p logs
+          if ! python3 bin/update-plan.py gate-published 2>&1 | tee logs/gate-published.log; then
+            echo "[GATE-FAIL] publish verification aborted (fail-closed) — state не сохраняется"
+            exit 1
           fi
-          MODE=$(echo "$SEL" | grep '^SELECTION_MODE:' | cut -d' ' -f2 || true)
-          if [ "$MODE" = "BOUNDED" ]; then
-            echo "audit: bounded package validation run - Auto-issue NO-OP (без отчётов по остальным пакетам)"
-            exit 0
+          if ! python3 bin/update-plan.py revert-unpublished 2>&1 | tee -a logs/gate-published.log; then
+            echo "[GATE-FAIL] revert-unpublished failed — state не сохраняется"
+            exit 1
           fi
-          bin/auto-issue.sh || true
 
-      - name: Commit state
-        if: always()
+      - name: Commit state (bounded, dedup, reviewable bot PR, auto-merge)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
         run: |
           set -o pipefail
           cd "$GITHUB_WORKSPACE" 2>/dev/null || cd "$(pwd)" || exit 1
           git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
-          echo "=== Commit state step (bounded staging + bot-branch PR) ==="
           REMOTE_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          if ! git rev-parse --verify -q HEAD >/dev/null 2>&1; then
-            echo "нет HEAD — поднимаю репозиторий из origin"
-            git init -q
-            git remote add origin "$REMOTE_URL" 2>/dev/null || git remote set-url origin "$REMOTE_URL"
-            git -c protocol.version=2 fetch -q --depth=50 origin master
-            git reset -q FETCH_HEAD
-          else
-            git remote set-url origin "$REMOTE_URL" 2>/dev/null || git remote add origin "$REMOTE_URL"
-            git fetch -q origin master 2>/dev/null || true
-          fi
+          git remote set-url origin "$REMOTE_URL" 2>/dev/null || git remote add origin "$REMOTE_URL"
+          git fetch -q origin master 2>/dev/null || true
           git config user.name "candy-bot"
           git config user.email "candy-bot@users.noreply.github.com"
-
-          # Повторная генерация спек под актуальные цели state.json: в этом шаге
-          # versions-стадж уже обновил цели, а первый gen --all работал до них.
-          # Благодаря этому спека и state-цель всегда согласованы (helper иначе abort).
           mkdir -p logs
-          if ! python3 bin/gen_specs.py --all 2>&1 | tee logs/gen-specs-realign.log; then
-            echo "gen_specs --all (re-align) failed — state не сохраняется"
-            exit 1
-          fi
 
-          # Гейт: bounded-стейджинг (selection ⊆ пакетов прогона), откат датового
-          # churn чужих спек, abort при неожиданных диффах (никаких 132 specs).
+          # 1) regen под актуальные (уже отфильтрованные publish-gate) цели state
+          if ! python3 bin/gen_specs.py --all 2>&1 | tee logs/gen-specs-realign.log; then
+            echo "gen_specs --all (re-align) failed — state не сохраняется"; exit 1
+          fi
+          # 2) bounded staging: churn чужих спек откат, abort при неожиданных диффах
           if ! python3 bin/stage_state_sync.py 2>&1 | tee logs/stage-state.log; then
-            echo "stage_state_sync: ABORT — неожиданный/грязный дифф, PR не создаётся"
-            exit 1
+            echo "stage_state_sync: ABORT — грязный/неожиданный дифф, PR не создаётся"; exit 1
           fi
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
-            echo "=== Commit state done ==="
+            exit 0
+          fi
+
+          # 3) dedup: не больше одного открытого automation state PR
+          OPEN=$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" \
+            | jq '[.[] | select(.head.ref | startswith("bot/state-sync-"))] | length' 2>/dev/null || echo 0)
+          if [ "${OPEN:-0}" -gt 0 ]; then
+            echo "уже открыт automation state PR (${OPEN}) — новый PR не создаётся (no-op)"
             exit 0
           fi
 
           BRANCH="bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git commit -qm "submit sync state (run ${GITHUB_RUN_ID})"
-          if ! git push -q "$REMOTE_URL" "HEAD:refs/heads/${BRANCH}"; then
-            echo "push ${BRANCH} failed — состояние не сохранено"
-            exit 1
+          if ! git push -q "$REMOTE_URL" "HEAD:refs/heads/bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"; then
+            echo "push bot/state-sync failed — состояние не сохранено"; exit 1
           fi
           echo "pushed: ${BRANCH}"
 
           jq -n --arg head "$BRANCH" \
                 --arg title "submit sync state (run ${GITHUB_RUN_ID})" \
-                --arg body "Автоматический PR состояния от run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Стейджинг прошёл bounded-гейт bin/stage_state_sync.py (см. logs/stage-state.log в артефактах прогона). Нота: PR создан через GITHUB_TOKEN, поэтому pull_request-CI на него GitHub не запускает — ревью/merge вручную." \
+                --arg body "Автоматический PR состояния от run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Публикация проверена exact all-chroots (bin/update-plan.py gate-published); стейджинг прошёл bounded-гейт bin/stage_state_sync.py." \
                 > /tmp/pr.json
           HTTP=$(curl -sS -o /tmp/pr-response.json -w '%{http_code}' -X POST \
             -H "Authorization: Bearer ${GH_TOKEN}" \
@@ -236,13 +261,38 @@ jobs:
             --data @/tmp/pr.json \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls") || true
           PR_URL=$(jq -r '.html_url // empty' /tmp/pr-response.json 2>/dev/null || true)
+          PR_NODE=$(jq -r '.node_id // empty' /tmp/pr-response.json 2>/dev/null || true)
           if [ "$HTTP" != "201" ] || [ -z "$PR_URL" ]; then
-            echo "PR create failed (HTTP ${HTTP}):"
-            cat /tmp/pr-response.json 2>/dev/null || true
-            exit 1
+            echo "PR create failed (HTTP ${HTTP}):"; cat /tmp/pr-response.json 2>/dev/null || true; exit 1
           fi
           echo "PR created: ${PR_URL}"
-          echo "=== Commit state done ==="
+
+          # 4) запустить required validation на bot-ветке (GITHUB_TOKEN-PR не триггерит CI)
+          DHTTP=$(curl -sS -o /tmp/disp.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/validate.yml/dispatches" \
+            --data "{\"ref\":\"${BRANCH}\"}") || true
+          if [ "$DHTTP" != "204" ]; then
+            echo "validate dispatch failed (HTTP ${DHTTP}):"; cat /tmp/disp.json 2>/dev/null || true; exit 1
+          fi
+
+          # 5) auto-merge (merge отложен GitHub до прохождения required checks)
+          if [ -z "$PR_NODE" ]; then
+            echo "нет PR node_id — auto-merge невозможен"; exit 1
+          fi
+          jq -n --arg id "$PR_NODE" \
+            '{query:"mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id, mergeMethod:SQUASH}){clientMutationId}}", variables:{id:$id}}' \
+            > /tmp/gql.json
+          GHTTP=$(curl -sS -o /tmp/gql-response.json -w '%{http_code}' -X POST \
+            -H "Authorization: bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            --data @/tmp/gql.json \
+            "https://api.github.com/graphql") || true
+          if [ "$GHTTP" != "200" ] || jq -e '.errors' /tmp/gql-response.json >/dev/null 2>&1; then
+            echo "auto-merge enable failed (HTTP ${GHTTP}):"; cat /tmp/gql-response.json 2>/dev/null || true; exit 1
+          fi
+          echo "auto-merge enabled for ${PR_URL}"
 
       - name: Telegram notification
         if: always()

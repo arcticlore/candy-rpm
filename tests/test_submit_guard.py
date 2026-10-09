@@ -153,40 +153,40 @@ class TestCmdPlanMachineOutput(unittest.TestCase):
 
 
 class TestUpdateWorkflowStructure(unittest.TestCase):
-    """Структура update.yml под политику guard-шага."""
+    """Структура scheduled update.yml под bounded-автономную политику."""
 
     TEXT = (ROOT / ".github" / "workflows" / "update.yml").read_text(
         encoding="utf-8")
 
-    def test_force_resubmit_input_exists_defaults_false(self):
-        idx = self.TEXT.index("force_resubmit:")
-        block = self.TEXT[idx:idx + 400]
+    def test_single_daily_schedule_present(self):
+        self.assertEqual(self.TEXT.count("schedule:"), 1)
+        self.assertIn("cron:", self.TEXT)
+
+    def test_manual_dispatch_is_plan_only_mandatory(self):
+        idx = self.TEXT.index("plan_only:")
+        block = self.TEXT[idx:idx + 300]
         self.assertIn("type: boolean", block)
-        self.assertIn("default: false", block)
+        self.assertIn("default: true", block)
 
-    def test_guard_runs_before_srpm_and_submit(self):
-        guard = self.TEXT.index("coprase-status.py plan")
-        srpm = self.TEXT.index("Build SRPMs")
-        submit = self.TEXT.index("Submit to COPR")
-        self.assertLess(guard, srpm)
-        self.assertLess(srpm, submit)
+    def test_no_full_rebuild_no_force(self):
+        self.assertNotIn("full_rebuild", self.TEXT)
+        self.assertNotIn("--force", self.TEXT)
 
-    def test_full_rebuild_only_reaches_the_guard_env(self):
-        # inputs.full_rebuild используется ровно один раз — в guard-шаге;
-        # SRPM/builddep/submit условия больше от него не зависят.
-        self.assertEqual(self.TEXT.count("inputs.full_rebuild"), 1)
-        self.assertNotIn("inputs.full_rebuild ==", self.TEXT)
-        self.assertIn('PLAN_FULL_REBUILD="${{ inputs.full_rebuild }}"', self.TEXT)
+    def test_concurrency_never_cancels(self):
+        self.assertIn("cancel-in-progress: false", self.TEXT)
 
-    def test_force_flag_comes_from_plan_outputs(self):
-        self.assertIn("${{ steps.plan.outputs.force == '1' && '--force' || '' }}",
-                      self.TEXT)
-        # форс-ветки SRPM/builddep используют ровно effective allowlist из plan
-        self.assertEqual(self.TEXT.count('TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"'), 2)
+    def test_plan_before_submit_and_gate_before_commit(self):
+        plan = self.TEXT.index("update-plan.py plan")
+        submit = self.TEXT.index("coprase-status.py submit")
+        gate = self.TEXT.index("update-plan.py gate-published")
+        commit = self.TEXT.index("Commit state")
+        self.assertLess(plan, submit)   # changed-only gate до submit
+        self.assertLess(submit, gate)   # publish-верификация после сборки
+        self.assertLess(gate, commit)   # state пишется только после gate
 
-    def test_manual_only_no_schedule(self):
-        head = self.TEXT.split("\n", 20)
-        self.assertFalse(re.search(r"^\s*schedule:", "\n".join(head), re.M))
+    def test_no_direct_master_push(self):
+        self.assertNotIn("HEAD:master", self.TEXT)
+        self.assertNotIn("refs/heads/master", self.TEXT)
 
 
 if __name__ == "__main__":

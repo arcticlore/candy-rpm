@@ -138,14 +138,52 @@ jobs:
               if mk.is_file():
                   bad.append(f'MARKER: {mk}')
 
-          # 6) update.yml (production mutation): только вручную, без schedule
+          # 6) update.yml — единственный scheduled COPR-submit workflow, при
+          #    строгом выполнении bounded-инвариантов (fail-closed автономка).
           up_file = ROOT / '.github/workflows/update.yml'
           if up_file.is_file():
-              on = triggers(yaml.safe_load(up_file.read_text(encoding='utf-8')))
-              if isinstance(on, dict) and 'schedule' in on:
-                  bad.append('update.yml: содержит schedule (production-расписание запрещено)')
+              up_text = up_file.read_text(encoding='utf-8')
+              up_doc = yaml.safe_load(up_text)
+              on = triggers(up_doc)
+              # ровно ОДИН ежедневный schedule
+              sched = on.get('schedule') if isinstance(on, dict) else None
+              if not (isinstance(sched, list) and len(sched) == 1
+                      and isinstance(sched[0], dict) and 'cron' in sched[0]):
+                  bad.append('update.yml: требуется ровно один schedule с cron')
               if not (isinstance(on, dict) and 'workflow_dispatch' in on):
-                  bad.append('update.yml: должен запускаться только вручную (workflow_dispatch)')
+                  bad.append('update.yml: должен иметь workflow_dispatch')
+              # никакой возможности передать full_rebuild / --force
+              for lit in ('full_rebuild', '--force'):
+                  if lit in up_text:
+                      bad.append(f'update.yml: запрещён литерал {lit!r}')
+              # одна очередь, без отмены
+              conc = up_doc.get('concurrency') if isinstance(up_doc, dict) else None
+              if not isinstance(conc, dict) or conc.get('cancel-in-progress') is not False:
+                  bad.append('update.yml: требуется concurrency.cancel-in-progress: false')
+              # max-wave в диапазоне 1..5
+              mw = re.search(r'CANDY_MAX_WAVE:\s*"(\d+)"', up_text)
+              if not mw or not (1 <= int(mw.group(1)) <= 5):
+                  bad.append('update.yml: CANDY_MAX_WAVE должен быть в 1..5')
+              # ручной запуск — только plan_only (default=true)
+              wd = on.get('workflow_dispatch') if isinstance(on, dict) else None
+              inputs = wd.get('inputs') if isinstance(wd, dict) else None
+              po = inputs.get('plan_only') if isinstance(inputs, dict) else None
+              if not isinstance(po, dict) or po.get('default') is not True:
+                  bad.append('update.yml: workflow_dispatch.inputs.plan_only default=true обязателен')
+              # publish-gate обязателен и не нейтрализован
+              if 'update-plan.py gate-published' not in up_text:
+                  bad.append('update.yml: отсутствует publish-gate (update-plan.py gate-published)')
+              for i, ln in enumerate(up_text.splitlines(), 1):
+                  if ('gate-published' in ln or 'revert-unpublished' in ln) and '|| true' in ln:
+                      bad.append(f'{up_file}:{i}: publish-gate нейтрализован (|| true)')
+
+          # 6b) scheduled COPR-submit разрешён ТОЛЬКО update.yml (self-дозор пропускается)
+          for wf in sorted(ROOT.glob('.github/workflows/*.yml')):
+              if wf.name == 'update.yml' or str(wf) == SELF:
+                  continue
+              wt = wf.read_text(encoding='utf-8')
+              if ('copr-cli build' in wt or 'coprase-status.py submit' in wt) and 'schedule' in wt:
+                  bad.append(f'{wf}: scheduled COPR-submit разрешён только update.yml')
 
           # 8) reviewable head-commit и PR-заголовок — без native CI-skip маркеров
           head = subprocess.run(['git', 'log', '-1', '--pretty=%s'],
@@ -162,7 +200,7 @@ jobs:
               for b in bad[:30]:
                   print('  -', b)
               raise SystemExit(1)
-          print('OK: AZ5-кода нет, маркеров нет, прямых записей в master нет, update manual-only, reviewable без skip-маркеров')
+          print('OK: AZ5-кода нет, маркеров нет, прямых записей в master нет, scheduled update bounded-only, reviewable без skip-маркеров')
           PY
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -174,4 +212,4 @@ jobs:
           files: .github/workflows/*.yml
 
       - name: coprase-status selection + submit-guard unit tests (stdlib, no network/COPR)
-        run: python3 -m unittest -v tests/test_coprase_status.py tests/test_submit_guard.py tests/test_commit_ver.py tests/test_stage_state_sync.py tests/test_workflow_tools.py
+        run: python3 -m unittest -v tests/test_coprase_status.py tests/test_submit_guard.py tests/test_commit_ver.py tests/test_stage_state_sync.py tests/test_workflow_tools.py tests/test_update_plan.py
