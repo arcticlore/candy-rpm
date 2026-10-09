@@ -31,8 +31,10 @@ jobs:
     timeout-minutes: 180
     container: fedora:44
     env:
-      CANDY_PACKAGE_ALLOWLIST: ""
+      # Иммутабельный план: max wave, ожидание фактического merge (не auto-merge).
       CANDY_MAX_WAVE: "5"
+      CANDY_MERGE_TIMEOUT: "5400"
+      CANDY_MERGE_POLL: "30"
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
@@ -74,7 +76,7 @@ jobs:
             echo "[PLAN-FAIL] changed-only plan aborted (fail-closed) — submit/commit не выполняются"
             exit 1
           fi
-          grep -E '^(TO_SUBMIT|ALLOWLIST_CSV|PLAN_EMPTY)=' logs/update-plan.log >> "$GITHUB_OUTPUT" || true
+          grep -E '^(MODE|BUILD_ENTRIES|STATE_ONLY_ENTRIES|ALLOWLIST_CSV|BUILD_ALLOWLIST_CSV|STATE_ONLY_ALLOWLIST_CSV|PLAN_EMPTY)=' logs/update-plan.log >> "$GITHUB_OUTPUT" || true
 
       - name: Upload changed-only plan artifact
         if: always()
@@ -84,24 +86,221 @@ jobs:
           path: logs/update-plan.log
 
       - name: Configure COPR
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode != 'none'
         run: |
           mkdir -p ~/.config
           echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
           chmod 600 ~/.config/copr
 
-      - name: Generate specs
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
-        run: python3 bin/gen_specs.py --all
-
-      - name: Refresh upstream versions (bounded to plan)
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+      # ------------------------------------------------------------------
+      # state-only reconcile: planned target already published 8/8 but
+      # state/SPECS stale → bounded state PR, NEVER a rebuild.
+      # ------------------------------------------------------------------
+      - name: Materialize exact planned targets (state-only, bounded)
+        id: materialize_so
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 bin/coprase-status.py versions 2>&1 | tee logs/versions.log
+          CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.state_only_entries }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: |
+          set -o pipefail
+          if ! python3 bin/update-plan.py materialize 2>&1 | tee logs/materialize.log; then
+            echo "[MATERIALIZE-FAIL] planned target not reproducible — state не сохранён"
+            exit 1
+          fi
+
+      - name: Generate specs (state-only)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only'
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: python3 bin/gen_specs.py --all
+
+      - name: Verify published 8/8 (state-only gate; fail-closed)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only'
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          OUT=$(python3 bin/update-plan.py gate-published 2>&1 | tee logs/gate-published.log)
+          if echo "$OUT" | grep -Eq '^UNPUBLISHED=.+'; then
+            echo "[GATE-FAIL] state-only target not published 8/8 — state не сохраняется"
+            exit 1
+          fi
+          python3 bin/update-plan.py revert-unpublished 2>&1 | tee -a logs/gate-published.log
+
+      - name: Stage bounded state/SPECS + fingerprint
+        id: stage
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only'
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          if ! python3 bin/stage_state_sync.py 2>&1 | tee logs/stage-state.log; then
+            echo "stage_state_sync: ABORT — грязный/неожиданный дифф, PR не создаётся"; exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "staged_empty=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "staged_empty=0" >> "$GITHUB_OUTPUT"
+            FP=$(python3 bin/update-plan.py fingerprint | sed -n 's/^EXPECTED_FINGERPRINT=//p')
+            if [ -z "$FP" ]; then echo "fingerprint computation failed"; exit 1; fi
+            echo "fingerprint=$FP" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pre-submit guard — open bot PR (state-only, fail-closed)
+        id: preflight_so
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only' && steps.stage.outputs.staged_empty != '1'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.state_only_entries }}
+          CANDY_EXPECTED_FINGERPRINT: ${{ steps.stage.outputs.fingerprint }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          if ! python3 bin/update-plan.py preflight 2>&1 | tee logs/preflight.log; then
+            echo "[PREFLIGHT-FAIL] open-PR guard failed (fail-closed) — PR не создаётся/не переиспользуется"
+            exit 1
+          fi
+          grep -E '^(DECISION|REUSE_PR|REUSE_BRANCH)=' logs/preflight.log >> "$GITHUB_OUTPUT" || true
+
+      - name: Ensure bounded state PR (create or reuse)
+        id: prcommit
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only' && steps.stage.outputs.staged_empty != '1' && (steps.preflight_so.outputs.decision == 'PROCEED' || steps.preflight_so.outputs.decision == 'REUSE')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          cd "$GITHUB_WORKSPACE" 2>/dev/null || cd "$(pwd)" || exit 1
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
+
+          # РЕЮЗ: открытый bot PR с точно тем же контентом — переходим к наблюдению,
+          # повторной сборки нет (build в state-only не вызывается вообще).
+          if [ "${{ steps.preflight_so.outputs.decision }}" = "REUSE" ]; then
+            echo "reusing open bot PR #${{ steps.preflight_so.outputs.reuse_pr }} (same content)"
+            echo "pr_number=${{ steps.preflight_so.outputs.reuse_pr }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          REMOTE_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git remote set-url origin "$REMOTE_URL" 2>/dev/null || git remote add origin "$REMOTE_URL"
+          git fetch -q origin master 2>/dev/null || true
+          git config user.name "candy-bot"
+          git config user.email "candy-bot@users.noreply.github.com"
+
+          BRANCH="bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git commit -qm "state: bounded submit sync (run ${GITHUB_RUN_ID})"
+          if ! git push -q "$REMOTE_URL" "HEAD:refs/heads/bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"; then
+            echo "push bot/state-sync failed — состояние не сохранено"; exit 1
+          fi
+          echo "pushed: ${BRANCH}"
+
+          jq -n --arg head "$BRANCH" \
+                --arg title "state: bounded submit sync (run ${GITHUB_RUN_ID})" \
+                --arg body "Автоматический PR состояния от run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Цель опубликована 8/8 (bin/update-plan.py gate-published); стейджинг прошёл bounded-гейт bin/stage_state_sync.py. Иммутабельный план name@target." \
+                > /tmp/pr.json
+          HTTP=$(curl -sS -o /tmp/pr-response.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            --data @/tmp/pr.json \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls") || true
+          PR_URL=$(jq -r '.html_url // empty' /tmp/pr-response.json 2>/dev/null || true)
+          PR_NUM=$(jq -r '.number // empty' /tmp/pr-response.json 2>/dev/null || true)
+          PR_NODE=$(jq -r '.node_id // empty' /tmp/pr-response.json 2>/dev/null || true)
+          if [ "$HTTP" != "201" ] || [ -z "$PR_URL" ] || [ -z "$PR_NUM" ]; then
+            echo "PR create failed (HTTP ${HTTP}):"; cat /tmp/pr-response.json 2>/dev/null || true; exit 1
+          fi
+          echo "PR created: ${PR_URL}"
+
+          # required validation на bot-ветке (GITHUB_TOKEN-PR не триггерит CI)
+          DHTTP=$(curl -sS -o /tmp/disp.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/validate.yml/dispatches" \
+            --data "{\"ref\":\"${BRANCH}\"}") || true
+          if [ "$DHTTP" != "204" ]; then
+            echo "validate dispatch failed (HTTP ${DHTTP}):"; cat /tmp/disp.json 2>/dev/null || true; exit 1
+          fi
+
+          # auto-merge: merge отложен GitHub до прохождения required checks.
+          # Включение auto-merge ≠ завершение — фактический merged ждёт observe-merge.
+          if [ -z "$PR_NODE" ]; then
+            echo "нет PR node_id — auto-merge невозможен"; exit 1
+          fi
+          jq -n --arg id "$PR_NODE" \
+            '{query:"mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id, mergeMethod:SQUASH}){clientMutationId}}", variables:{id:$id}}' \
+            > /tmp/gql.json
+          GHTTP=$(curl -sS -o /tmp/gql-response.json -w '%{http_code}' -X POST \
+            -H "Authorization: bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            --data @/tmp/gql.json \
+            "https://api.github.com/graphql") || true
+          if [ "$GHTTP" != "200" ] || jq -e '.errors' /tmp/gql-response.json >/dev/null 2>&1; then
+            echo "auto-merge enable failed (HTTP ${GHTTP}):"; cat /tmp/gql-response.json 2>/dev/null || true; exit 1
+          fi
+          echo "auto-merge enabled for ${PR_URL}"
+          echo "pr_number=${PR_NUM}" >> "$GITHUB_OUTPUT"
+
+      - name: Observe until actual merge (state-only, fail-closed)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only' && steps.prcommit.outputs.pr_number != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          if ! python3 bin/update-plan.py observe-merge "${{ steps.prcommit.outputs.pr_number }}" 2>&1 | tee logs/observe-merge.log; then
+            echo "[OBSERVE-FAIL] bot PR не смержен (timeout/checks/closed) — run красный; следующий run распознает тот же PR"
+            exit 1
+          fi
+
+      # ------------------------------------------------------------------
+      # build wave: changed-only submit. Fail-closed: пока открыт bot PR,
+      # одинаковость которого доказать нельзя, COPR submit не выполняется.
+      # ------------------------------------------------------------------
+      - name: Pre-submit guard — open bot PR (build, fail-closed)
+        id: preflight_build
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.build_entries }}
+          CANDY_EXPECTED_FINGERPRINT: ""
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          if ! python3 bin/update-plan.py preflight 2>&1 | tee logs/preflight.log; then
+            echo "[PREFLIGHT-FAIL] open-PR guard failed (fail-closed) — COPR submit не выполняется"
+            exit 1
+          fi
+
+      - name: Materialize exact planned targets (build, bounded)
+        id: materialize_build
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.build_entries }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
+        run: |
+          set -o pipefail
+          if ! python3 bin/update-plan.py materialize 2>&1 | tee logs/materialize.log; then
+            echo "[MATERIALIZE-FAIL] planned target not reproducible — submit не выполняется"
+            exit 1
+          fi
+
+      - name: Generate specs (build)
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
+        env:
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
+        run: python3 bin/gen_specs.py --all
 
       - name: Restore SRPM cache
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
         uses: actions/cache@v5
         with:
           path: |
@@ -109,23 +308,25 @@ jobs:
             SOURCES/
           key: srpm-cache-${{ hashFiles('pkgs.json', 'bin/gen_specs.py', 'bin/make-srpm.sh') }}
 
-      - name: Build SRPMs for planned packages
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+      - name: Build SRPMs for planned packages (exact planned target)
+        id: srpm
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
         env:
-          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
+          CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.build_entries }}
         run: |
           set -o pipefail
           mkdir -p SRPMS logs
-          echo "=== Building SRPMs for planned packages ==="
-          TO_SUBMIT="${{ steps.plan.outputs.to_submit }}"
+          echo "=== Building SRPMs at exact planned targets ==="
           BUILT=0
           FAILED=0
           SKIPPED=0
-          for name in $TO_SUBMIT; do
-            target=$(jq -r --arg n "$name" '.[$n].ver // ""' state/state.json)
-            if [ -z "$target" ]; then
-              echo "  [SKIP] $name: нет цели в state.json"
-              SKIPPED=$((SKIPPED+1))
+          for entry in $CANDY_PLAN_ENTRIES; do
+            name="${entry%%@*}"
+            target="${entry##*@}"
+            if [ -z "$name" ] || [ -z "$target" ] || [ "$name" = "$entry" ]; then
+              echo "  [FAIL] malformed plan entry: $entry"
+              FAILED=$((FAILED+1))
               continue
             fi
             if find SRPMS -maxdepth 1 -name "${name}-${target}-*.src.rpm" 2>/dev/null | grep -q .; then
@@ -147,12 +348,13 @@ jobs:
           echo "=== SRPMs: built=$BUILT failed=$FAILED skipped=$SKIPPED cached=$CACHED ==="
 
       - name: Verify BuildRequires resolve (дозор)
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
         env:
-          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
         run: |
           echo "=== dnf builddep --assumeno — дозор зависимостей ==="
-          for name in ${{ steps.plan.outputs.to_submit }}; do
+          for entry in ${{ steps.plan.outputs.build_entries }}; do
+            name="${entry%%@*}"
             srpm=$(find SRPMS -maxdepth 1 -name "${name}-*.src.rpm" 2>/dev/null | head -1)
             [ -n "$srpm" ] || continue
             bin/check-deps.sh "$srpm" || true
@@ -161,9 +363,9 @@ jobs:
           echo "=== Блокировано dnf-дозором: $BLOCKED ==="
 
       - name: Submit to COPR (bounded, no force)
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
         env:
-          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
         run: |
           set -o pipefail
           mkdir -p logs
@@ -173,9 +375,9 @@ jobs:
           fi
 
       - name: Auto-triage (bounded → NO-OP)
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
+        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'
         env:
-          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
+          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
         run: |
           if ! SEL=$(python3 bin/coprase-status.py selection 2>&1); then
             echo "audit: selection failed - Auto-triage NO-OP (fail-closed)"
@@ -187,112 +389,6 @@ jobs:
             exit 0
           fi
           bin/auto-triage.sh || true
-
-      - name: Publish gate (exact all-chroots; fail-closed)
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
-        env:
-          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
-        run: |
-          set -o pipefail
-          mkdir -p logs
-          if ! python3 bin/update-plan.py gate-published 2>&1 | tee logs/gate-published.log; then
-            echo "[GATE-FAIL] publish verification aborted (fail-closed) — state не сохраняется"
-            exit 1
-          fi
-          if ! python3 bin/update-plan.py revert-unpublished 2>&1 | tee -a logs/gate-published.log; then
-            echo "[GATE-FAIL] revert-unpublished failed — state не сохраняется"
-            exit 1
-          fi
-
-      - name: Commit state (bounded, dedup, reviewable bot PR, auto-merge)
-        if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.to_submit != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.allowlist_csv }}
-        run: |
-          set -o pipefail
-          cd "$GITHUB_WORKSPACE" 2>/dev/null || cd "$(pwd)" || exit 1
-          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
-          REMOTE_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git remote set-url origin "$REMOTE_URL" 2>/dev/null || git remote add origin "$REMOTE_URL"
-          git fetch -q origin master 2>/dev/null || true
-          git config user.name "candy-bot"
-          git config user.email "candy-bot@users.noreply.github.com"
-          mkdir -p logs
-
-          # 1) regen под актуальные (уже отфильтрованные publish-gate) цели state
-          if ! python3 bin/gen_specs.py --all 2>&1 | tee logs/gen-specs-realign.log; then
-            echo "gen_specs --all (re-align) failed — state не сохраняется"; exit 1
-          fi
-          # 2) bounded staging: churn чужих спек откат, abort при неожиданных диффах
-          if ! python3 bin/stage_state_sync.py 2>&1 | tee logs/stage-state.log; then
-            echo "stage_state_sync: ABORT — грязный/неожиданный дифф, PR не создаётся"; exit 1
-          fi
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
-          # 3) dedup: не больше одного открытого automation state PR
-          OPEN=$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" \
-            | jq '[.[] | select(.head.ref | startswith("bot/state-sync-"))] | length' 2>/dev/null || echo 0)
-          if [ "${OPEN:-0}" -gt 0 ]; then
-            echo "уже открыт automation state PR (${OPEN}) — новый PR не создаётся (no-op)"
-            exit 0
-          fi
-
-          BRANCH="bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git commit -qm "submit sync state (run ${GITHUB_RUN_ID})"
-          if ! git push -q "$REMOTE_URL" "HEAD:refs/heads/bot/state-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"; then
-            echo "push bot/state-sync failed — состояние не сохранено"; exit 1
-          fi
-          echo "pushed: ${BRANCH}"
-
-          jq -n --arg head "$BRANCH" \
-                --arg title "submit sync state (run ${GITHUB_RUN_ID})" \
-                --arg body "Автоматический PR состояния от run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Публикация проверена exact all-chroots (bin/update-plan.py gate-published); стейджинг прошёл bounded-гейт bin/stage_state_sync.py." \
-                > /tmp/pr.json
-          HTTP=$(curl -sS -o /tmp/pr-response.json -w '%{http_code}' -X POST \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            --data @/tmp/pr.json \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls") || true
-          PR_URL=$(jq -r '.html_url // empty' /tmp/pr-response.json 2>/dev/null || true)
-          PR_NODE=$(jq -r '.node_id // empty' /tmp/pr-response.json 2>/dev/null || true)
-          if [ "$HTTP" != "201" ] || [ -z "$PR_URL" ]; then
-            echo "PR create failed (HTTP ${HTTP}):"; cat /tmp/pr-response.json 2>/dev/null || true; exit 1
-          fi
-          echo "PR created: ${PR_URL}"
-
-          # 4) запустить required validation на bot-ветке (GITHUB_TOKEN-PR не триггерит CI)
-          DHTTP=$(curl -sS -o /tmp/disp.json -w '%{http_code}' -X POST \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/validate.yml/dispatches" \
-            --data "{\"ref\":\"${BRANCH}\"}") || true
-          if [ "$DHTTP" != "204" ]; then
-            echo "validate dispatch failed (HTTP ${DHTTP}):"; cat /tmp/disp.json 2>/dev/null || true; exit 1
-          fi
-
-          # 5) auto-merge (merge отложен GitHub до прохождения required checks)
-          if [ -z "$PR_NODE" ]; then
-            echo "нет PR node_id — auto-merge невозможен"; exit 1
-          fi
-          jq -n --arg id "$PR_NODE" \
-            '{query:"mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id, mergeMethod:SQUASH}){clientMutationId}}", variables:{id:$id}}' \
-            > /tmp/gql.json
-          GHTTP=$(curl -sS -o /tmp/gql-response.json -w '%{http_code}' -X POST \
-            -H "Authorization: bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            --data @/tmp/gql.json \
-            "https://api.github.com/graphql") || true
-          if [ "$GHTTP" != "200" ] || jq -e '.errors' /tmp/gql-response.json >/dev/null 2>&1; then
-            echo "auto-merge enable failed (HTTP ${GHTTP}):"; cat /tmp/gql-response.json 2>/dev/null || true; exit 1
-          fi
-          echo "auto-merge enabled for ${PR_URL}"
 
       - name: Telegram notification
         if: always()
