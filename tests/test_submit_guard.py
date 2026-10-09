@@ -175,14 +175,16 @@ class TestUpdateWorkflowStructure(unittest.TestCase):
     def test_concurrency_never_cancels(self):
         self.assertIn("cancel-in-progress: false", self.TEXT)
 
-    def test_plan_before_submit_and_gate_before_commit(self):
+    def test_plan_and_preflight_before_submit(self):
         plan = self.TEXT.index("update-plan.py plan")
+        preflight = self.TEXT.index("update-plan.py preflight")
         submit = self.TEXT.index("coprase-status.py submit")
-        gate = self.TEXT.index("update-plan.py gate-published")
-        commit = self.TEXT.index("Commit state")
-        self.assertLess(plan, submit)   # changed-only gate до submit
-        self.assertLess(submit, gate)   # publish-верификация после сборки
-        self.assertLess(gate, commit)   # state пишется только после gate
+        self.assertLess(plan, submit)       # changed-only plan до submit
+        self.assertLess(preflight, submit)  # open-PR guard до COPR submit
+        # state-only reconcile обязателен и ведёт к наблюдению фактического merge
+        self.assertIn("update-plan.py gate-published", self.TEXT)
+        self.assertIn("update-plan.py observe-merge", self.TEXT)
+        self.assertIn("update-plan.py materialize", self.TEXT)
 
     def test_no_direct_master_push(self):
         self.assertNotIn("HEAD:master", self.TEXT)
