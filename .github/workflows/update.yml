@@ -158,6 +158,9 @@ jobs:
           CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.state_only_entries }}
           CANDY_EXPECTED_FINGERPRINT: ${{ steps.stage.outputs.fingerprint }}
           CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
+          CANDY_MODE: ${{ steps.plan.outputs.mode }}
+          CANDY_MUTATE: ${{ steps.mode.outputs.mutate }}
+          CANDY_PREFLIGHT_LOG: logs/preflight.log
         run: |
           set -o pipefail
           mkdir -p logs
@@ -165,7 +168,11 @@ jobs:
             echo "[PREFLIGHT-FAIL] open-PR guard failed (fail-closed) — PR не создаётся/не переиспользуется"
             exit 1
           fi
-          grep -E '^(DECISION|REUSE_PR|REUSE_BRANCH)=' logs/preflight.log >> "$GITHUB_OUTPUT" || true
+          if ! python3 bin/update-plan.py export-decision; then
+            echo "[DECISION-FAIL] MODE=state-only без валидного DECISION (fail-closed) — run red"
+            exit 1
+          fi
+          grep -E '^(REUSE_PR|REUSE_BRANCH)=' logs/preflight.log >> "$GITHUB_OUTPUT" || true
 
       - name: Ensure bounded state PR (create or reuse)
         id: prcommit
@@ -271,11 +278,20 @@ jobs:
           CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.build_entries }}
           CANDY_EXPECTED_FINGERPRINT: ""
           CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
+          CANDY_MODE: ${{ steps.plan.outputs.mode }}
+          CANDY_MUTATE: ${{ steps.mode.outputs.mutate }}
+          CANDY_PREFLIGHT_LOG: logs/preflight.log
         run: |
           set -o pipefail
           mkdir -p logs
           if ! python3 bin/update-plan.py preflight 2>&1 | tee logs/preflight.log; then
             echo "[PREFLIGHT-FAIL] open-PR guard failed (fail-closed) — COPR submit не выполняется"
+            exit 1
+          fi
+          # DECISION должен быть экспортирован как step output; иначе downstream
+          # build/submit steps (gated на decision == 'PROCEED') дали бы green no-op.
+          if ! python3 bin/update-plan.py export-decision; then
+            echo "[DECISION-FAIL] MODE=build без валидного DECISION=PROCEED (fail-closed) — run red"
             exit 1
           fi
 
