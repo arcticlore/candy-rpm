@@ -179,9 +179,14 @@ jobs:
               # immutable plan / pre-submit guard / observe-merge обязательны
               for need in ('update-plan.py materialize',
                            'update-plan.py preflight',
+                           'update-plan.py export-decision',
                            'update-plan.py observe-merge'):
                   if need not in up_text:
                       bad.append(f'update.yml: отсутствует {need!r}')
+              # DECISION обязан экспортироваться в обоих preflight-путях
+              # (build + state-only), иначе downstream steps дают green no-op
+              if up_text.count('update-plan.py export-decision') < 2:
+                  bad.append('update.yml: export-decision не во всех preflight-шагах (ожидалось >=2)')
               # unbounded version refresh по всем пакетам запрещён
               if 'coprase-status.py versions' in up_text:
                   bad.append('update.yml: unbounded coprase-status.py versions запрещён')

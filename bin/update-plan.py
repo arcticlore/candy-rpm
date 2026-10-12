@@ -34,6 +34,8 @@ Subcommands:
     materialize        — bounded state pin to exact planned targets + reproduce
     fingerprint        — sha256 fingerprint of the staged planned diff
     preflight          — fail-closed open bot-PR check (proceed/reuse/abort)
+    export-decision    — normalize the preflight DECISION into $GITHUB_OUTPUT
+                         (exactly one DECISION; fail-closed per MODE)
     observe-merge PR   — wait for the actual merge verdict of a bot PR
     gate-published     — list effective targets NOT published 8/8 (no mutation)
     revert-unpublished — reset state.json targets not published 8/8 to HEAD
@@ -95,6 +97,17 @@ MERGE_TIMEOUT_MAX = 21600
 MERGE_POLL_DEFAULT = 30
 MERGE_POLL_MIN = 5
 MERGE_POLL_MAX = 900
+
+PREFLIGHT_LOG_ENV = "CANDY_PREFLIGHT_LOG"
+GITHUB_OUTPUT_ENV = "GITHUB_OUTPUT"
+
+# On a mutating run each MODE has an explicit, closed set of acceptable
+# preflight decisions. Anything else (missing/duplicate/unknown) is fail-closed.
+DECISION_ALLOWED: dict[str, frozenset[str]] = {
+    "build": frozenset({"PROCEED"}),
+    "state-only": frozenset({"PROCEED", "REUSE"}),
+}
+DECISION_RE = re.compile(r"(?m)^DECISION=(\S+)[ \t]*$")
 
 # check-run conclusions that mean "not a success" for the required checks.
 FAIL_CONCLUSIONS = frozenset(
@@ -917,6 +930,64 @@ def cmd_preflight() -> int:
     return 0
 
 
+def parse_decision(log_text: str) -> str:
+    """Extract EXACTLY one `DECISION=<value>` line from preflight output.
+
+    Zero or many matches is scheduling corruption and must fail closed: the
+    caller may never fall back to an implicit (empty) decision.
+    """
+    vals = DECISION_RE.findall(log_text)
+    if len(vals) != 1:
+        raise PlanError(
+            f"ожидалось ровно одно 'DECISION=', найдено {len(vals)}")
+    return vals[0]
+
+
+def export_decision(log_path: str, mode: str, mutate: str,
+                    out_path: str | None) -> str:
+    """Normalize the preflight DECISION into $GITHUB_OUTPUT, fail-closed.
+
+    On a mutating run (mutate == 'true') the MODE dictates the ONLY acceptable
+    decisions; a missing/duplicate/unknown DECISION or one not allowed for the
+    MODE is a hard error, so the run can never degrade into a green no-op.
+    Returns the exported value ('' when the run does not mutate).
+    """
+    if mutate != "true":
+        return ""
+    allowed = DECISION_ALLOWED.get(mode)
+    if not allowed:
+        raise PlanError(
+            f"нет допустимых DECISION для MODE={mode!r} при mutate=true")
+    try:
+        text = Path(log_path).read_text(encoding="utf-8")
+    except OSError as e:
+        raise PlanError(f"не читается preflight log {log_path!r}: {e}") from e
+    val = parse_decision(text)
+    if val not in allowed:
+        raise PlanError(
+            f"DECISION={val!r} недопустим для MODE={mode!r} "
+            f"(ожидается {'/'.join(sorted(allowed))})")
+    if not out_path:
+        raise PlanError("GITHUB_OUTPUT не задан — decision не экспортируется")
+    with open(out_path, "a", encoding="utf-8") as fh:
+        fh.write(f"decision={val}\n")
+    return val
+
+
+def cmd_export_decision() -> int:
+    log_path = os.environ.get(PREFLIGHT_LOG_ENV, "logs/preflight.log")
+    mode = os.environ.get("CANDY_MODE", "")
+    mutate = os.environ.get("CANDY_MUTATE", "")
+    try:
+        val = export_decision(log_path, mode, mutate,
+                              os.environ.get(GITHUB_OUTPUT_ENV))
+    except PlanError as e:
+        print(f"[DECISION-FAIL] {e}", file=sys.stderr)
+        return 4
+    print(f"decision={val}" if val else "decision= (skipped: mutate != true)")
+    return 0
+
+
 def cmd_observe_merge(argv: list[str]) -> int:
     if len(argv) < 3:
         print("[OBSERVE-FAIL] usage: observe-merge PR_NUMBER", file=sys.stderr)
@@ -1008,8 +1079,8 @@ def cmd_revert_unpublished() -> int:
 def main(argv: list[str]) -> int:
     if len(argv) < 2:
         print("usage: update-plan.py "
-              "{plan|materialize|fingerprint|preflight|observe-merge|"
-              "gate-published|revert-unpublished}", file=sys.stderr)
+              "{plan|materialize|fingerprint|preflight|export-decision|"
+              "observe-merge|gate-published|revert-unpublished}", file=sys.stderr)
         return 1
     cmd = argv[1]
     if cmd == "plan":
@@ -1020,6 +1091,8 @@ def main(argv: list[str]) -> int:
         return cmd_fingerprint()
     if cmd == "preflight":
         return cmd_preflight()
+    if cmd == "export-decision":
+        return cmd_export_decision()
     if cmd == "observe-merge":
         return cmd_observe_merge(argv)
     if cmd == "gate-published":

@@ -624,5 +624,137 @@ class TestWorkflowContainment(unittest.TestCase):
         self.assertLess(commit, observe)
 
 
+class TestDecisionHandoff(unittest.TestCase):
+    """P0: preflight DECISION must reach $GITHUB_OUTPUT, else green no-op."""
+
+    def test_parse_decision_exactly_one(self):
+        self.assertEqual(up.parse_decision("junk\nDECISION=PROCEED\n"), "PROCEED")
+
+    def test_parse_decision_zero_fails(self):
+        with self.assertRaises(up.PlanError):
+            up.parse_decision("no decision here\n")
+
+    def test_parse_decision_duplicate_fails(self):
+        with self.assertRaises(up.PlanError):
+            up.parse_decision("DECISION=PROCEED\nDECISION=ABORT\n")
+
+    def _export(self, text, mode, mutate):
+        td = tempfile.mkdtemp()
+        log = os.path.join(td, "preflight.log")
+        out = os.path.join(td, "gh_output")
+        pathlib.Path(log).write_text(text)
+        pathlib.Path(out).write_text("")
+        val = up.export_decision(log, mode, mutate, out)
+        written = pathlib.Path(out).read_text()
+        return val, written
+
+    def test_build_proceed_is_exported(self):
+        val, written = self._export("DECISION=PROCEED\n", "build", "true")
+        self.assertEqual(val, "PROCEED")
+        self.assertEqual(written, "decision=PROCEED\n")
+
+    def test_build_reuse_is_rejected(self):
+        with self.assertRaises(up.PlanError):
+            self._export("DECISION=REUSE\n", "build", "true")
+
+    def test_build_abort_is_rejected(self):
+        with self.assertRaises(up.PlanError):
+            up.export_decision(*self._export("DECISION=ABORT\n", "build", "true")[:1])
+
+    def test_missing_decision_fails_closed(self):
+        with self.assertRaises(up.PlanError):
+            up.export_decision("/dev/null", "build", "true", "/dev/null")
+
+    def test_unknown_value_fails(self):
+        with self.assertRaises(up.PlanError):
+            self._export("DECISION=MAYBE\n", "build", "true")
+
+    def test_state_only_accepts_proceed_and_reuse(self):
+        self.assertEqual(
+            self._export("DECISION=PROCEED\n", "state-only", "true")[0], "PROCEED")
+        self.assertEqual(
+            self._export("DECISION=REUSE\n", "state-only", "true")[0], "REUSE")
+
+    def test_state_only_abort_fails(self):
+        with self.assertRaises(up.PlanError):
+            self._export("DECISION=ABORT\n", "state-only", "true")
+
+    def test_non_mutating_run_exports_nothing(self):
+        val, written = self._export("", "build", "false")
+        self.assertEqual(val, "")
+        self.assertEqual(written, "")
+
+    def test_cmd_export_decision_red_on_invalid(self):
+        td = tempfile.mkdtemp()
+        log = os.path.join(td, "preflight.log")
+        out = os.path.join(td, "gh_output")
+        pathlib.Path(log).write_text("")  # missing DECISION
+        pathlib.Path(out).write_text("")
+        env = {"CANDY_PREFLIGHT_LOG": log, "CANDY_MODE": "build",
+               "CANDY_MUTATE": "true", "GITHUB_OUTPUT": out}
+        with mock.patch.dict(os.environ, env, clear=False), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            rc = up.cmd_export_decision()
+        self.assertEqual(rc, 4)
+
+    def test_cmd_export_decision_ok(self):
+        td = tempfile.mkdtemp()
+        log = os.path.join(td, "preflight.log")
+        out = os.path.join(td, "gh_output")
+        pathlib.Path(log).write_text("DECISION=PROCEED\n")
+        pathlib.Path(out).write_text("")
+        env = {"CANDY_PREFLIGHT_LOG": log, "CANDY_MODE": "build",
+               "CANDY_MUTATE": "true", "GITHUB_OUTPUT": out}
+        with mock.patch.dict(os.environ, env, clear=False), \
+             redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            rc = up.cmd_export_decision()
+        self.assertEqual(rc, 0)
+        self.assertEqual(pathlib.Path(out).read_text(), "decision=PROCEED\n")
+
+    # --- workflow wiring: the handoff that was missing -----------------------
+    def _block_for(self, step_id):
+        parts = UPDATE_YML.read_text(encoding="utf-8").split("      - name:")
+        for p in parts:
+            blk = "      - name:" + p
+            if f"id: {step_id}\n" in blk:
+                return blk
+        raise AssertionError(f"missing step {step_id}")
+
+    def test_build_preflight_exports_decision(self):
+        blk = self._block_for("preflight_build")
+        self.assertIn("update-plan.py export-decision", blk)
+        self.assertIn("CANDY_MODE: ${{ steps.plan.outputs.mode }}", blk)
+        self.assertIn("CANDY_MUTATE: ${{ steps.mode.outputs.mutate }}", blk)
+
+    def _block_named(self, title):
+        parts = UPDATE_YML.read_text(encoding="utf-8").split("      - name: ")
+        for p in parts:
+            if p.splitlines()[0].strip() == title:
+                return "      - name: " + p
+        raise AssertionError(f"missing step titled {title!r}")
+
+    def test_build_downstream_gated_on_exported_decision(self):
+        # с непустым decision=PROCEED materialize/SRPM/COPR действительно достижимы
+        for step in ("materialize_build", "srpm"):
+            with self.subTest(step=step):
+                blk = self._block_for(step)
+                self.assertIn(
+                    "steps.preflight_build.outputs.decision == 'PROCEED'", blk)
+        submit = self._block_named("Submit to COPR (bounded, no force)")
+        self.assertIn("steps.preflight_build.outputs.decision == 'PROCEED'", submit)
+
+    def test_state_only_handoff(self):
+        blk = self._block_for("preflight_so")
+        self.assertIn("update-plan.py export-decision", blk)
+        prcommit = self._block_for("prcommit")
+        self.assertIn("steps.preflight_so.outputs.decision", prcommit)
+
+    def test_guard_requires_export_decision_in_both_paths(self):
+        text = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
+        self.assertIn("export-decision", text)
+        update = UPDATE_YML.read_text()
+        self.assertGreaterEqual(update.count("update-plan.py export-decision"), 2)
+
+
 if __name__ == "__main__":
     unittest.main()
