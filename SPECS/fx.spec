@@ -1,5 +1,5 @@
 Name:           fx
-Version:        39.2.0
+Version:        40.0.0
 Release:        1%{?dist}
 Summary:        Terminal JSON viewer and processor
 
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/fx
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 39.2.0-1
+* Sat Oct 24 2026 candy-bot <candy@localhost> - 40.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
