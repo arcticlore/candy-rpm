@@ -95,6 +95,11 @@ def main() -> int:
                 base = cand
                 break
     if not base:
+        if not (repo / ".git").exists():
+            return fail(
+                "git-репозиторий отсутствует — actions/checkout не сделал git clone "
+                "(в контейнер-имидже нет git на момент checkout; dnf install git "
+                "обязан идти ДО checkout) — см. нулевую ошибку Р#238")
         return fail("нет эталонного ref (origin/master/FETCH_HEAD/HEAD)")
 
     selection = set(parse_selection(args.selection))

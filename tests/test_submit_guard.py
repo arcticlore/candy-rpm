@@ -190,6 +190,14 @@ class TestUpdateWorkflowStructure(unittest.TestCase):
         self.assertNotIn("HEAD:master", self.TEXT)
         self.assertNotIn("refs/heads/master", self.TEXT)
 
+    def test_git_installed_before_checkout(self):
+        """fedora:44 имидж.drop git → checkout делает tarball → stage_state_sync
+        теряет эталонный ref (Р#238). dnf install git обязан идти ДО checkout."""
+        self.assertIn("Install core git (must run BEFORE checkout)", self.TEXT)
+        git_install = self.TEXT.index("dnf install -y git")
+        checkout = self.TEXT.index("actions/checkout@")
+        self.assertLess(git_install, checkout)
+
 
 if __name__ == "__main__":
     unittest.main()

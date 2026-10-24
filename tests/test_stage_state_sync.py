@@ -111,6 +111,31 @@ class StageStateSyncTest(unittest.TestCase):
 
     # --- тесты ---
 
+    def test_no_git_repo_aborts_actionable(self):
+        """tarball-checkout: нет .git вообще → чёткая причина, не общий fallback."""
+        pathlib.Path(self.repo / ".git", "HEAD").read_text()  # sanity: сейчас есть
+        (self.repo / ".git").rename(self.repo / "_git_backup_")
+        rc, out = self.run_helper()
+        (self.repo / "_git_backup_").rename(self.repo / ".git")
+        self.assertNotEqual(rc, 0)
+        self.assertIn("ABORT: git-репозиторий отсутствует", out)
+        self.assertIn("dnf install git обязан идти ДО checkout", out)
+
+    def test_no_base_ref_on_real_repo_aborts(self):
+        """Есть .git, но ни один эталонный ref не резолвится, base пустой."""
+        import subprocess as sp
+        # .git есть, но refs нет (всё удалено) → ни origin/master, ни HEAD
+        (self.repo / ".git" / "refs" / "heads" / "master").unlink()
+
+        # удалить упакованный ref, если есть
+        packed = pathlib.Path(self.repo / ".git" / "packed-refs")
+        if packed.exists():
+            packed.unlink()
+        rc, out = self.run_helper()
+        self.assertNotEqual(rc, 0)
+        self.assertIn("нет эталонного ref (origin/master/", out)
+        self.assertNotIn("git-репозиторий отсутствует", out)
+
     def test_bounded_131_specs_stage_only_selection(self):
         """132-spec guard: 7 selection-пакетов → ровно 8 staged, churn откат."""
         sel = self.pkgs[:7]
