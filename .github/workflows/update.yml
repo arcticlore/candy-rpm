@@ -36,6 +36,16 @@ jobs:
       CANDY_MERGE_TIMEOUT: "5400"
       CANDY_MERGE_POLL: "30"
     steps:
+      # git обязана быть ПЕРЕД checkout: actions/checkout без git в котейнере
+      # скачивает repo tarball-архивом через REST API (нет .git вообще),
+      # и stage_state_sync/API больше не имеет эталонного ref (Р#238).
+      - name: Install core git (must run BEFORE checkout)
+        run: |
+          mkdir -p logs
+          dnf install -y git >> logs/dnf-git-install.log 2>&1 \
+            || { echo "dnf install git failed:"; tail -20 logs/dnf-git-install.log; exit 1; }
+          git --version
+
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
       - name: Resolve run mode (fail-closed)
