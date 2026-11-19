@@ -1,5 +1,5 @@
 Name:           lazygit
-Version:        0.65.1
+Version:        0.66.1
 Release:        1%{?dist}
 Summary:        Simple terminal UI for git commands
 
@@ -45,5 +45,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/lazygit
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0.65.1-1
+* Sat Oct 24 2026 candy-bot <candy@localhost> - 0.66.1-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
