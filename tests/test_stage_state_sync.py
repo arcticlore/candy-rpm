@@ -122,17 +122,24 @@ class StageStateSyncTest(unittest.TestCase):
         self.assertIn("dnf install git обязан идти ДО checkout", out)
 
     def test_no_base_ref_on_real_repo_aborts(self):
-        """Есть .git, но ни один эталонный ref не резолвится, base пустой."""
-        import subprocess as sp
-        # .git есть, но refs нет (всё удалено) → ни origin/master, ни HEAD
-        (self.repo / ".git" / "refs" / "heads" / "master").unlink()
+        """Есть .git, но ни один эталонный ref не резолвится, base пустой.
 
-        # удалить упакованный ref, если есть
-        packed = pathlib.Path(self.repo / ".git" / "packed-refs")
-        if packed.exists():
-            packed.unlink()
-        rc, out = self.run_helper()
-        self.assertNotEqual(rc, 0)
+        Отдельный пустой git-init — детерминированная фикстура этого состояния.
+        Удалять refs из репозитория setUp нельзя: `git commit` может запустить
+        фоновый auto-maintenance, который успевает пересоздать файлы внутри
+        `.git` во время TemporaryDirectory.cleanup (реальный CI-флейк #44).
+        """
+        with tempfile.TemporaryDirectory() as td:
+            empty_repo = pathlib.Path(td)
+            subprocess.run(["git", "init", "-q"], cwd=empty_repo, check=True)
+            env = dict(os.environ)
+            env.pop("CANDY_PACKAGE_ALLOWLIST", None)
+            r = subprocess.run(
+                [sys.executable, str(HELPER), "--repo", str(empty_repo)],
+                env=env, capture_output=True, text=True,
+            )
+        out = r.stdout + r.stderr
+        self.assertNotEqual(r.returncode, 0)
         self.assertIn("нет эталонного ref (origin/master/", out)
         self.assertNotIn("git-репозиторий отсутствует", out)
 
