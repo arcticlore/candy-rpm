@@ -370,8 +370,24 @@ jobs:
               FAILED=$((FAILED+1))
             fi
           done
+
+          # Иммутабельный план атомарен относительно submit: пока хотя бы для
+          # одной name@target нет точного SRPM, НИ ОДИН COPR submit не допустим.
+          MISSING=0
+          for entry in $CANDY_PLAN_ENTRIES; do
+            name="${entry%%@*}"
+            target="${entry##*@}"
+            if ! find SRPMS -maxdepth 1 -name "${name}-${target}-*.src.rpm" 2>/dev/null | grep -q .; then
+              echo "  [MISSING] exact SRPM: $name@$target"
+              MISSING=$((MISSING+1))
+            fi
+          done
           CACHED=$(find SRPMS -maxdepth 1 -name '*.src.rpm' 2>/dev/null | wc -l)
-          echo "=== SRPMs: built=$BUILT failed=$FAILED skipped=$SKIPPED cached=$CACHED ==="
+          echo "=== SRPMs: built=$BUILT failed=$FAILED missing=$MISSING skipped=$SKIPPED cached=$CACHED ==="
+          if [ "$FAILED" -ne 0 ] || [ "$MISSING" -ne 0 ]; then
+            echo "[SRPM-GATE-FAIL] incomplete immutable plan — all COPR submits blocked"
+            exit 1
+          fi
 
       - name: Verify BuildRequires resolve (дозор)
         if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'build' && steps.preflight_build.outputs.decision == 'PROCEED'

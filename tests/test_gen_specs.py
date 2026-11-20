@@ -69,6 +69,18 @@ class TestGenSpecs:
         owner, project = name.split("/", 1)
         assert owner and project, f"Неполное COPR имя: {name}"
 
+    def test_go_toolchain_auto_is_explicit_in_spec_and_vendor_step(self):
+        """New go directives work even when distro Go defaults to local-only."""
+        import gen_specs
+        m = gen_specs.Package(name="doggo", eco="go", host="github",
+                              slug="mr-karan/doggo", bins=["doggo"],
+                              gpkg="./cmd/doggo")
+        spec = gen_specs.render("doggo", "1.4.2", {"doggo": m})
+        assert "export GOTOOLCHAIN=auto" in spec
+        assert spec.index("export GOTOOLCHAIN=auto") < spec.index("go build ")
+        make_srpm = open(os.path.join(ROOT, "bin/make-srpm.sh")).read()
+        assert "GOTOOLCHAIN=auto GOFLAGS= go mod vendor" in make_srpm
+
     def test_render_noarch_and_provides(self):
         """Поля noarch/provides попадают в спек"""
         import gen_specs

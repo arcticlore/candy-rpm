@@ -40,6 +40,10 @@ ALLOWLIST_ENV = "CANDY_PACKAGE_ALLOWLIST"
 COMMIT_VER_RE = re.compile(r"^(\d{8})\.([0-9A-Za-z]+)$")
 
 
+class SubmitGateError(RuntimeError):
+    """Immutable submit plan is incomplete or cannot be proven safe."""
+
+
 def is_package_enabled(enabled: object) -> bool:
     """Robust enabled semantics, compatible with gen_specs.Package.is_enabled().
 
@@ -501,8 +505,32 @@ def pick_srpm(name: str, files: list[str], target_ver: str) -> str:
     return max(files, key=lambda f: os.stat(f).st_mtime)
 
 
+def resolve_exact_srpms(to_submit: list[str], versions: dict[str, str]) -> dict[str, str]:
+    """Resolve every candidate to an exact target SRPM before any mutation.
+
+    This is deliberately all-or-nothing: a missing target or an SRPM only for a
+    stale version aborts the entire wave, preventing a green partial submit.
+    """
+    resolved: dict[str, str] = {}
+    problems: list[str] = []
+    for name in to_submit:
+        target = versions.get(name, "")
+        if not target:
+            problems.append(f"{name}: empty target version")
+            continue
+        files = glob.glob(f"SRPMS/{name}-*.src.rpm")
+        exact = [f for f in files if f"{name}-{target}-" in os.path.basename(f)]
+        if not exact:
+            problems.append(f"{name}@{target}: exact SRPM missing")
+            continue
+        resolved[name] = max(exact, key=lambda f: os.stat(f).st_mtime)
+    if problems:
+        raise SubmitGateError("; ".join(problems))
+    return resolved
+
+
 def cmd_submit():
-    """Slot-managed submit loop."""
+    """Slot-managed submit loop, fail-closed on every planned target."""
     print("Fetching all COPR builds (pagination)...")
     all_builds = fetch_all_builds(OWNER, PROJECT)
     print(f"Total builds fetched: {len(all_builds)}")
@@ -514,10 +542,9 @@ def cmd_submit():
     audit_effective(enabled)
 
     if not all_builds:
-        print("[ABORT] COPR API вернул 0 билдов (сеть/API недоступны) — "
-              "подтверждения статуса нет, чтобы не плодить дубликаты.",
-              file=sys.stderr)
-        return
+        raise SubmitGateError(
+            "COPR API вернул 0 билдов (сеть/API недоступны): "
+            "статус не доказан, submit запрещён")
 
     # Determine what needs submission
     force = "--force" in sys.argv
@@ -529,13 +556,12 @@ def cmd_submit():
         print("Nothing to submit!")
         return
 
-    srpms = {}
-    for name in to_submit:
-        files = glob.glob(f"SRPMS/{name}-*.src.rpm")
-        if files:
-            srpms[name] = pick_srpm(name, files, versions.get(name, ""))
-
-    submitted = set()
+    # Prove the complete immutable name@target → SRPM mapping before the first
+    # COPR mutation.  Never submit a safe prefix and silently skip the rest.
+    srpms = resolve_exact_srpms(to_submit, versions)
+    planned = set(to_submit)
+    submitted: set[str] = set()
+    failed: set[str] = set()
     start_time = time.time()
 
     while to_submit:
@@ -559,10 +585,8 @@ def cmd_submit():
         # Submit up to free_slots packages
         batch = to_submit[:free_slots]
         for name in batch:
-            if name not in srpms:
-                print(f"  [SKIP] {name}: no SRPM")
-                to_submit.remove(name)
-                continue
+            if name not in srpms:  # defensive: resolve_exact_srpms proved this
+                raise SubmitGateError(f"{name}: exact SRPM mapping disappeared")
 
             print(f"  [SUBMIT] {name}")
             if submit_build(srpms[name]):
@@ -570,7 +594,8 @@ def cmd_submit():
                 to_submit.remove(name)
             else:
                 print(f"  [FAIL] {name}")
-                to_submit.remove(name)  # don't retry failures
+                failed.add(name)
+                to_submit.remove(name)  # don't retry blindly in the same run
 
             time.sleep(2)  # rate limit
 
@@ -581,6 +606,12 @@ def cmd_submit():
     print(f"Remaining: {len(to_submit)}")
     if to_submit:
         print(f"Remaining packages: {', '.join(to_submit[:30])}")
+    if failed or to_submit or submitted != planned:
+        missing = sorted(planned - submitted)
+        raise SubmitGateError(
+            "submit plan incomplete: "
+            f"submitted={sorted(submitted)} failed={sorted(failed)} "
+            f"remaining={to_submit} missing={missing}")
 
 
 def cmd_selection():
@@ -654,7 +685,11 @@ if __name__ == "__main__":
     elif cmd == "versions":
         cmd_versions()
     elif cmd == "submit":
-        cmd_submit()
+        try:
+            cmd_submit()
+        except SubmitGateError as exc:
+            print(f"[SUBMIT-GATE-FAIL] {exc}", file=sys.stderr)
+            sys.exit(2)
     elif cmd == "selection":
         cmd_selection()
     elif cmd == "plan":

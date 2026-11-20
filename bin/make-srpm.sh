@@ -159,7 +159,10 @@ cargo)
 go)
     command -v go >/dev/null || { echo "нужен go: sudo dnf install golang"; exit 3; }
     D=$(extract "$SRC")
-    (cd "$D" && GOFLAGS= go mod vendor)
+    # Fedora's packaged Go may default to GOTOOLCHAIN=local.  New upstream
+    # modules (for example doggo 1.4.2: go >= 1.27.3) must be allowed to fetch
+    # their declared toolchain while materialising the immutable vendor tree.
+    (cd "$D" && GOTOOLCHAIN=auto GOFLAGS= go mod vendor)
     tar -C "$D" -czf "SOURCES/$NAME-node-vendor-$VER.tar.gz" vendor
     rm -rf "$D" ;;
 npm)

@@ -28,6 +28,7 @@ Don't throw tomatoes - file issues instead.
 %autosetup -N -a1 -n %{name}-%{version}
 
 %build
+export GOTOOLCHAIN=auto
 export GOFLAGS='-mod=vendor'
 export CGO_ENABLED=0
 export GOPATH=$(mktemp -d)

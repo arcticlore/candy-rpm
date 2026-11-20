@@ -8,7 +8,9 @@ Run remotely via:  python3 -m unittest -v tests/test_coprase_status.py
 
 import importlib.util
 import pathlib
+import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MODULE_PATH = ROOT / "bin" / "coprase-status.py"
@@ -148,6 +150,32 @@ class TestSubmitCandidates(unittest.TestCase):
     def test_succeeded_older_version_rerun(self):
         hist = [("succeeded", "0.9-1", 111)]
         self.assertTrue(cs.needs_submission("mise", "1.0", hist))
+
+
+class TestExactSrpmGate(unittest.TestCase):
+    """A planned wave must be complete before its first COPR mutation."""
+
+    def test_resolves_only_exact_target(self):
+        with tempfile.TemporaryDirectory() as td:
+            exact = pathlib.Path(td) / "doggo-1.4.2-1.fc44.src.rpm"
+            stale = pathlib.Path(td) / "doggo-1.4.0-1.fc44.src.rpm"
+            exact.write_bytes(b"exact")
+            stale.write_bytes(b"stale")
+            with mock.patch.object(cs.glob, "glob", return_value=[str(stale), str(exact)]):
+                got = cs.resolve_exact_srpms(["doggo"], {"doggo": "1.4.2"})
+            self.assertEqual(got, {"doggo": str(exact)})
+
+    def test_missing_or_stale_target_aborts_whole_plan(self):
+        with mock.patch.object(cs.glob, "glob",
+                               return_value=["SRPMS/doggo-1.4.0-1.fc44.src.rpm"]):
+            with self.assertRaises(cs.SubmitGateError):
+                cs.resolve_exact_srpms(
+                    ["starship", "doggo"],
+                    {"starship": "1.27.0", "doggo": "1.4.2"})
+
+    def test_empty_target_aborts(self):
+        with self.assertRaises(cs.SubmitGateError):
+            cs.resolve_exact_srpms(["doggo"], {})
 
 
 if __name__ == "__main__":
