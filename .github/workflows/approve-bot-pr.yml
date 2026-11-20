@@ -1,0 +1,45 @@
+name: approve bounded state-sync validation
+
+# GitHub classifies github-actions[bot] as an outside first-time contributor on
+# every generated reconciliation PR.  The exact-head validation is still
+# mandatory; this trusted base-branch workflow only removes the manual click
+# after proving the PR is the bounded in-repository state/SPECS sync.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: approve-state-sync-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  approve-bounded-validation:
+    if: >-
+      github.event.pull_request.user.login == 'github-actions[bot]' &&
+      github.event.pull_request.user.type == 'Bot' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'bot/state-sync-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # pull_request_target is privileged: checkout ONLY trusted master.  The
+      # helper reads PR metadata/files through API and never executes PR code.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: master
+          persist-credentials: false
+
+      - name: Approve only exact-head bounded reconciliation validation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 bin/approve_bot_pr_run.py \
+            --event "$GITHUB_EVENT_PATH" \
+            --repo "$GITHUB_REPOSITORY" \
+            --timeout 90
