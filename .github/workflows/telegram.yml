@@ -1,7 +1,11 @@
-name: telegram bot
+name: telegram bot (резерв, вебхук выключен)
+# Бот живёт в вебхуке: supabase/functions/tg (Supabase Edge Function).
+# Long-poll здесь оставлен ТОЛЬКО как путь отката, если вебхук умрёт:
+# расписания нет, запуск руками. Одновременно с вебхуком long-poll
+# работать не может — Telegram отдаёт 409 Conflict на getUpdates, поэтому
+# первый шаг джобы проверяет getWebhookInfo и отказывается стартовать,
+# пока вебхук не снят через deleteWebhook.
 on:
-  schedule:
-    - cron: "*/5 * * * *"   # единственный хост бота (максимально часто)
   workflow_dispatch:
 
 permissions:
@@ -17,6 +21,21 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      # Fail-closed: пока вебхук привязан, long-poll ловил бы 409 и съедал
+      # апдейты у работающего бота. Лучше честно не стартовать.
+      - name: Refuse to run while a webhook owns the bot
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+        run: |
+          set -eu
+          URL=$(curl -sS --fail-with-body "https://api.telegram.org/bot$TG_BOT_TOKEN/getWebhookInfo" \
+                | python3 -c 'import json,sys; print((json.load(sys.stdin).get("result") or {}).get("url",""))')
+          if [ -n "$URL" ]; then
+            echo "::error::вебхук активен ($URL) — long-poll дал бы 409. Сначала deleteWebhook."
+            exit 1
+          fi
+          echo "вебхука нет — можно слушать long-poll"
 
       - name: Restore offset (state/tg-offset — runtime state, fetch до старта)
         run: |
