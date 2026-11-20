@@ -246,6 +246,21 @@ jobs:
             echo "validate dispatch failed (HTTP ${DHTTP}):"; cat /tmp/disp.json 2>/dev/null || true; exit 1
           fi
 
+          # GitHub дополнительно заводит на bot-PR пустой pull_request run и
+          # гасит его как action_required: ни одного check он не даёт (их
+          # приносит dispatch выше), но merge box остаётся BLOCKED и
+          # auto-merge не наступает никогда. Снимаем строго этот run на точном
+          # head SHA ветки; отказ = красный run, а не молча висящий PR.
+          HEAD_SHA=$(git rev-parse HEAD)
+          if ! python3 bin/clear_gated_runs.py \
+                 --repo "${GITHUB_REPOSITORY}" \
+                 --branch "${BRANCH}" \
+                 --head-sha "${HEAD_SHA}" \
+                 --timeout-min 5; then
+            echo "[GATED-FAIL] редундантный gated run не снят — auto-merge не наступит"
+            exit 1
+          fi
+
           # auto-merge: merge отложен GitHub до прохождения required checks.
           # Включение auto-merge ≠ завершение — фактический merged ждёт observe-merge.
           if [ -z "$PR_NODE" ]; then
