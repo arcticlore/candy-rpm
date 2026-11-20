@@ -72,10 +72,6 @@ jobs:
           echo "list=${LIST}" >> "$GITHUB_OUTPUT"
           echo "packages: ${LIST:-<нет>}"
 
-      - name: Regenerate specs
-        if: steps.targets.outputs.list != ''
-        run: python3 bin/gen_specs.py
-
       # Каждый пакет обязан дать РОВНО свой SRPM. [SKIP] от make-srpm.sh
       # (недоступная версия апстрима) тоже провал: план не должен содержать
       # запись, для которой submit заведомо невозможен.
