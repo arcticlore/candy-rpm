@@ -28,6 +28,16 @@ def event():
     }
 
 
+def workflow_event():
+    return {
+        "workflow_run": {
+            **run(),
+            "head_branch": BRANCH,
+            "pull_requests": [{"number": 81}],
+        }
+    }
+
+
 def run(*, status="completed", conclusion="action_required", sha=SHA,
         actor="github-actions[bot]", actor_type="Bot"):
     return {
@@ -43,6 +53,7 @@ def run(*, status="completed", conclusion="action_required", sha=SHA,
 
 class API:
     def __init__(self, files=None, runs=None):
+        self.pr = event()["pull_request"]
         self.files = files or [
             {"filename": "state/state.json", "status": "modified"},
             {"filename": "SPECS/dua.spec", "status": "modified"},
@@ -51,6 +62,8 @@ class API:
         self.posts = []
 
     def get(self, path):
+        if path.endswith("/pulls/81"):
+            return self.pr
         if "/pulls/81/files" in path:
             return self.files
         if "/actions/workflows/validate.yml/runs?" in path:
@@ -67,6 +80,22 @@ def test_approves_only_exact_bounded_action_required_run():
     message = gate.approve(event(), repo=REPO, api=api, timeout=0)
     assert api.posts == [f"/repos/{REPO}/actions/runs/44728141222/approve"]
     assert "approved bounded bot validation" in message
+
+
+def test_workflow_run_normalizes_to_the_same_exact_pr_gate():
+    api = API()
+    message = gate.approve(workflow_event(), repo=REPO, api=api, timeout=0)
+    assert api.posts == [f"/repos/{REPO}/actions/runs/44728141222/approve"]
+    assert "approved bounded bot validation" in message
+
+
+def test_workflow_run_head_mismatch_fails_closed():
+    api = API()
+    api.pr = copy.deepcopy(api.pr)
+    api.pr["head"]["sha"] = "b" * 40
+    with pytest.raises(gate.ApprovalError):
+        gate.approve(workflow_event(), repo=REPO, api=api, timeout=0)
+    assert api.posts == []
 
 
 @pytest.mark.parametrize("mutate", [
@@ -126,6 +155,8 @@ def test_wrong_workflow_or_action_required_actor_cannot_be_approved():
 def test_workflow_is_privileged_but_never_checks_out_pr_head():
     text = open(os.path.join(ROOT, ".github/workflows/approve-bot-pr.yml")).read()
     assert "pull_request_target:" in text
+    assert "workflow_run:" in text
+    assert 'workflows: ["validate (required PR/push CI)"]' in text
     assert "ref: master" in text
     assert "persist-credentials: false" in text
     assert "actions: write" in text

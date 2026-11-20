@@ -6,8 +6,9 @@ as a new contributor on every generated PR.  That leaves the pull_request copy
 of validate.yml at ``action_required`` and blocks auto-merge even though the
 exact-head workflow_dispatch checks are green.
 
-This helper is intended only from a trusted ``pull_request_target`` workflow.
-It never checks out PR code.  Before approving anything it proves that the PR
+This helper is intended only from a trusted default-branch workflow handling
+``pull_request_target`` or ``workflow_run``. It never checks out PR code.
+Before approving anything it proves that the PR
 is an in-repository, github-actions[bot]-authored reconciliation branch and
 that its complete file set is limited to modified state/state.json plus one or
 more existing SPECS/*.spec files.  Every mismatch fails closed.
@@ -127,8 +128,40 @@ class GitHubAPI:
         return self.request("POST", path, {})
 
 
+def normalize_event(event: dict[str, Any], repo: str, api: GitHubAPI) -> dict[str, Any]:
+    """Return a PR-shaped event from pull_request_target or workflow_run.
+
+    GITHUB_TOKEN-created PRs suppress pull_request_target recursion, but their
+    action-required validate.yml run still emits workflow_run.  The latter is
+    trusted default-branch code and carries the exact PR number/head identity.
+    """
+    if isinstance(event.get("pull_request"), dict):
+        return event
+    run = event.get("workflow_run")
+    if not isinstance(run, dict):
+        raise ApprovalError("neither pull_request nor workflow_run payload present")
+    actor = run.get("actor") or {}
+    if (run.get("event") != "pull_request" or run.get("status") != "completed" or
+            run.get("conclusion") != "action_required" or run.get("path") != WORKFLOW_PATH):
+        raise ApprovalError("workflow_run is not an action-required pull_request validation")
+    if actor.get("login") != BOT or actor.get("type") != "Bot":
+        raise ApprovalError("action-required workflow_run actor is not github-actions[bot]")
+    prs = run.get("pull_requests") or []
+    if len(prs) != 1 or not isinstance(prs[0].get("number"), int):
+        raise ApprovalError("workflow_run must identify exactly one pull request")
+    number = prs[0]["number"]
+    pr = api.get(f"/repos/{repo}/pulls/{number}")
+    if not isinstance(pr, dict):
+        raise ApprovalError("pull request lookup did not return an object")
+    head = pr.get("head") or {}
+    if head.get("sha") != run.get("head_sha") or head.get("ref") != run.get("head_branch"):
+        raise ApprovalError("workflow_run head does not match current PR head")
+    return {"action": "opened", "number": number, "pull_request": pr}
+
+
 def approve(event: dict[str, Any], *, repo: str, api: GitHubAPI, timeout: int = 90,
             poll: int = 3) -> str:
+    event = normalize_event(event, repo, api)
     number, branch, sha = validate_event(event, repo)
     files = api.get(f"/repos/{repo}/pulls/{number}/files?per_page=100")
     if not isinstance(files, list):
