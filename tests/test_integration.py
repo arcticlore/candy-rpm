@@ -139,10 +139,3 @@ class TestIntegration:
         )
         assert result.returncode == 0
 
-    def test_push_script_syntax(self):
-        """push.sh проходит проверку синтаксиса"""
-        result = subprocess.run(
-            ['bash', '-n', os.path.join(ROOT, 'bin/push.sh')],
-            capture_output=True, text=True, timeout=10
-        )
-        assert result.returncode == 0

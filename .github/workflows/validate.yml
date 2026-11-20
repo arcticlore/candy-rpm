@@ -231,4 +231,4 @@ jobs:
           files: .github/workflows/*.yml
 
       - name: coprase-status selection + submit-guard unit tests (stdlib, no network/COPR)
-        run: python3 -m unittest -v tests/test_coprase_status.py tests/test_submit_guard.py tests/test_commit_ver.py tests/test_stage_state_sync.py tests/test_workflow_tools.py tests/test_update_plan.py tests/test_tg_webhook.py tests/test_changed_packages.py
+        run: python3 -m unittest -v tests/test_coprase_status.py tests/test_submit_guard.py tests/test_commit_ver.py tests/test_stage_state_sync.py tests/test_workflow_tools.py tests/test_update_plan.py tests/test_tg_webhook.py tests/test_changed_packages.py tests/test_stale_sweep.py

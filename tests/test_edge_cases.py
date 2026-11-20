@@ -358,7 +358,6 @@ class TestBashSyntax:
             "converge.sh",
             "auto-triage.sh",
             "make-srpm.sh",
-            "push.sh",
             "status.sh",
             "dashboard.sh",
         ],

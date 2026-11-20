@@ -6,7 +6,6 @@ cd "$ROOT"
 L=logs/update.log
 
 W=$(pgrep -c -f "[b]in/update-check.sh" || true)
-B=$(pgrep -c -f "[b]in/babysit.sh" || true)
 
 TAKEN=$(grep -c "\[UPD\]" $L 2>/dev/null || echo 0)
 OKSRPM=$(grep -c "^\[OK\] SRPMS" $L 2>/dev/null || echo 0)
@@ -15,7 +14,7 @@ FAILED=$(grep -c "\[FAIL\]" $L 2>/dev/null || echo 0)
 SKIPPED=$(grep -c "\[SKIP\]" $L 2>/dev/null || echo 0)
 
 echo "=== ЛОКАЛЬНО ==="
-echo "воркеров: $W | нянька: $B | взято: $TAKEN | SRPM: $OKSRPM | в COPR ушло: $UPLOADED | fail: $FAILED | skip: $SKIPPED"
+echo "воркеров: $W | взято: $TAKEN | SRPM: $OKSRPM | в COPR ушло: $UPLOADED | fail: $FAILED | skip: $SKIPPED"
 
 echo "=== COPR (arcticlore/candy) ==="
 if command -v copr-cli >/dev/null; then
