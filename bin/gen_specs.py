@@ -486,6 +486,9 @@ def body_go(m: Package, br: list[str], req: list[str]) -> str:
         prep(m),
         "",
         "%build",
+        # Distro Go can default to local-only; honor upstream's go/toolchain
+        # directive while retaining the vendored dependency graph.
+        "export GOTOOLCHAIN=auto",
         "export GOFLAGS='-mod=vendor'",
         cgo,
         "export GOPATH=$(mktemp -d)",

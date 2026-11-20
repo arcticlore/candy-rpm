@@ -320,6 +320,9 @@ class TestImmutablePlanEntries(unittest.TestCase):
         self.assertIn('name="${entry%%@*}"', text)
         self.assertIn('target="${entry##*@}"', text)
         self.assertIn('bin/make-srpm.sh "$name" "$target"', text)
+        self.assertIn('[SRPM-GATE-FAIL] incomplete immutable plan', text)
+        self.assertIn('-name "${name}-${target}-*.src.rpm"', text)
+        self.assertIn('if [ "$FAILED" -ne 0 ] || [ "$MISSING" -ne 0 ]', text)
         self.assertNotIn('jq -r --arg n "$name" \'.[$n].ver', text)
         # unbounded version refresh удалён
         self.assertNotIn("coprase-status.py versions", text)
