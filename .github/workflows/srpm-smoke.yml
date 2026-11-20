@@ -1,0 +1,119 @@
+name: srpm smoke (added/changed packages)
+
+# Доказательство ДО мержа: каждая добавленная или изменённая запись pkgs.json
+# действительно даёт точный SRPM. Это прямое следствие атомарного submit
+# (#46): один несобравшийся SRPM блокирует ВЕСЬ COPR submit, то есть новый
+# пакет способен заблокировать восстановление уже существующих. Здесь нет
+# COPR submit, commit и push — только сборка SRPM и чтение апстримов.
+on:
+  pull_request:
+    paths:
+      - pkgs.json
+      - bin/gen_specs.py
+      - bin/make-srpm.sh
+      - bin/api_ver.sh
+      - .github/workflows/srpm-smoke.yml
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: "CSV имён пакетов (пусто = вычислить из diff к master)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: srpm-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    container: fedora:44
+    steps:
+      # git обязан быть ДО checkout: иначе actions/checkout скачает tarball
+      # без .git, и diff к master (база списка пакетов) станет невозможен.
+      - name: Install core git (must run BEFORE checkout)
+        run: |
+          dnf install -y git > /tmp/dnf-git.log 2>&1 \
+            || { echo "dnf install git failed:"; tail -20 /tmp/dnf-git.log; exit 1; }
+          git --version
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+
+      - name: Install toolchain
+        run: |
+          dnf install -y jq rpm-build rpmdevtools dnf-plugins-core python3 python3-pyyaml \
+            golang cargo rust nodejs24 nodejs24-npm-bin > /tmp/dnf-install.log 2>&1 \
+            || { echo "dnf install failed:"; tail -20 /tmp/dnf-install.log; exit 1; }
+
+      - name: Resolve packages to prove
+        id: targets
+        env:
+          MANUAL: ${{ inputs.packages }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          if [ -n "${MANUAL:-}" ]; then
+            LIST=$(echo "$MANUAL" | tr -d ' ' )
+          else
+            BASE="${BASE_REF:-master}"
+            git fetch -q origin "$BASE"
+            if ! LIST=$(python3 bin/changed_packages.py --base-ref "origin/${BASE}" --format csv); then
+              echo "[SRPM-SMOKE-FAIL] не удалось вычислить список изменённых пакетов"
+              exit 1
+            fi
+          fi
+          echo "list=${LIST}" >> "$GITHUB_OUTPUT"
+          echo "packages: ${LIST:-<нет>}"
+
+      - name: Regenerate specs
+        if: steps.targets.outputs.list != ''
+        run: python3 bin/gen_specs.py
+
+      # Каждый пакет обязан дать РОВНО свой SRPM. [SKIP] от make-srpm.sh
+      # (недоступная версия апстрима) тоже провал: план не должен содержать
+      # запись, для которой submit заведомо невозможен.
+      - name: Build SRPM for each added/changed package
+        if: steps.targets.outputs.list != ''
+        env:
+          LIST: ${{ steps.targets.outputs.list }}
+        run: |
+          set -uo pipefail
+          mkdir -p SRPMS logs
+          FAILED=""
+          for name in $(echo "$LIST" | tr ',' ' '); do
+            echo "::group::$name"
+            if bash bin/make-srpm.sh "$name"; then
+              if find SRPMS -maxdepth 1 -name "${name}-*.src.rpm" | grep -q .; then
+                echo "[OK] $name"
+              else
+                echo "[MISSING] $name: make-srpm завершился успехом, а SRPM нет"
+                FAILED="$FAILED $name"
+              fi
+            else
+              echo "[FAIL] $name: make-srpm завершился ошибкой"
+              FAILED="$FAILED $name"
+            fi
+            echo "::endgroup::"
+          done
+          if [ -n "$FAILED" ]; then
+            echo "[SRPM-SMOKE-FAIL] нет точного SRPM для:$FAILED"
+            exit 1
+          fi
+          echo "все добавленные/изменённые пакеты дали SRPM"
+
+      - name: Upload SRPM list
+        if: always() && steps.targets.outputs.list != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: srpm-smoke-${{ github.run_number }}
+          path: |
+            SRPMS/
+            logs/
+          if-no-files-found: ignore
