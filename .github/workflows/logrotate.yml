@@ -1,23 +1,72 @@
 name: logrotate
-on:
 
+# Логи лежат в самом репозитории (logs/runs/**, logs/builder/**) и растут
+# бесконечно. Прежняя версия этого workflow удаляла их во временной копии
+# раннера и ничего не пушила, то есть ротации не было вовсе. Теперь отбор
+# идёт по ДАТЕ КОММИТА (mtime в свежем checkout'е равен времени клона и для
+# возраста бесполезен), а удаление приезжает отдельным PR из ветки bot/*:
+# прямая запись в master запрещена containment-дозором.
+on:
   workflow_dispatch:
+    inputs:
+      keep_days:
+        description: "Сколько дней логов оставить"
+        required: false
+        default: "30"
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: logrotate
+  cancel-in-progress: false
 
 jobs:
   rotate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
 
-      - name: Rotate logs
+      - name: Select logs older than keep_days
+        id: select
+        env:
+          KEEP_DAYS: ${{ inputs.keep_days }}
         run: |
-          find logs/ -name "*.log" -size +10M -exec truncate -s 1M {} \;
-          find logs/runs/ -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} \;
-          find SRPMS/ -name "*.src.rpm" -mtime +30 -delete 2>/dev/null || true
+          set -euo pipefail
+          python3 - <<'PY' | tee /tmp/old-logs.txt
+          import os, subprocess, datetime
+          keep = int(os.environ.get("KEEP_DAYS") or 30)
+          cutoff = datetime.date.today() - datetime.timedelta(days=keep)
+          files = subprocess.run(["git", "ls-files", "logs"], capture_output=True,
+                                 text=True, check=True).stdout.split()
+          for f in files:
+              day = subprocess.run(["git", "log", "-1", "--format=%cs", "--", f],
+                                   capture_output=True, text=True, check=True).stdout.strip()
+              if day and datetime.date.fromisoformat(day) < cutoff:
+                  print(f)
+          PY
+          COUNT=$(wc -l < /tmp/old-logs.txt | tr -d ' ')
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+          echo "кандидатов на удаление: ${COUNT}"
 
-      # Ротация read-only: логи — runtime state на runner, в источник не пишем.
-
+      - name: Open rotation PR
+        if: steps.select.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP_DAYS: ${{ inputs.keep_days }}
+        run: |
+          set -euo pipefail
+          BRANCH="bot/logrotate-${{ github.run_id }}"
+          git config user.name  "candy-bot"
+          git config user.email "candy-bot@users.noreply.github.com"
+          git switch -q -c "$BRANCH"
+          xargs -a /tmp/old-logs.txt git rm -q --
+          git commit -qm "chore(logs): rotate logs older than ${KEEP_DAYS:-30} days"
+          git push -q origin "HEAD:$BRANCH"
+          gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
+            --title "chore(logs): rotate ${{ steps.select.outputs.count }} log files" \
+            --body "Автоматическая ротация: удалены файлы под logs/, чей последний коммит старше ${KEEP_DAYS:-30} дней. Содержимое доступно в истории git."

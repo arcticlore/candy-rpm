@@ -756,23 +756,6 @@
    "use": "duckpond.sh — утки на пруду"
   },
   {
-   "name": "lifecycler",
-   "eco": "python-script",
-   "host": "github",
-   "slug": "tobi-wan-kenobi/lifecycler",
-   "tagp": "v",
-   "summary": "Aquarium right in your terminal",
-   "license": "GPL-2.0-only",
-   "bins": [
-    "lifecycler"
-   ],
-   "verify": true,
-   "prio": 9,
-   "use": "lifecycler — аквариум/клеточный автомат",
-   "enabled": false,
-   "note": "Апстрим недоступен (404) / пакет удалён из registry"
-  },
-  {
    "name": "maze",
    "eco": "python-script",
    "host": "github",
@@ -1001,26 +984,6 @@
    "prio": 9,
    "enabled": false,
    "note": "Удалён из npm-registry (404); заменён пакетом dvd-term (alefnull/dvd-term)"
-  },
-  {
-   "name": "fireworks",
-   "eco": "script",
-   "host": "web",
-   "url": "https://archive.org/download/bash-fireworks/fireworks.sh",
-   "version": "1.0",
-   "summary": "Bash fireworks screensaver",
-   "license": "GPL-2.0-only",
-   "files": [
-    "fireworks.sh"
-   ],
-   "req": [
-    "bash"
-   ],
-   "interp": "bash",
-   "prio": 3,
-   "use": "fireworks.sh — фейерверк",
-   "enabled": false,
-   "note": "Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети"
   },
   {
    "name": "cli-fx",
@@ -1463,28 +1426,6 @@
    "use": "tint dracula — сменить тему терминала; tint -l список"
   },
   {
-   "name": "cli-visualizer",
-   "eco": "c-cmake",
-   "host": "github",
-   "slug": "dpayne/cli-visualizer",
-   "tagp": "",
-   "summary": "CLI audio visualizer for mpd/alsa/pulse",
-   "license": "MIT",
-   "br": [
-    "cmake",
-    "fftw-devel",
-    "gcc-c++",
-    "ncurses-devel",
-    "pulseaudio-libs-devel"
-   ],
-   "verify": true,
-   "exp": true,
-   "prio": 9,
-   "use": "vis — визуализатор звука (mpd/alsa/pulse)",
-   "enabled": false,
-   "note": "Апстрим недоступен (404) / пакет удалён из registry"
-  },
-  {
    "name": "linuxwave",
    "eco": "zig",
    "host": "github",
@@ -1501,49 +1442,6 @@
    "enabled": true,
    "note": "",
    "exp": false
-  },
-  {
-   "name": "chucknorris",
-   "eco": "script",
-   "host": "github",
-   "slug": "bfontaine/chucknorris",
-   "tagp": "",
-   "summary": "Chuck Norris jokes in your terminal",
-   "license": "MIT",
-   "files": [
-    "bin/chucknorris"
-   ],
-   "req": [
-    "ruby"
-   ],
-   "interp": "ruby",
-   "verify": true,
-   "prio": 9,
-   "enabled": false,
-   "note": "Апстрим-слаг не найден, пакет отключён до уточнения"
-  },
-  {
-   "name": "hack",
-   "eco": "script",
-   "host": "github",
-   "slug": "ivanovmg/hack",
-   "tagp": "",
-   "summary": "Simulate Hollywood hacking in your terminal",
-   "license": "GPL-3.0-or-later",
-   "files": [
-    "hack.sh"
-   ],
-   "bins": [
-    "hack"
-   ],
-   "req": [
-    "bash"
-   ],
-   "interp": "bash",
-   "verify": true,
-   "prio": 9,
-   "enabled": false,
-   "note": "Апстрим-слаг не найден, пакет отключён до уточнения"
   },
   {
    "name": "rickrollrc",
