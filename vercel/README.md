@@ -27,7 +27,7 @@ GitHub.
    |---|---|
    | `TG_BOT_TOKEN` | токен бота (тот же, что в секрете GitHub) |
    | `TG_SECRET` | любая длинная случайная строка |
-   | `TG_OWNER_CHAT` | `TG_CHAT_ID` владельца (нужно для `/run`) |
+   | `TG_OWNER_CHAT` | chat_id владельцев через запятую (`7502676910,5174354533`): бот отвечает только им и только им даёт `/run` |
    | `GH_REPO` | `arcticlore/candy-rpm` |
    | `GH_TOKEN` | fine-grained PAT с `actions: write` — только если нужен `/run` |
    | `COPR_OWNER` / `COPR_PROJECT` | `arcticlore` / `candy` |

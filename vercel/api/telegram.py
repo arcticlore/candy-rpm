@@ -18,7 +18,8 @@ workflow_dispatch и сразу отвечает. Долгие операции 
 Переменные окружения (Project Settings → Environment Variables):
   TG_BOT_TOKEN   — токен бота (обязательно)
   TG_SECRET      — секрет вебхука, он же X-Telegram-Bot-Api-Secret-Token
-  TG_OWNER_CHAT  — chat_id владельца; только ему доступны команды записи
+  TG_OWNER_CHAT  — список chat_id владельцев через запятую/пробел; только они
+                   получают ответы бота и только им доступны команды записи
   GH_REPO        — owner/repo, по умолчанию arcticlore/candy-rpm
   GH_TOKEN       — fine-grained PAT с actions:write (нужен только для /run)
   COPR_OWNER     — по умолчанию arcticlore
@@ -28,6 +29,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -94,6 +96,22 @@ HELLO = (
     "📦 Сборки — последние сборки в COPR\n"
     "/run — запустить план-прогон update.yml (только владелец)"
 )
+
+
+def owner_chats() -> set[str]:
+    """TG_OWNER_CHAT → множество chat_id.
+
+    Владельцев может быть несколько (личный аккаунт, второй телефон,
+    служебный чат). Разделители — запятая, пробел или точка с запятой,
+    чтобы значение переменной можно было набрать как угодно.
+    """
+    return {p for p in re.split(r"[,\s;]+", env("TG_OWNER_CHAT").strip()) if p}
+
+
+def is_owner(chat_id: Any) -> bool:
+    """Fail-closed: пустой TG_OWNER_CHAT означает «владельцев нет»."""
+    owners = owner_chats()
+    return bool(owners) and str(chat_id) in owners
 
 
 def _repo() -> str:
@@ -175,8 +193,7 @@ def action_builds() -> str:
 
 def action_run(chat_id: str) -> str:
     """workflow_dispatch update.yml в режиме плана. Только владелец."""
-    owner = env("TG_OWNER_CHAT")
-    if not owner or str(chat_id) != owner:
+    if not is_owner(chat_id):
         return "Эта команда доступна только владельцу."
     tok = env("GH_TOKEN")
     if not tok:
@@ -239,6 +256,11 @@ def handle_update(update: dict[str, Any]) -> dict[str, Any] | None:
         text = msg.get("text", "")
     chat = (msg.get("chat") or {}).get("id")
     if chat is None:
+        return None
+    # Чужим чатам бот не отвечает вовсе: состояние CI — не публичные данные.
+    # Пустой список владельцев оставляет старое поведение (отвечать всем),
+    # чтобы локальный прогон без переменных окружения оставался проверяемым.
+    if owner_chats() and not is_owner(chat):
         return None
     reply = route(text, str(chat))[:LIMIT]
     return tg_call(

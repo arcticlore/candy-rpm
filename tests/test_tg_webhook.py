@@ -113,6 +113,53 @@ class WriteGuardTests(unittest.TestCase):
         tg.os.environ.pop("TG_OWNER_CHAT", None)
         self.assertIn("владельцу", tg.action_run("111"))
 
+    def test_every_id_in_the_list_is_an_owner(self) -> None:
+        tg.os.environ["TG_OWNER_CHAT"] = "7502676910,5174354533"
+        self.assertTrue(tg.is_owner(7502676910))
+        self.assertTrue(tg.is_owner("5174354533"))
+        self.assertFalse(tg.is_owner("999"))
+
+    def test_separators_are_comma_space_or_semicolon(self) -> None:
+        tg.os.environ["TG_OWNER_CHAT"] = " 111 , 222;333  444 "
+        self.assertEqual(tg.owner_chats(), {"111", "222", "333", "444"})
+
+    def test_second_owner_may_dispatch(self) -> None:
+        tg.os.environ["TG_OWNER_CHAT"] = "111,222"
+        tg.os.environ.pop("GH_TOKEN", None)
+        self.assertIn("GH_TOKEN", tg.action_run("222"))
+
+
+class ChatGateTests(unittest.TestCase):
+    """Бот отвечает только чатам из TG_OWNER_CHAT."""
+
+    def setUp(self) -> None:
+        self._env = dict(tg.os.environ)
+        self.sent: list[dict] = []
+        self._orig_call, self._orig_route = tg.tg_call, tg.route
+        tg.tg_call = lambda method, **kw: self.sent.append({"m": method, **kw}) or {}
+        tg.route = lambda text, chat="": "ответ"
+
+    def tearDown(self) -> None:
+        tg.tg_call, tg.route = self._orig_call, self._orig_route
+        tg.os.environ.clear()
+        tg.os.environ.update(self._env)
+
+    def test_stranger_gets_no_reply_at_all(self) -> None:
+        tg.os.environ["TG_OWNER_CHAT"] = "111,222"
+        self.assertIsNone(tg.handle_update({"message": {"chat": {"id": 999}, "text": "статус"}}))
+        self.assertEqual(self.sent, [])
+
+    def test_each_owner_is_answered(self) -> None:
+        tg.os.environ["TG_OWNER_CHAT"] = "111,222"
+        tg.handle_update({"message": {"chat": {"id": 111}, "text": "статус"}})
+        tg.handle_update({"message": {"chat": {"id": 222}, "text": "статус"}})
+        self.assertEqual([m["chat_id"] for m in self.sent], [111, 222])
+
+    def test_empty_owner_list_keeps_the_old_answer_everyone_behaviour(self) -> None:
+        tg.os.environ.pop("TG_OWNER_CHAT", None)
+        tg.handle_update({"message": {"chat": {"id": 999}, "text": "статус"}})
+        self.assertEqual(len(self.sent), 1)
+
 
 class UpdateShapeTests(unittest.TestCase):
     def setUp(self) -> None:
