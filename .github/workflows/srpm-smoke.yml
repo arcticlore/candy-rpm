@@ -47,14 +47,14 @@ jobs:
 
       - name: Install toolchain
         run: |
-          dnf install -y jq rpm-build rpmdevtools dnf-plugins-core python3 python3-pyyaml \
-            golang cargo rust nodejs24 nodejs24-npm-bin > /tmp/dnf-install.log 2>&1 \
+          dnf install -y jq tar gzip xz curl findutils diffutils rpm-build rpmdevtools \
+            python3 python3-pyyaml cargo rust cargo-rpm-macros golang > /tmp/dnf-install.log 2>&1 \
             || { echo "dnf install failed:"; tail -20 /tmp/dnf-install.log; exit 1; }
 
       - name: Resolve packages to prove
         id: targets
         env:
-          MANUAL: ${{ inputs.packages }}
+          MANUAL: ${{ github.event.inputs.packages }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail

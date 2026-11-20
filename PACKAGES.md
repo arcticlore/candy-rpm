@@ -65,6 +65,18 @@
 | **ufetch** | Tiny system info for Unix-like operating systems | `ufetch` | gitlab.com/jschx/ufetch |
 | **wtfutil** | Личный дашборд-терминал из модулей (ops-style) | `wtfutil — дашборд модулей` | github.com/wtfutil/wtf |
 | **zk** | Zettelkasten-заметки в терминале | `zk new; zk list` | github.com/zk-org/zk |
+| **television** | Быстрый fuzzy-поиск по файлам, истории, git и процессам (tv) | `tv — общий fuzzy-искатель; tv files, tv env` | github.com/alexpasmantier/television |
+| **superfile** | Современный файловый менеджер в терминале | `spf — панели, превью, работа с файлами` | github.com/yorukot/superfile |
+| **jnv** | Интерактивный просмотр JSON с живым jq-фильтром | `jnv data.json — фильтр jq набирается вживую` | github.com/ynqa/jnv |
+| **csvlens** | Просмотр CSV/TSV в терминале как в less | `csvlens data.csv — / поиск, q выход` | github.com/YS-L/csvlens |
+| **gitu** | Git-клиент в терминале в духе magit | `gitu — внутри git-репозитория` | github.com/altsem/gitu |
+| **lazysql** | TUI-клиент SQL (postgres/mysql/sqlite) в духе lazygit | `lazysql — подключения и запросы` | github.com/jorgerojas26/lazysql |
+| **rainfrog** | TUI-клиент БД (postgres/mysql/sqlite) | `rainfrog --url postgres://…` | github.com/achristmascarl/rainfrog |
+| **oxker** | TUI-мониторинг docker/podman-контейнеров | `oxker — логи и статистика контейнеров` | github.com/mrjackwills/oxker |
+| **systemctl-tui** | Просмотр и управление systemd-юнитами в терминале | `systemctl-tui — список юнитов, логи, start/stop` | github.com/rgwood/systemctl-tui |
+| **impala** | Управление Wi-Fi из терминала (бэкенд iwd) | `impala — сети, подключение, пароль` | github.com/pythops/impala |
+| **serpl** | Поиск и замена по проекту в терминале (на базе ripgrep) | `serpl — в корне проекта` | github.com/yassinebridi/serpl |
+| **taskwarrior-tui** | TUI для taskwarrior (task) | `taskwarrior-tui — требует настроенный task` | github.com/kdheepak/taskwarrior-tui |
 | **arttime** | ASCII art, clock, timer and time manager for the terminal | `arttime — ASCII-арт+часы; arttime -m сообщение` | github.com/poetaman/arttime |
 | **ascii-image-converter** | Конвертация изображений в ASCII-art прямо в терминале | `ascii-image-converter photo.jpg --color` | github.com/TheZoraiz/ascii-image-converter |
 | **ascii-rain** | Comfy rain for your console | `ascii-rain — дождь, Ctrl+C выход` | github.com/nkleemann/ascii-rain |
@@ -89,6 +101,10 @@
 | **snakes** | Snakes crawling across your terminal | `snakes.pl — змейки` | github.com/pipeseroni/snakes.pl |
 | **snowmachine** | Snow in your terminal | `snowmachine — снегопад` | pypi.org/project/snowmachine |
 | **tabiew** | TUI-просмотр csv/parquet/json датасетов | `tw data.csv` | github.com/shshemi/tabiew |
+| **krabby** | Печать спрайтов покемонов в терминале | `krabby random — для .bashrc` | github.com/yannjor/krabby |
+| **dvd-term** | Скринсейвер «летающий логотип DVD» в терминале | `dvd-term — выход Q` | github.com/alefnull/dvd-term |
+| **shuffle** | ASCII-арт с эффектом перемешивания | `shuffle file.ascii` | github.com/Lennart1978/shuffle |
+| **bb** | Демо ASCII-арта высокого разрешения (витрина aalib) | `bb — демо, выход Esc` | deb.debian.org/debian/pool/main/b/bb |
 | **terminal-parrot** | Party parrot time, in your terminal | `terminal-parrot — танцующий попугай` | github.com/jmhobbs/terminal-parrot |
 | **terminaltexteffects** | Terminal text effects engine — анимации печати и эффектов в терминале | `tte "твой текст" — эффекты печати; tte --list-effects` | pypi.org/project/terminaltexteffects |
 | **termshot** | Скриншот команды в виде терминального окна | `termshot --out shot.png -- ls -la` | github.com/homeport/termshot |
@@ -149,16 +165,13 @@
 - ~~nitch~~ — Компилятор nim отсутствует в Fedora 45; включить после установки choosenim
 - ~~winfetch~~ — Апстрим Windows-only ('Only supported on Windows'). На Linux используйте fastfetch/macchina
 - ~~lifecycler~~ — Апстрим недоступен (404) / пакет удалён из registry
-- ~~shuffle~~ — причина не указана
 - ~~weatherspect~~ — причина не указана
-- ~~termdvd~~ — Апстрим недоступен (404) / пакет удалён из registry
+- ~~termdvd~~ — Удалён из npm-registry (404); заменён пакетом **dvd-term**
 - ~~fireworks~~ — Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети
-- ~~bb~~ — Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети
 - ~~cli-visualizer~~ — Апстрим недоступен (404) / пакет удалён из registry
 - ~~chucknorris~~ — Апстрим-слаг не найден, пакет отключён до уточнения
 - ~~hack~~ — Апстрим-слаг не найден, пакет отключён до уточнения
 - ~~WezTerm~~ — Сборка ~40+ мин, может не собраться на aarch64
 - ~~Ghostty~~ — Требуется zig, которого нет в Fedora; собирать вручную или из COPR pgdev
 - ~~eDEX-UI~~ — Electron, огромная сборка; проще flathub
-- ~~taskwarrior-tui~~ — Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого
 - ~~tetris~~ — Апстрим на Haskell (Setup.hs) — в COPR не собрать без GHC
