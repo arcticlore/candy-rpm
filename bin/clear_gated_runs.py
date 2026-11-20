@@ -11,8 +11,10 @@ check он не даёт — зато merge box остаётся BLOCKED, auto-m
 
 Что делает скрипт. Находит на ТОЧНОМ head SHA ровно такие run'ы (событие
 pull_request/pull_request_target, ветка bot/state-sync-*, conclusion
-action_required) и снимает их: сначала DELETE (run пустой — ни jobs, ни логов,
-скрывать нечего), при отказе — approve. Любая неопределённость (отказ API,
+action_required) и снимает их: сначала approve, и только при его отказе —
+DELETE. Порядок проверен на candy-opensuse #89: удаление прошло успешно, но
+merge box остался BLOCKED, а statusCheckRollup головного коммита опустел —
+удалённый pull_request-прогон уносит с собой обязательные контексты. Любая неопределённость (отказ API,
 битый JSON, чужой SHA, не снятый run, таймаут) = ненулевой код выхода:
 молча оставить PR в BLOCKED нельзя.
 
@@ -122,17 +124,17 @@ def clear_gated_runs(repo: str, head_sha: str, branch: str, token: str,
             run_id = int(run["id"])
             base = f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}"
             try:
-                request("DELETE", base, token)
-                handled.append(("deleted", run_id))
-                continue
-            except GateError as del_exc:
-                try:
-                    request("POST", f"{base}/approve", token)
-                except GateError as approve_exc:
-                    raise GateError(
-                        f"gated run {run_id} не снят: delete={del_exc}; "
-                        f"approve={approve_exc}") from approve_exc
+                request("POST", f"{base}/approve", token)
                 handled.append(("approved", run_id))
+                continue
+            except GateError as approve_exc:
+                try:
+                    request("DELETE", base, token)
+                except GateError as del_exc:
+                    raise GateError(
+                        f"gated run {run_id} не снят: approve={approve_exc}; "
+                        f"delete={del_exc}") from del_exc
+                handled.append(("deleted", run_id))
         if clock() >= deadline:
             raise GateError(
                 f"таймаут {timeout_s:.0f}s: gated run'ы на {head_sha} не исчезли")
