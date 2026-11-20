@@ -3,7 +3,9 @@ on:
   # Единственный ежедневный schedule (off-peak). Реальный production-submit
   # происходит ТОЛЬКО здесь, bounded changed-only (см. bin/update-plan.py).
   schedule:
-    - cron: "17 3 * * *"
+    # Temporary bounded cadence for one schedule-only recovery proof. Remove
+    # immediately after the first run is created; concurrency remains fail-safe.
+    - cron: "*/5 * * * *"
   # Ручной запуск — ТОЛЬКО plan_only (обязательное true). У него нет пути к
   # COPR submit, commit, push или PR: мутирующие шаги гейтятся по event_name.
   workflow_dispatch:
