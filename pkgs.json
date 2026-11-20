@@ -845,22 +845,22 @@
   },
   {
    "name": "shuffle",
-   "eco": "script",
+   "eco": "c-make",
    "host": "github",
-   "slug": "wyjok/shuffle",
-   "tagp": "v",
-   "summary": "ASCII art with a cool shuffle effect",
+   "slug": "Lennart1978/shuffle",
+   "tagp": "V",
+   "summary": "ASCII-арт с эффектом перемешивания",
    "license": "MIT",
-   "files": [
-    "shuffle.sh"
+   "bins": [
+    "shuffle"
    ],
-   "req": [
-    "bash"
-   ],
-   "interp": "bash",
+   "noman": true,
+   "install_cmd": "install -Dpm0755 shuffle %{buildroot}%{_bindir}/shuffle",
    "verify": true,
-   "enabled": false,
-   "prio": 9
+   "prio": 9,
+   "use": "shuffle file.ascii",
+   "alt": "github.com/Lennart1978/shuffle",
+   "note": "Прежний апстрим wyjok/shuffle удалён (404); это поддерживаемый форк на C"
   },
   {
    "name": "cbeams",
@@ -1000,7 +1000,7 @@
    "verify": true,
    "prio": 9,
    "enabled": false,
-   "note": "Апстрим недоступен (404) / пакет удалён из registry"
+   "note": "Удалён из npm-registry (404); заменён пакетом dvd-term (alefnull/dvd-term)"
   },
   {
    "name": "fireworks",
@@ -1076,20 +1076,25 @@
    "name": "bb",
    "eco": "c-autotools",
    "host": "web",
-   "url": "http://aa-project.sourceforge.net/bb/bb-1.3.0.tar.gz",
-   "version": "1.3.0",
-   "topdir": "bb-1.3.0",
-   "summary": "High-res ASCII art demo (aalib showcase)",
+   "url": "https://deb.debian.org/debian/pool/main/b/bb/bb_1.3rc1.orig.tar.gz",
+   "version": "1.3rc1",
+   "topdir": "bb-1.3rc1.orig",
+   "summary": "Демо ASCII-арта высокого разрешения (витрина aalib)",
    "license": "GPL-2.0-only",
+   "license_files": [
+    "COPYING"
+   ],
    "br": [
     "aalib-devel",
-    "gcc"
+    "gcc",
+    "gettext-devel"
    ],
    "autoreconf": true,
    "verify": true,
    "prio": 9,
-   "enabled": false,
-   "note": "Источник недоступен с этой сети (archive.org/sourceforge); включить при смене сети"
+   "use": "bb — демо, выход Esc",
+   "alt": "dnf install bb (в Fedora отсутствует) / Debian pool",
+   "note": "sourceforge и archive.org мертвы; источник — orig-тарбол Debian"
   },
   {
    "name": "ponysay",
@@ -1241,21 +1246,21 @@
    "tagp": "v",
    "summary": "Interactive ASCII diagram generator (math/tree/table/flow)",
    "license": "MIT",
-    "br": [
-     "git-core",
-     "curl",
-     "java-25-openjdk-headless"
-    ],
+   "br": [
+    "git-core",
+    "curl",
+    "java-25-openjdk-headless"
+   ],
    "topdir": "Diagon-1.1.158",
-    "cmake_args": "-DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=%{_builddir}/Diagon-1.1.158/antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9 -DBUILD_SHARED_LIBS=OFF",
-    "prep_extra": "curl -sL https://github.com/antlr/antlr4/archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz | tar xz\nsed -i -E '/CMAKE_POLICY\\(SET +CMP[0-9]+ +OLD\\)/d' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt\nsed -i 's|typename Allocator = typename std::unordered_map<Key, Value>::allocator_type>|typename Allocator = std::allocator<std::pair<const Key, Value>>>|' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/runtime/src/FlatHashMap.h",
-    "exp": true,
-    "prio": 9,
-    "use": "diagon math — интерактивные ASCII-диаграммы",
-    "noman": true,
-    "license_files": [
-     "LICENSE"
-    ]
+   "cmake_args": "-DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DFETCHCONTENT_SOURCE_DIR_ANTLR=%{_builddir}/Diagon-1.1.158/antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9 -DBUILD_SHARED_LIBS=OFF",
+   "prep_extra": "curl -sL https://github.com/antlr/antlr4/archive/1cb4669f84cea5b59661fd44b0f80509fdacd3f9.tar.gz | tar xz\nsed -i -E '/CMAKE_POLICY\\(SET +CMP[0-9]+ +OLD\\)/d' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/CMakeLists.txt\nsed -i 's|typename Allocator = typename std::unordered_map<Key, Value>::allocator_type>|typename Allocator = std::allocator<std::pair<const Key, Value>>>|' antlr4-1cb4669f84cea5b59661fd44b0f80509fdacd3f9/runtime/Cpp/runtime/src/FlatHashMap.h",
+   "exp": true,
+   "prio": 9,
+   "use": "diagon math — интерактивные ASCII-диаграммы",
+   "noman": true,
+   "license_files": [
+    "LICENSE"
+   ]
   },
   {
    "name": "tulizu",
@@ -2215,11 +2220,18 @@
    "host": "github",
    "slug": "kdheepak/taskwarrior-tui",
    "tagp": "v",
-   "enabled": false,
-   "prio": 9,
-   "summary": "TUI для taskwarrior",
+   "prio": 3,
+   "summary": "TUI для taskwarrior (task)",
    "license": "MIT",
-   "note": "Требует taskwarrior, которого нет в Fedora — собрать оба слишком дорого"
+   "bins": [
+    "taskwarrior-tui"
+   ],
+   "req": [
+    "task"
+   ],
+   "noman": true,
+   "use": "taskwarrior-tui — требует настроенный task",
+   "alt": "cargo install taskwarrior-tui"
   },
   {
    "name": "genact",
@@ -2616,6 +2628,217 @@
    "prio": 1,
    "use": "delta -- pager для git; git config core.pager delta",
    "alt": "cargo install git-delta --locked"
+  },
+  {
+   "name": "television",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "alexpasmantier/television",
+   "summary": "Быстрый fuzzy-поиск по файлам, истории, git и процессам (tv)",
+   "license": "MIT",
+   "bins": [
+    "tv"
+   ],
+   "prio": 2,
+   "use": "tv — общий fuzzy-искатель; tv files, tv env",
+   "alt": "cargo install television --locked"
+  },
+  {
+   "name": "jnv",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "ynqa/jnv",
+   "tagp": "v",
+   "summary": "Интерактивный просмотр JSON с живым jq-фильтром",
+   "license": "MIT",
+   "bins": [
+    "jnv"
+   ],
+   "prio": 2,
+   "use": "jnv data.json — фильтр jq набирается вживую",
+   "alt": "cargo install jnv"
+  },
+  {
+   "name": "csvlens",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "YS-L/csvlens",
+   "tagp": "v",
+   "summary": "Просмотр CSV/TSV в терминале как в less",
+   "license": "MIT",
+   "bins": [
+    "csvlens"
+   ],
+   "prio": 2,
+   "use": "csvlens data.csv — / поиск, q выход",
+   "alt": "cargo install csvlens"
+  },
+  {
+   "name": "gitu",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "altsem/gitu",
+   "tagp": "v",
+   "summary": "Git-клиент в терминале в духе magit",
+   "license": "MIT",
+   "bins": [
+    "gitu"
+   ],
+   "br": [
+    "pkgconf-pkg-config",
+    "zlib-devel",
+    "perl"
+   ],
+   "req": [
+    "git-core"
+   ],
+   "prio": 2,
+   "use": "gitu — внутри git-репозитория",
+   "alt": "cargo install gitu"
+  },
+  {
+   "name": "oxker",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "mrjackwills/oxker",
+   "tagp": "v",
+   "summary": "TUI-мониторинг docker/podman-контейнеров",
+   "license": "MIT",
+   "bins": [
+    "oxker"
+   ],
+   "prio": 3,
+   "use": "oxker — логи и статистика контейнеров",
+   "alt": "cargo install oxker"
+  },
+  {
+   "name": "impala",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "pythops/impala",
+   "tagp": "v",
+   "summary": "Управление Wi-Fi из терминала (бэкенд iwd)",
+   "license": "GPL-3.0-only",
+   "bins": [
+    "impala"
+   ],
+   "req": [
+    "iwd"
+   ],
+   "prio": 3,
+   "use": "impala — сети, подключение, пароль",
+   "alt": "cargo install impala"
+  },
+  {
+   "name": "systemctl-tui",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "rgwood/systemctl-tui",
+   "tagp": "v",
+   "summary": "Просмотр и управление systemd-юнитами в терминале",
+   "license": "MIT",
+   "bins": [
+    "systemctl-tui"
+   ],
+   "prio": 3,
+   "install_cmd": "install -Dpm0755 target/release/systemctl-tui %{buildroot}%{_bindir}/systemctl-tui",
+   "use": "systemctl-tui — список юнитов, логи, start/stop",
+   "alt": "cargo install systemctl-tui"
+  },
+  {
+   "name": "rainfrog",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "achristmascarl/rainfrog",
+   "tagp": "v",
+   "summary": "TUI-клиент БД (postgres/mysql/sqlite)",
+   "license": "MIT",
+   "bins": [
+    "rainfrog"
+   ],
+   "prio": 3,
+   "use": "rainfrog --url postgres://…",
+   "alt": "cargo install rainfrog"
+  },
+  {
+   "name": "serpl",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "yassinebridi/serpl",
+   "summary": "Поиск и замена по проекту в терминале (на базе ripgrep)",
+   "license": "MIT",
+   "bins": [
+    "serpl"
+   ],
+   "req": [
+    "ripgrep"
+   ],
+   "prio": 3,
+   "use": "serpl — в корне проекта",
+   "alt": "cargo install serpl"
+  },
+  {
+   "name": "krabby",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "yannjor/krabby",
+   "tagp": "v",
+   "summary": "Печать спрайтов покемонов в терминале",
+   "license": "GPL-3.0-only",
+   "bins": [
+    "krabby"
+   ],
+   "prio": 9,
+   "use": "krabby random — для .bashrc",
+   "alt": "cargo install krabby"
+  },
+  {
+   "name": "dvd-term",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "alefnull/dvd-term",
+   "tagp": "v",
+   "summary": "Скринсейвер «летающий логотип DVD» в терминале",
+   "license": "Apache-2.0",
+   "bins": [
+    "dvd-term"
+   ],
+   "prio": 9,
+   "use": "dvd-term — выход Q",
+   "alt": "cargo install dvd-term",
+   "note": "Замена удалённого из npm termdvd"
+  },
+  {
+   "name": "superfile",
+   "eco": "go",
+   "host": "github",
+   "slug": "yorukot/superfile",
+   "tagp": "v",
+   "summary": "Современный файловый менеджер в терминале",
+   "license": "MIT",
+   "bins": [
+    "spf"
+   ],
+   "gpkg": ".",
+   "prio": 2,
+   "use": "spf — панели, превью, работа с файлами",
+   "alt": "github.com/yorukot/superfile#installation"
+  },
+  {
+   "name": "lazysql",
+   "eco": "go",
+   "host": "github",
+   "slug": "jorgerojas26/lazysql",
+   "tagp": "v",
+   "summary": "TUI-клиент SQL (postgres/mysql/sqlite) в духе lazygit",
+   "license": "MIT",
+   "bins": [
+    "lazysql"
+   ],
+   "gpkg": ".",
+   "prio": 3,
+   "use": "lazysql — подключения и запросы",
+   "alt": "go install github.com/jorgerojas26/lazysql@latest"
   }
  ]
 }
