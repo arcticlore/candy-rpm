@@ -17,6 +17,18 @@ jobs:
       # Снапшот берётся РОВНО ОДИН раз (curl --fail-with-body с ретраями,
       # ответ во временный файл + валидация JSON) и переиспользуется ниже.
       # При недоступности COPR — ::error и красный шаг, а не JSONDecodeError.
+      # Free-tier Supabase усыпляет проект от безделья, а спящий проект —
+      # это молчащий бот. Пинг раз в два часа держит функцию тёплой и
+      # заодно проверяет, что вебхук вообще отвечает.
+      - name: Keep the telegram webhook awake
+        continue-on-error: true
+        run: |
+          set -eu
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 \
+                 https://eikrdvuoihrpgegkcjlk.supabase.co/functions/v1/tg)
+          echo "webhook health: $CODE"
+          [ "$CODE" = "200" ] || echo "::warning::вебхук ответил $CODE"
+
       - name: COPR status snapshot + failed list
         run: python3 tools/coprsnap.py snapshot --out "$RUNNER_TEMP/coprsnap.json"
 
