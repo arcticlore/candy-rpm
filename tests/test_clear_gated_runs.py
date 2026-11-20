@@ -4,7 +4,7 @@
 GitHub заводит на PR, созданный GITHUB_TOKEN, пустой `pull_request` run и
 гасит его как action_required. Check'ов он не даёт (их приносит явный
 dispatch), но merge box остаётся BLOCKED и auto-merge не наступает. Тесты
-фиксируют: выборка строго по этому PR, DELETE с фолбэком на approve,
+фиксируют: выборка строго по этому PR, approve с фолбэком на DELETE,
 fail-closed на любом отказе и таймауте, и что шаг реально включён в волну.
 """
 from __future__ import annotations
@@ -119,19 +119,22 @@ class SelectionTests(unittest.TestCase):
 
 
 class ClearTests(unittest.TestCase):
-    def test_delete_is_the_primary_path(self) -> None:
+    def test_approve_is_the_primary_path(self) -> None:
+        # DELETE уносит контексты вместе с прогоном: candy-opensuse #89 остался
+        # BLOCKED с пустым statusCheckRollup. Approve даёт прогону отчитаться.
         api = FakeAPI([run_payload()])
         handled = cg.clear_gated_runs(REPO, SHA, BRANCH, "tok", request=api,
                                       sleep=lambda _s: None)
-        self.assertEqual(handled, [("deleted", 44738315930)])
+        self.assertEqual(handled, [("approved", 44738315930)])
         self.assertEqual(cg.gated_runs(REPO, SHA, BRANCH, "tok", request=api), [])
-        self.assertTrue(any(m == "DELETE" for m, _u in api.calls))
+        self.assertTrue(any(m == "POST" and u.endswith("/approve") for m, u in api.calls))
+        self.assertFalse(any(m == "DELETE" for m, _u in api.calls))
 
-    def test_approve_is_the_fallback(self) -> None:
-        api = FakeAPI([run_payload()], allow_delete=False)
+    def test_delete_is_the_fallback(self) -> None:
+        api = FakeAPI([run_payload()], allow_approve=False)
         handled = cg.clear_gated_runs(REPO, SHA, BRANCH, "tok", request=api,
                                       sleep=lambda _s: None)
-        self.assertEqual(handled, [("approved", 44738315930)])
+        self.assertEqual(handled, [("deleted", 44738315930)])
         self.assertEqual(cg.gated_runs(REPO, SHA, BRANCH, "tok", request=api), [])
 
     def test_fail_closed_when_both_paths_are_denied(self) -> None:
