@@ -5,8 +5,14 @@ name: approve bounded state-sync validation
 # mandatory; this trusted base-branch workflow only removes the manual click
 # after proving the PR is the bounded in-repository state/SPECS sync.
 on:
+  # Human/trusted synchronizations reach pull_request_target directly.
   pull_request_target:
     types: [opened, reopened, synchronize]
+  # PRs created with GITHUB_TOKEN suppress pull_request_target recursion, but
+  # their action-required validate run emits this trusted default-branch event.
+  workflow_run:
+    workflows: ["validate (required PR/push CI)"]
+    types: [completed]
 
 permissions:
   actions: write
@@ -20,10 +26,18 @@ concurrency:
 jobs:
   approve-bounded-validation:
     if: >-
-      github.event.pull_request.user.login == 'github-actions[bot]' &&
-      github.event.pull_request.user.type == 'Bot' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      startsWith(github.event.pull_request.head.ref, 'bot/state-sync-')
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.user.login == 'github-actions[bot]' &&
+       github.event.pull_request.user.type == 'Bot' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       startsWith(github.event.pull_request.head.ref, 'bot/state-sync-')) ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.status == 'completed' &&
+       github.event.workflow_run.conclusion == 'action_required' &&
+       github.event.workflow_run.path == '.github/workflows/validate.yml' &&
+       github.event.workflow_run.actor.login == 'github-actions[bot]' &&
+       startsWith(github.event.workflow_run.head_branch, 'bot/state-sync-'))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
