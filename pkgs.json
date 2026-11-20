@@ -206,6 +206,8 @@
    "eco": "go",
    "host": "github",
    "slug": "mr-karan/doggo",
+   "version": "1.4.0",
+   "note": "пин 1.4.0: 1.4.1 требует go 1.27.2, 1.4.2 — go 1.27.3, а в Fedora f44 golang 1.26.11 (f45 1.27.1, rawhide 1.27.4) — сборка падает на go.mod directive. Снять пин, когда golang >= 1.27.3 появится в целевых chroot. Последняя удачная сборка COPR: 11044782 (1.4.0-1).",
    "tagp": "v",
    "summary": "Fast command-line DNS client for humans",
    "license": "GPL-3.0-only",
