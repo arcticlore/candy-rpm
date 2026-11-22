@@ -48,6 +48,23 @@ jobs:
 
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
+      # Контейнер исполняется от root, файлы воркспейса принадлежат uid раннера:
+      # git >= 2.35 объявляет такой репозиторий "dubious ownership" и валит
+      # rc=128 КАЖДУЮ git-команду шагов ниже. actions/checkout прописывает
+      # исключение во временный HOME, который после шага исчезает, а наш
+      # safe.directory стоял только в шаге коммита — то есть ПОСЛЕ
+      # stage_state_sync, который и падал с «нет эталонного ref» (Р#239).
+      - name: Trust workspace for git (fail-fast, must run BEFORE any git step)
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$(pwd)"
+          if ! git rev-parse --verify origin/master >/dev/null 2>&1; then
+            echo "[GIT-FAIL] origin/master недоступен сразу после checkout:"
+            git rev-parse --verify origin/master || true
+            exit 1
+          fi
+          echo "git ok: HEAD=$(git rev-parse --short HEAD) base=$(git rev-parse --short origin/master)"
+
       - name: Resolve run mode (fail-closed)
         id: mode
         run: |

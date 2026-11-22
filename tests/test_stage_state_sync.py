@@ -143,6 +143,46 @@ class StageStateSyncTest(unittest.TestCase):
         self.assertIn("нет эталонного ref (origin/master/", out)
         self.assertNotIn("git-репозиторий отсутствует", out)
 
+    def test_dubious_ownership_does_not_hide_the_base(self):
+        """Р#239: контейнер от root + файлы чужого uid.
+
+        git объявляет репозиторий "dubious ownership" и возвращает rc=128 на
+        любой команде. Раньше это выглядело как «нет эталонного ref» и валило
+        весь submit. Helper обязан пережить это сам, не трогая глобальный
+        конфиг пользователя.
+        """
+        env = dict(os.environ)
+        env.pop("CANDY_PACKAGE_ALLOWLIST", None)
+        env["GIT_TEST_ASSUME_DIFFERENT_OWNER"] = "1"
+
+        # 1. проверяем, что переключатель действительно воспроизводит отказ
+        probe = subprocess.run(["git", "-C", str(self.repo), "rev-parse", "--verify", "HEAD"],
+                               env=env, capture_output=True, text=True)
+        if probe.returncode == 0:
+            self.skipTest("этот git не поддерживает GIT_TEST_ASSUME_DIFFERENT_OWNER")
+        self.assertIn("dubious ownership", probe.stderr)
+
+        # 2. helper с тем же окружением обязан отработать штатно
+        r = subprocess.run([sys.executable, str(HELPER)],
+                           cwd=self.repo, env=env, capture_output=True, text=True)
+        out = r.stdout + r.stderr
+        self.assertEqual(r.returncode, 0, out)
+        self.assertNotIn("нет эталонного ref", out)
+
+    def test_missing_base_reports_git_reason(self):
+        """Причина отказа git обязана попадать в текст abort, а не теряться."""
+        with tempfile.TemporaryDirectory() as td:
+            empty = pathlib.Path(td)
+            subprocess.run(["git", "init", "-q"], cwd=empty, check=True)
+            env = dict(os.environ)
+            env.pop("CANDY_PACKAGE_ALLOWLIST", None)
+            r = subprocess.run([sys.executable, str(HELPER), "--repo", str(empty)],
+                               env=env, capture_output=True, text=True)
+        out = r.stdout + r.stderr
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("нет эталонного ref", out)
+        self.assertIn("HEAD: rc=", out)
+
     def test_bounded_131_specs_stage_only_selection(self):
         """132-spec guard: 7 selection-пакетов → ровно 8 staged, churn откат."""
         sel = self.pkgs[:7]

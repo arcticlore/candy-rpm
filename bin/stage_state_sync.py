@@ -37,8 +37,13 @@ VERSION_RE = re.compile(r"^Version:\s*(\S+)", re.M)
 
 
 def git(repo: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+    # -c safe.directory: в job-контейнере update.yml (container: fedora:44) git
+    # работает от root, а файлы воркспейса принадлежат uid раннера. git >= 2.35
+    # отвергает такой репозиторий ("detected dubious ownership") с rc=128 на
+    # КАЖДОЙ команде, включая rev-parse, — Р#239. Флаг живёт только в пределах
+    # одного вызова: глобальный конфиг пользователя не трогаем.
     return subprocess.run(
-        ["git", "-C", str(repo), *args],
+        ["git", "-c", f"safe.directory={repo}", "-C", str(repo), *args],
         capture_output=True, text=True, check=check,
     )
 
@@ -89,18 +94,25 @@ def main() -> int:
 
     repo = Path(args.repo).resolve()
     base = args.base
+    probe_errors: list[str] = []
     if not base:
         for cand in ("origin/master", "FETCH_HEAD", "HEAD"):
-            if git(repo, "rev-parse", "--verify", cand, check=False).returncode == 0:
+            r = git(repo, "rev-parse", "--verify", cand, check=False)
+            if r.returncode == 0:
                 base = cand
                 break
+            # Причину обязаны показать: молчаливый fallback уже стоил нам
+            # двух прогонов, где git падал на правах доступа, а не на ref.
+            first = next((ln for ln in (r.stderr or "").splitlines() if ln.strip()), "")
+            probe_errors.append(f"{cand}: rc={r.returncode} {first.strip()}".rstrip())
     if not base:
         if not (repo / ".git").exists():
             return fail(
                 "git-репозиторий отсутствует — actions/checkout не сделал git clone "
                 "(в контейнер-имидже нет git на момент checkout; dnf install git "
                 "обязан идти ДО checkout) — см. нулевую ошибку Р#238")
-        return fail("нет эталонного ref (origin/master/FETCH_HEAD/HEAD)")
+        detail = " | ".join(probe_errors) if probe_errors else "git не сообщил причину"
+        return fail(f"нет эталонного ref (origin/master/FETCH_HEAD/HEAD) — {detail}")
 
     selection = set(parse_selection(args.selection))
     bounded = bool(selection)
