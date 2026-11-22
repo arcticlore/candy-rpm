@@ -2739,6 +2739,148 @@
    "prio": 3,
    "use": "lazysql — подключения и запросы",
    "alt": "go install github.com/jorgerojas26/lazysql@latest"
+  },
+  {
+   "name": "duf",
+   "eco": "go",
+   "host": "github",
+   "slug": "muesli/duf",
+   "tagp": "v",
+   "summary": "Дисковое использование в терминале (Disk Usage/Free)",
+   "license": "MIT AND BSD-3-Clause",
+   "bins": [
+    "duf"
+   ],
+   "license_files": [
+    "LICENSE"
+   ],
+   "prio": 3,
+   "use": "duf",
+   "topdir": "duf-v0.9.1"
+  },
+  {
+   "name": "hexyl",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sharkdp/hexyl",
+   "tagp": "v",
+   "summary": "Шестнадцатеричный просмотр файлов (command-line hex viewer)",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "hexyl"
+   ],
+   "license_files": [
+    "LICENSE-MIT",
+    "LICENSE-APACHE"
+   ],
+   "prio": 3,
+   "use": "hexyl <файл>",
+   "topdir": "hexyl-v0.17.0"
+  },
+  {
+   "name": "zoxide",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "ajeetdsouza/zoxide",
+   "tagp": "v",
+   "summary": "Умный cd для терминала (smarter cd)",
+   "license": "MIT",
+   "bins": [
+    "zoxide"
+   ],
+   "license_files": [
+    "LICENSE"
+   ],
+   "prio": 3,
+   "use": "zoxide add /path; cd превращается в z",
+   "topdir": "zoxide-v0.10.0"
+  },
+  {
+   "name": "tarts",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "oiwn/tarts",
+   "tagp": "v",
+   "summary": "Экранные заставки и визуальные эффекты для терминала",
+   "license": "MIT",
+   "bins": [
+    "tarts"
+   ],
+   "license_files": [
+    "LICENSE"
+   ],
+   "prio": 3,
+   "use": "tarts <эффект>",
+   "topdir": "tarts-v0.1.25"
+  },
+  {
+   "name": "dust",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "bootandy/dust",
+   "tagp": "v",
+   "summary": "Более интуитивное du (disk usage)",
+   "license": "Apache-2.0",
+   "bins": [
+    "dust"
+   ],
+   "license_files": [
+    "LICENSE"
+   ],
+   "prio": 3,
+   "use": "dust /path — таблица размеров каталогов",
+   "topdir": "dust-v1.2.6"
+  },
+  {
+   "name": "ov",
+   "eco": "go",
+   "host": "github",
+   "slug": "noborus/ov",
+   "tagp": "v",
+   "summary": "Терминальный просмотрщик файлов (реализация less в Go)",
+   "license": "MIT",
+   "bins": [
+    "ov"
+   ],
+   "prio": 3,
+   "use": "ov file|data — просмотр с подсветкой",
+   "topdir": "ov-v0.54.0"
+  },
+  {
+   "name": "tailspin",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "bensadeh/tailspin",
+   "tagp": "",
+   "summary": "Хайлайтер лог-файлов (tail с подсветкой синтаксиса)",
+   "license": "MIT",
+   "bins": [
+    "tspin"
+   ],
+   "license_files": [
+    "LICENCE"
+   ],
+   "prio": 3,
+   "use": "tailspin -f app.log",
+   "topdir": "tailspin-7.0.0"
+  },
+  {
+   "name": "tetro-tui",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "Strophox/tetro-tui",
+   "tagp": "v",
+   "summary": "Терминальный тетрис с настройками",
+   "license": "MIT",
+   "bins": [
+    "tetro-tui"
+   ],
+   "license_files": [
+    "LICENSE"
+   ],
+   "prio": 3,
+   "use": "tetro-tui",
+   "topdir": "tetro-tui-v3.6.2"
   }
  ]
 }
