@@ -15,7 +15,7 @@
 
 **Nightly-updated COPR repository of terminal eye-candy for Fedora**
 
-**147 packages** · 14 ecosystems · auto-build twice a day · 2 architectures  
+**155 packages** · 14 ecosystems · auto-build twice a day · 2 architectures  
 *x86_64 · aarch64*
 
 </div>
