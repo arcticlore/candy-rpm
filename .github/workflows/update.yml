@@ -32,7 +32,7 @@ jobs:
     container: fedora:44
     env:
       # Иммутабельный план: max wave, ожидание фактического merge (не auto-merge).
-      CANDY_MAX_WAVE: "5"
+      CANDY_MAX_WAVE: "7"
       CANDY_MERGE_TIMEOUT: "5400"
       CANDY_MERGE_POLL: "30"
     steps:

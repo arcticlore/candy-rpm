@@ -75,8 +75,8 @@ EXPECTED_CHROOTS: tuple[str, ...] = (
     "fedora-rawhide-x86_64",
 )
 
-MAX_WAVE_DEFAULT = 5
-MAX_WAVE_HARD = 5
+MAX_WAVE_DEFAULT = 7
+MAX_WAVE_HARD = 7
 
 REPO_NS = "{http://linux.duke.edu/metadata/repo}"
 COMMON_NS = "{http://linux.duke.edu/metadata/common}"
