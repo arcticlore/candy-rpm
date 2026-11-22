@@ -21,6 +21,7 @@ import io
 import json
 import os
 import pathlib
+import re
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
@@ -153,9 +154,10 @@ class TestMaxWave(unittest.TestCase):
         self.assertEqual(res["overflow"], ["zeta"])
 
     def test_resolve_max_wave_bounds(self):
-        self.assertEqual(up.resolve_max_wave(""), 5)
+        self.assertEqual(up.resolve_max_wave(""), 7)
         self.assertEqual(up.resolve_max_wave("3"), 3)
-        for bad in ("0", "6", "x", "-1"):
+        self.assertEqual(up.resolve_max_wave("7"), 7)
+        for bad in ("0", "8", "x", "-1"):
             with self.assertRaises(up.PlanError):
                 up.resolve_max_wave(bad)
 
@@ -606,8 +608,19 @@ class TestWorkflowContainment(unittest.TestCase):
                 self.assertIn("CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs",
                               blk, msg=blk[:200])
 
-    def test_max_wave_five(self):
-        self.assertIn('CANDY_MAX_WAVE: "5"', self.TEXT)
+    def test_max_wave_matches_hard_bound(self):
+        """Волна ограничена, и предел в workflow совпадает с пределом в коде.
+
+        Раньше здесь стояла литеральная пятёрка в двух местах сразу —
+        workflow и MAX_WAVE_HARD расходились бы молча, а план отвалился бы
+        уже в проде на resolve_max_wave. Теперь тест сверяет их между собой.
+        """
+        mw = re.search(r'CANDY_MAX_WAVE:\s*"(\d+)"', self.TEXT)
+        self.assertIsNotNone(mw, "CANDY_MAX_WAVE обязан быть задан явно")
+        val = int(mw.group(1))
+        self.assertEqual(val, up.MAX_WAVE_HARD,
+                         "CANDY_MAX_WAVE в update.yml разошёлся с MAX_WAVE_HARD")
+        self.assertTrue(1 <= val <= up.MAX_WAVE_HARD)
 
     def test_no_force_no_full_rebuild(self):
         self.assertNotIn("full_rebuild", self.TEXT)

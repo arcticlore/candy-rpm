@@ -160,10 +160,10 @@ jobs:
               conc = up_doc.get('concurrency') if isinstance(up_doc, dict) else None
               if not isinstance(conc, dict) or conc.get('cancel-in-progress') is not False:
                   bad.append('update.yml: требуется concurrency.cancel-in-progress: false')
-              # max-wave в диапазоне 1..5
+              # max-wave в диапазоне 1..7
               mw = re.search(r'CANDY_MAX_WAVE:\s*"(\d+)"', up_text)
-              if not mw or not (1 <= int(mw.group(1)) <= 5):
-                  bad.append('update.yml: CANDY_MAX_WAVE должен быть в 1..5')
+              if not mw or not (1 <= int(mw.group(1)) <= 7):
+                  bad.append('update.yml: CANDY_MAX_WAVE должен быть в 1..7')
               # ручной запуск — только plan_only (default=true)
               wd = on.get('workflow_dispatch') if isinstance(on, dict) else None
               inputs = wd.get('inputs') if isinstance(wd, dict) else None
