@@ -774,3 +774,52 @@ class TestDecisionHandoff(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestBoostedOrder(unittest.TestCase):
+    """Временный высший приоритет для новых пакетов и его самоснятие."""
+
+    PKGS = [
+        {"name": "starship", "prio": 1},
+        {"name": "lazygit", "prio": 1},
+        {"name": "fd", "prio": 2, "boost": True},
+        {"name": "nyancat", "prio": 3, "boost": True},
+        {"name": "zellij", "prio": 1},
+    ]
+    ORDER = ["starship", "lazygit", "fd", "nyancat", "zellij"]
+
+    def test_boosted_go_first_when_never_built(self):
+        got = up.boosted_order(self.PKGS, self.ORDER, state={})
+        self.assertEqual(got[:2], ["fd", "nyancat"])
+        self.assertEqual(got[2:], ["starship", "lazygit", "zellij"])
+
+    def test_boost_self_clears_after_first_successful_build(self):
+        """Запись в state.json = успешная публикация 8/8 -> буст снят."""
+        state = {"fd": {"ver": "10.5.2", "ts": 1}}
+        got = up.boosted_order(self.PKGS, self.ORDER, state=state)
+        self.assertEqual(got[0], "nyancat", "nyancat ещё не собран — остаётся впереди")
+        self.assertEqual(got[1:], ["starship", "lazygit", "fd", "zellij"],
+                         "fd вернулся на своё место в файле")
+
+    def test_all_built_restores_file_order_exactly(self):
+        state = {"fd": {"ver": "1"}, "nyancat": {"ver": "1"}}
+        self.assertEqual(up.boosted_order(self.PKGS, self.ORDER, state=state),
+                         self.ORDER)
+
+    def test_no_boost_field_is_identity(self):
+        plain = [{"name": n} for n in self.ORDER]
+        self.assertEqual(up.boosted_order(plain, self.ORDER, state={}), self.ORDER)
+
+    def test_relative_order_of_boosted_is_preserved(self):
+        pkgs = [{"name": n, "boost": True} for n in self.ORDER]
+        self.assertEqual(up.boosted_order(pkgs, self.ORDER, state={}), self.ORDER)
+
+    def test_boosted_packages_reach_the_build_wave(self):
+        """Интеграция: с max_wave=2 волну занимают именно boost-пакеты."""
+        pkgs = [{"name": n, "enabled": True} for n in ("alpha", "beta")]
+        pkgs += [{"name": "fresh", "enabled": True, "boost": True}]
+        upstream = {"alpha": "1.0", "beta": "1.0", "fresh": "1.0"}
+        res = up.build_plan(
+            max_wave=1, pkgs=pkgs, state={}, upstream=upstream,
+            published={}, active=set(), chroots=up.EXPECTED_CHROOTS)
+        self.assertEqual(res["plan"], ["fresh"])
