@@ -79,6 +79,11 @@ jobs:
         if: steps.targets.outputs.list != ''
         env:
           LIST: ${{ steps.targets.outputs.list }}
+          # Без токена bin/api_ver.sh ходит в api.github.com анонимно, а это
+          # 60 запросов/час на общий IP раннера — на больших волнах лимит
+          # кончается и последние пакеты падают как "апстрим-версия
+          # недоступна". С токеном лимит 5000/час.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -uo pipefail
           mkdir -p SRPMS logs

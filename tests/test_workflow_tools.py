@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import yaml
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -406,3 +407,31 @@ class JqInvocationHasFilterTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SrpmSmokeHasGithubTokenTest(unittest.TestCase):
+    """Шаг сборки SRPM обязан получать GITHUB_TOKEN.
+
+    bin/api_ver.sh вызывает gh_curl, который без GITHUB_TOKEN ходит в
+    api.github.com анонимно. Анонимный лимит — 60 запросов/час на IP, а
+    IP у раннеров общий, поэтому на волне из 13 пакетов лимит кончился
+    на последнем по алфавиту (yq) и шаг упал с «апстрим-версия
+    недоступна». С токеном лимит 5000/час.
+    """
+
+    WF = (Path(__file__).resolve().parents[1]
+          / ".github" / "workflows" / "srpm-smoke.yml")
+
+    def test_srpm_step_passes_github_token(self):
+        doc = yaml.safe_load(self.WF.read_text(encoding="utf-8"))
+        steps = doc["jobs"]["smoke"]["steps"]
+        built = [s for s in steps
+                 if "make-srpm.sh" in str(s.get("run", ""))]
+        self.assertTrue(built, "не найден шаг, вызывающий bin/make-srpm.sh")
+        for step in built:
+            env = step.get("env") or {}
+            self.assertIn(
+                "GITHUB_TOKEN", env,
+                "шаг сборки SRPM вызывает api_ver.sh без GITHUB_TOKEN — "
+                "анонимный лимит 60/час уронит большие волны")
+            self.assertIn("secrets.GITHUB_TOKEN", str(env["GITHUB_TOKEN"]))
