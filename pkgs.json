@@ -3105,6 +3105,243 @@
    "boost": true,
    "use": "cpufetch — логотип и характеристики CPU",
    "alt": "github.com/Dr-Noob/cpufetch#installation"
+  },
+  {
+   "name": "fzf",
+   "eco": "go",
+   "host": "github",
+   "slug": "junegunn/fzf",
+   "tagp": "v",
+   "summary": "Интерактивный нечёткий поиск по любому потоку строк",
+   "license": "MIT",
+   "bins": [
+    "fzf"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 1,
+   "boost": true,
+   "use": "history | fzf — выбрать строку интерактивно",
+   "alt": "go install github.com/junegunn/fzf@latest"
+  },
+  {
+   "name": "croc",
+   "eco": "go",
+   "host": "github",
+   "slug": "schollz/croc",
+   "tagp": "v",
+   "summary": "Передача файлов между машинами по кодовой фразе",
+   "license": "MIT",
+   "bins": [
+    "croc"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "croc send файл — на второй машине croc <код>",
+   "alt": "go install github.com/schollz/croc/v10@latest"
+  },
+  {
+   "name": "k9s",
+   "eco": "go",
+   "host": "github",
+   "slug": "derailed/k9s",
+   "tagp": "v",
+   "summary": "Терминальный пульт управления кластером Kubernetes",
+   "license": "Apache-2.0",
+   "bins": [
+    "k9s"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "k9s — навигация по подам и логам",
+   "alt": "go install github.com/derailed/k9s@latest"
+  },
+  {
+   "name": "chezmoi",
+   "eco": "go",
+   "host": "github",
+   "slug": "twpayne/chezmoi",
+   "tagp": "v",
+   "summary": "Менеджер dotfiles с шаблонами и шифрованием",
+   "license": "MIT",
+   "bins": [
+    "chezmoi"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "chezmoi init --apply <репозиторий>",
+   "alt": "go install github.com/twpayne/chezmoi/v2@latest"
+  },
+  {
+   "name": "yq",
+   "eco": "go",
+   "host": "github",
+   "slug": "mikefarah/yq",
+   "tagp": "v",
+   "summary": "Процессор YAML/JSON/XML в стиле jq",
+   "license": "MIT",
+   "bins": [
+    "yq"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "yq '.services.web.image' compose.yaml",
+   "alt": "go install github.com/mikefarah/yq/v4@latest"
+  },
+  {
+   "name": "gh-dash",
+   "eco": "go",
+   "host": "github",
+   "slug": "dlvhdr/gh-dash",
+   "tagp": "v",
+   "summary": "Дашборд pull request'ов и issue прямо в терминале",
+   "license": "MIT",
+   "bins": [
+    "gh-dash"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "gh-dash — обзор своих PR (нужен настроенный gh)",
+   "alt": "gh extension install dlvhdr/gh-dash",
+   "note": "лицензия в корне называется LICENSE.txt — glob %license LICENSE* её ловит"
+  },
+  {
+   "name": "dasel",
+   "eco": "go",
+   "host": "github",
+   "slug": "TomWright/dasel",
+   "tagp": "v",
+   "summary": "Запросы и правка JSON/YAML/TOML/XML/CSV одним синтаксисом",
+   "license": "MIT",
+   "bins": [
+    "dasel"
+   ],
+   "gpkg": "./cmd/dasel",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "dasel -f config.yaml '.server.port'",
+   "alt": "go install github.com/tomwright/dasel/v2/cmd/dasel@latest"
+  },
+  {
+   "name": "ripgrep",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "BurntSushi/ripgrep",
+   "tagp": "",
+   "summary": "Рекурсивный поиск по содержимому файлов, уважает .gitignore",
+   "license": "Unlicense OR MIT",
+   "bins": [
+    "rg"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 1,
+   "boost": true,
+   "use": "rg 'TODO' — поиск по проекту",
+   "alt": "cargo install ripgrep",
+   "note": "крейт ripgrep, но бинарь называется rg — bins задан явно; MSRV 1.96 <= 1.98 (Leap)"
+  },
+  {
+   "name": "miniserve",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "svenstaro/miniserve",
+   "tagp": "v",
+   "summary": "Отдать файл или каталог по HTTP одной командой",
+   "license": "MIT",
+   "bins": [
+    "miniserve"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "miniserve ./каталог — раздача на localhost:8080",
+   "alt": "cargo install miniserve"
+  },
+  {
+   "name": "xan",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "medialab/xan",
+   "tagp": "",
+   "summary": "Нарезка, фильтрация и статистика по CSV в терминале",
+   "license": "Unlicense OR MIT",
+   "bins": [
+    "xan"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "xan view data.csv — таблица без выхода из консоли",
+   "alt": "cargo install xan"
+  },
+  {
+   "name": "serie",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "lusingander/serie",
+   "tagp": "v",
+   "summary": "Граф истории git в виде насыщенного TUI",
+   "license": "MIT",
+   "bins": [
+    "serie"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 4,
+   "boost": true,
+   "use": "serie — визуальный git log в репозитории",
+   "alt": "cargo install serie"
+  },
+  {
+   "name": "process-compose",
+   "eco": "go",
+   "host": "github",
+   "slug": "F1bonacc1/process-compose",
+   "tagp": "v",
+   "summary": "Оркестратор локальных процессов по YAML, как compose без контейнеров",
+   "license": "Apache-2.0",
+   "bins": [
+    "process-compose"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 4,
+   "boost": true,
+   "use": "process-compose up — поднять стек из process-compose.yaml",
+   "alt": "go install github.com/f1bonacc1/process-compose@latest"
+  },
+  {
+   "name": "btop",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "aristocratos/btop",
+   "tagp": "v",
+   "summary": "Монитор ресурсов с мышью и графиками, замена htop",
+   "license": "Apache-2.0",
+   "bins": [
+    "btop"
+   ],
+   "br": [
+    "gcc-c++"
+   ],
+   "noman": true,
+   "install_cmd": "install -Dpm0755 bin/btop %{buildroot}%{_bindir}/btop",
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "btop — обзор CPU/памяти/дисков/сети",
+   "alt": "snap install btop",
+   "note": "upstream install ставит ещё темы/.desktop/иконки — %files их не покрывает, поэтому ставим только бинарь (Makefile кладёт его в bin/)"
   }
  ]
 }
