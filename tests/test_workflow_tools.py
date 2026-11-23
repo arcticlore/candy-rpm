@@ -8,6 +8,7 @@ import importlib.util
 import io
 import json
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -331,6 +332,76 @@ class TgOffsetSaveTest(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 0)
         self.assertIn("нечего сохранять", proc.stdout)
+
+
+class JqInvocationHasFilterTest(unittest.TestCase):
+    """`jq -n --arg a X` без фильтра молча печатает `null` с кодом 0.
+
+    POST такого тела в GitHub API отвечает 422 «For 'links/0/schema',
+    nil is not an object» и роняет ночной state-sync. Баг прожил в
+    update.yml полтора месяца именно потому, что jq не ругается.
+    """
+
+    WF_DIR = Path(__file__).resolve().parents[1] / ".github" / "workflows"
+    # флаги jq, забирающие ИМЯ и ЗНАЧЕНИЕ (два последующих токена)
+    PAIR_FLAGS = {"--arg", "--argjson", "--slurpfile", "--rawfile"}
+    # одиночные флаги без аргумента
+    BOOL_FLAGS = {"-n", "-r", "-e", "-c", "-s", "-j", "-a", "-S", "--raw-output",
+                  "--null-input", "--exit-status", "--compact-output", "--slurp",
+                  "--raw-input", "--tab", "--join-output", "--sort-keys", "-R"}
+
+    def _join_continuations(self, text):
+        lines, out, i = text.splitlines(), [], 0
+        while i < len(lines):
+            if lines[i].lstrip().startswith("#"):
+                i += 1
+                continue
+            buf = lines[i]
+            while buf.rstrip().endswith("\\") and i + 1 < len(lines):
+                i += 1
+                buf = buf.rstrip()[:-1] + " " + lines[i]
+            out.append(buf)
+            i += 1
+        return out
+
+    def _has_filter(self, cmd):
+        try:
+            toks = shlex.split(cmd, posix=True)
+        except ValueError:
+            return True  # неразбираемое из-за YAML-кавычек — не судим
+        if "jq" not in toks:
+            return True
+        toks = toks[toks.index("jq") + 1:]
+        i = 0
+        while i < len(toks):
+            t = toks[i]
+            if t in self.PAIR_FLAGS:
+                i += 3
+            elif t in self.BOOL_FLAGS or (t.startswith("-") and len(t) > 1):
+                i += 1
+            elif t in (">", ">>", "|", "<"):
+                return False  # дошли до перенаправления, фильтра не было
+            else:
+                return True   # непустой позиционный аргумент = фильтр
+        return False
+
+    def test_every_jq_n_has_a_filter(self):
+        offenders = []
+        for wf in sorted(self.WF_DIR.glob("*.yml")):
+            for cmd in self._join_continuations(wf.read_text(encoding="utf-8")):
+                if "jq -n" not in cmd and "jq --null-input" not in cmd:
+                    continue
+                if not self._has_filter(cmd):
+                    offenders.append(f"{wf.name}: {cmd.strip()[:110]}")
+        self.assertEqual(offenders, [], "jq -n без фильтра выводит null: " + "; ".join(offenders))
+
+    def test_guard_catches_a_known_bad_invocation(self):
+        """Сторож ловит ровно ту форму, что сломала update.yml."""
+        bad = 'jq -n --arg head "$B" --arg title "T" --arg body "X" > /tmp/pr.json'
+        good = ('jq -n --arg head "$B" --arg title "T" '
+                '\'{title: $title, head: $head, base: "master"}\' > /tmp/pr.json')
+        self.assertFalse(self._has_filter(bad))
+        self.assertTrue(self._has_filter(good))
 
 
 if __name__ == "__main__":

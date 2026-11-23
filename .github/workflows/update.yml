@@ -237,7 +237,12 @@ jobs:
           jq -n --arg head "$BRANCH" \
                 --arg title "state: bounded submit sync (run ${GITHUB_RUN_ID})" \
                 --arg body "Автоматический PR состояния от run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Цель опубликована 8/8 (bin/update-plan.py gate-published); стейджинг прошёл bounded-гейт bin/stage_state_sync.py. Иммутабельный план name@target." \
+                '{title: $title, head: $head, base: "master", body: $body}' \
                 > /tmp/pr.json
+          if ! jq -e 'type == "object" and (.head|length>0) and (.title|length>0) and (.base|length>0)' \
+                 /tmp/pr.json >/dev/null 2>&1; then
+            echo "[PR-FAIL] /tmp/pr.json не объект с head/title/base:"; cat /tmp/pr.json; exit 1
+          fi
           HTTP=$(curl -sS -o /tmp/pr-response.json -w '%{http_code}' -X POST \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
