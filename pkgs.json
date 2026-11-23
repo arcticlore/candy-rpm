@@ -2881,6 +2881,230 @@
    "prio": 3,
    "use": "tetro-tui",
    "topdir": "tetro-tui-v3.6.2"
+  },
+  {
+   "name": "fd",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sharkdp/fd",
+   "tagp": "v",
+   "summary": "Простая и быстрая замена find",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "fd"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "fd шаблон — поиск файлов по имени",
+   "alt": "cargo install fd-find"
+  },
+  {
+   "name": "bat",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sharkdp/bat",
+   "tagp": "v",
+   "summary": "cat с подсветкой синтаксиса и интеграцией с git",
+   "license": "MIT OR Apache-2.0",
+   "bins": [
+    "bat"
+   ],
+   "br": [
+    "cmake",
+    "pkgconf-pkg-config",
+    "zlib-devel"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "bat файл — просмотр с подсветкой",
+   "alt": "cargo install bat",
+   "note": "onig_sys и libgit2-sys собираются из исходников: нужны cmake и zlib-devel"
+  },
+  {
+   "name": "eza",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "eza-community/eza",
+   "tagp": "v",
+   "summary": "Современная замена ls (поддерживаемый форк exa)",
+   "license": "EUPL-1.2",
+   "bins": [
+    "eza"
+   ],
+   "br": [
+    "cmake",
+    "pkgconf-pkg-config",
+    "zlib-devel"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "eza -l --git — листинг с git-статусом",
+   "alt": "cargo install eza",
+   "note": "libgit2-sys собирается из исходников: нужны cmake, pkgconf и zlib-devel"
+  },
+  {
+   "name": "procs",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "dalance/procs",
+   "tagp": "v",
+   "summary": "Современная замена ps на Rust",
+   "license": "MIT",
+   "bins": [
+    "procs"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "procs имя — поиск процессов",
+   "alt": "cargo install procs"
+  },
+  {
+   "name": "mprocs",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "pvolok/mprocs",
+   "tagp": "v",
+   "summary": "Запуск нескольких команд параллельно в одном TUI",
+   "license": "MIT",
+   "bins": [
+    "mprocs"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "mprocs 'npm run dev' 'cargo watch'",
+   "alt": "cargo install mprocs"
+  },
+  {
+   "name": "xplr",
+   "eco": "cargo",
+   "host": "github",
+   "slug": "sayanarijit/xplr",
+   "tagp": "v",
+   "summary": "Гибкий файловый менеджер в терминале со скриптами на Lua",
+   "license": "MIT",
+   "bins": [
+    "xplr"
+   ],
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "xplr — навигация, Lua-конфиг",
+   "alt": "cargo install xplr"
+  },
+  {
+   "name": "gdu",
+   "eco": "go",
+   "host": "github",
+   "slug": "dundee/gdu",
+   "tagp": "v",
+   "summary": "Быстрый анализатор занятого места с TUI",
+   "license": "MIT",
+   "bins": [
+    "gdu"
+   ],
+   "gpkg": "./cmd/gdu",
+   "topdir": "%{name}-%{version}",
+   "prio": 2,
+   "boost": true,
+   "use": "gdu /path — что съело диск",
+   "alt": "go install github.com/dundee/gdu/v5/cmd/gdu@latest"
+  },
+  {
+   "name": "dive",
+   "eco": "go",
+   "host": "github",
+   "slug": "wagoodman/dive",
+   "tagp": "v",
+   "summary": "Разбор слоёв docker/podman-образа в терминале",
+   "license": "MIT",
+   "bins": [
+    "dive"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "dive образ:тег — что в каком слое",
+   "alt": "go install github.com/wagoodman/dive@latest"
+  },
+  {
+   "name": "gron",
+   "eco": "go",
+   "host": "github",
+   "slug": "tomnomnom/gron",
+   "tagp": "v",
+   "summary": "Разворачивает JSON в плоские строки — удобно грепать",
+   "license": "MIT",
+   "bins": [
+    "gron"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "curl -s api | gron | grep token",
+   "alt": "go install github.com/tomnomnom/gron@latest"
+  },
+  {
+   "name": "freeze",
+   "eco": "go",
+   "host": "github",
+   "slug": "charmbracelet/freeze",
+   "tagp": "v",
+   "summary": "Красивые картинки из кода и вывода терминала",
+   "license": "MIT",
+   "bins": [
+    "freeze"
+   ],
+   "gpkg": ".",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "freeze main.go -o out.png",
+   "alt": "go install github.com/charmbracelet/freeze@latest"
+  },
+  {
+   "name": "nyancat",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "klange/nyancat",
+   "tagp": "",
+   "summary": "Анимированный Nyan Cat в терминале",
+   "license": "NCSA",
+   "bins": [
+    "nyancat"
+   ],
+   "noman": true,
+   "install_cmd": "install -Dpm0755 src/nyancat %{buildroot}%{_bindir}/nyancat",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "nyancat — выход Ctrl+C",
+   "alt": "telnet nyancat.dakko.us",
+   "note": "корневой Makefile только делегирует в src/; install-цели нет — ставим бинарь вручную"
+  },
+  {
+   "name": "cpufetch",
+   "eco": "c-make",
+   "host": "github",
+   "slug": "Dr-Noob/cpufetch",
+   "tagp": "v",
+   "summary": "ASCII-арт с информацией о процессоре",
+   "license": "GPL-2.0-only",
+   "bins": [
+    "cpufetch"
+   ],
+   "install_cmd": "%make_install PREFIX=%{_prefix}",
+   "topdir": "%{name}-%{version}",
+   "prio": 3,
+   "boost": true,
+   "use": "cpufetch — логотип и характеристики CPU",
+   "alt": "github.com/Dr-Noob/cpufetch#installation"
   }
  ]
 }

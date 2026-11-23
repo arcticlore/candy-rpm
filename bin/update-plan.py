@@ -489,6 +489,32 @@ def enabled_set(pkgs: list[dict]) -> tuple[set[str], list[str]]:
     return enabled, order
 
 
+def boosted_order(pkgs: list[dict], order: list[str],
+                  state: dict | None = None) -> list[str]:
+    """Поднять наверх пакеты с "boost", ещё ни разу не собранные.
+
+    Волна Fedora идёт в порядке pkgs.json (prio планировщиком не читается),
+    поэтому временный высший приоритет = перестановка имени в начало order.
+
+    Признак «ни разу не собран» — отсутствие имени в state/state.json. В этом
+    репозитории state пишет ТОЛЬКО bounded state-sync и только после
+    публикации 8/8 (unbounded `coprase-status.py versions` запрещён дозором
+    containment в validate.yml), поэтому запись там означает ровно «успешно
+    опубликован хотя бы раз».
+
+    Отсюда главное свойство: буст снимается САМ. После первой успешной
+    сборки имя появляется в state, условие перестаёт выполняться, и пакет
+    возвращается на своё обычное место. Чистить pkgs.json не нужно.
+    """
+    st = state or {}
+    boost = [p.get("name") for p in pkgs
+             if p.get("boost") and p.get("name") and p.get("name") not in st]
+    if not boost:
+        return order
+    bset = set(boost)
+    return [n for n in order if n in bset] + [n for n in order if n not in bset]
+
+
 def effective_with_allowlist(pkgs: list[dict], allowlist_raw: str,
                              state: dict | None = None) -> set[str]:
     enabled, _ = enabled_set(pkgs)
@@ -519,6 +545,7 @@ def build_plan(max_wave: int, allowlist_raw: str = "",
     if state is None:
         state = load_state()
     enabled, order = enabled_set(pkgs)
+    order = boosted_order(pkgs, order, state)
     locked = locked_names(state)
     allowed = parse_allowlist(allowlist_raw)
     if allowed:
