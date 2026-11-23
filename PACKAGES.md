@@ -18,9 +18,7 @@
 | **gping** | Ping, but with a graph | `gping 1.1.1.1 — ping с графиком` | github.com/orf/gping |
 | **gum** | Glamorous tool для шелл-скриптов: спиннеры, выбор, ввод (charm-стиль) | `gum choose 'вариант 1' 'вариант 2'; gum spin -- sleep 2` | github.com/charmbracelet/gum |
 | **hyperfine** | Бенчмарк команд со статистикой и экспортом | `hyperfine 'sleep 0.3'` | github.com/sharkdp/hyperfine |
-| **just** | Современный command runner (Make без боли) | `just <рецепт>; just --list` | github.com/casey/just |
 | **lazydocker** | Lazier way to manage everything docker | `запусти lazydocker при работающем docker` | github.com/jesseduffield/lazydocker |
-| **lazygit** | Simple terminal UI for git commands | `запусти lazygit внутри git-репозитория` | github.com/jesseduffield/lazygit |
 | **lf** | Terminal file manager | `lf — файловый менеджер` | github.com/gokcehan/lf |
 | **mise** | Менеджер рантаймов node/python/ruby — быстрый asdf-killer | `mise use --pin node@22` | github.com/jdx/mise |
 | **oha** | HTTP бенчмарк с красивым TUI | `oha -n 200 https://example.com` | github.com/hatoo/oha |
@@ -28,7 +26,6 @@
 | **sd** | Intuitive find & replace CLI (sed alternative) | `sd 'старый текст' 'новый текст' file.txt` | github.com/chmln/sd |
 | **starship** | Minimal, blazing-fast, infinitely customizable cross-shell prompt | `eval "$(starship init bash)" — добавь в ~/.bashrc` | github.com/starship/starship |
 | **tealdeer** | Быстрый tldr-client: примеры команд вместо man | `tldr tar — шпаргалки` | github.com/dbrgn/tealdeer |
-| **tokei** | Статистика кода по языкам, молниеносная | `tokei ./src` | github.com/XAMPPRocky/tokei |
 | **trippy** | Гибрид mtr/traceroute с живым TUI | `sudo trip example.com` | github.com/fujiapple852/trippy |
 | **viddy** | Modern watch command (with key bindings and diffs) | `viddy 'df -h' — watch с подсветкой diff` | github.com/sachaos/viddy |
 | **watchexec** | Перезапуск команд при изменении файлов | `watchexec -- make test` | github.com/watchexec/watchexec |
@@ -47,7 +44,6 @@
 | **dysk** | df для людей: диски человекочитаемо | `dysk — все точки монтирования` | github.com/Canop/dysk |
 | **ghfetch** | Neofetch-like utility to fetch GitHub info in the terminal | `ghfetch <логин-github>` | github.com/SafarSoFar/ghfetch |
 | **gitfetch** | GitHub contribution visualization tool inspired by neofetch | `gitfetch <логин-github>` | github.com/FabricSoul/gitfetch |
-| **gitui** | TUI-интерфейс для git ( staging, branches, interactive rebase ) | `gitui — в папке репозитория` | github.com/gitui-org/gitui |
 | **grex** | Генератор регулярок из примеров строк | `grex a1 b2 → '^a[12]b[12]$'` | github.com/pemistahl/grex |
 | **kondo** | Чистка build-артефактов проектов (node_modules/target) | `kondo ~/dev — найти мусор` | github.com/tbillington/kondo |
 | **macchina** | System information fetcher with an emphasis on performance | `macchina — инфа о системе` | github.com/Macchina-CLI/macchina |
