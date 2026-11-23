@@ -44,7 +44,9 @@
    "gpkg": ".",
    "prio": 1,
    "use": "запусти lazygit внутри git-репозитория",
-   "alt": "бинарник со страницы Releases или COPR: dnf copr enable atim/lazygit"
+   "alt": "бинарник со страницы Releases или COPR: dnf copr enable atim/lazygit",
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44-upd: lazygit 0.66.3) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "lazydocker",
@@ -1768,7 +1770,9 @@
     "just"
    ],
    "use": "just <рецепт>; just --list",
-   "prio": 1
+   "prio": 1,
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: just 1.47.1; fedora44-upd: just 1.59.0) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "hyperfine",
@@ -1796,7 +1800,9 @@
     "tokei"
    ],
    "use": "tokei ./src",
-   "prio": 1
+   "prio": 1,
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: tokei 14.0.0; fedora44-upd: tokei 15.0.0) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "tealdeer",
@@ -2449,7 +2455,9 @@
    ],
    "prio": 2,
    "use": "gitui — в папке репозитория",
-   "alt": "cargo install gitui --locked"
+   "alt": "cargo install gitui --locked",
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: gitui 0.28.0; fedora44-upd: gitui 0.28.1) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "toipe",
@@ -2741,24 +2749,6 @@
    "alt": "go install github.com/jorgerojas26/lazysql@latest"
   },
   {
-   "name": "duf",
-   "eco": "go",
-   "host": "github",
-   "slug": "muesli/duf",
-   "tagp": "v",
-   "summary": "Дисковое использование в терминале (Disk Usage/Free)",
-   "license": "MIT AND BSD-3-Clause",
-   "bins": [
-    "duf"
-   ],
-   "license_files": [
-    "LICENSE"
-   ],
-   "prio": 3,
-   "use": "duf",
-   "topdir": "duf-v0.9.1"
-  },
-  {
    "name": "hexyl",
    "eco": "cargo",
    "host": "github",
@@ -2778,24 +2768,6 @@
    "topdir": "hexyl-v0.17.0"
   },
   {
-   "name": "zoxide",
-   "eco": "cargo",
-   "host": "github",
-   "slug": "ajeetdsouza/zoxide",
-   "tagp": "v",
-   "summary": "Умный cd для терминала (smarter cd)",
-   "license": "MIT",
-   "bins": [
-    "zoxide"
-   ],
-   "license_files": [
-    "LICENSE"
-   ],
-   "prio": 3,
-   "use": "zoxide add /path; cd превращается в z",
-   "topdir": "zoxide-v0.10.0"
-  },
-  {
    "name": "tarts",
    "eco": "cargo",
    "host": "github",
@@ -2812,24 +2784,6 @@
    "prio": 3,
    "use": "tarts <эффект>",
    "topdir": "tarts-v0.1.25"
-  },
-  {
-   "name": "dust",
-   "eco": "cargo",
-   "host": "github",
-   "slug": "bootandy/dust",
-   "tagp": "v",
-   "summary": "Более интуитивное du (disk usage)",
-   "license": "Apache-2.0",
-   "bins": [
-    "dust"
-   ],
-   "license_files": [
-    "LICENSE"
-   ],
-   "prio": 3,
-   "use": "dust /path — таблица размеров каталогов",
-   "topdir": "dust-v1.2.6"
   },
   {
    "name": "ov",
@@ -2895,9 +2849,10 @@
    ],
    "topdir": "%{name}-%{version}",
    "prio": 2,
-   "boost": true,
    "use": "fd шаблон — поиск файлов по имени",
-   "alt": "cargo install fd-find"
+   "alt": "cargo install fd-find",
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: fd-find 10.4.2; fedora44-upd: fd-find 10.5.2) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "bat",
@@ -2917,10 +2872,10 @@
    ],
    "topdir": "%{name}-%{version}",
    "prio": 2,
-   "boost": true,
    "use": "bat файл — просмотр с подсветкой",
    "alt": "cargo install bat",
-   "note": "onig_sys и libgit2-sys собираются из исходников: нужны cmake и zlib-devel"
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: bat 0.26.1; fedora44-upd: bat 0.26.1) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием.",
+   "enabled": false
   },
   {
    "name": "eza",
@@ -2940,27 +2895,10 @@
    ],
    "topdir": "%{name}-%{version}",
    "prio": 2,
-   "boost": true,
    "use": "eza -l --git — листинг с git-статусом",
    "alt": "cargo install eza",
-   "note": "libgit2-sys собирается из исходников: нужны cmake, pkgconf и zlib-devel"
-  },
-  {
-   "name": "procs",
-   "eco": "cargo",
-   "host": "github",
-   "slug": "dalance/procs",
-   "tagp": "v",
-   "summary": "Современная замена ps на Rust",
-   "license": "MIT",
-   "bins": [
-    "procs"
-   ],
-   "topdir": "%{name}-%{version}",
-   "prio": 2,
-   "boost": true,
-   "use": "procs имя — поиск процессов",
-   "alt": "cargo install procs"
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: eza 0.23.4; fedora44-upd: eza 0.23.5) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием.",
+   "enabled": false
   },
   {
    "name": "mprocs",
@@ -3083,28 +3021,10 @@
    "install_cmd": "install -Dpm0755 src/nyancat %{buildroot}%{_bindir}/nyancat",
    "topdir": "%{name}-%{version}",
    "prio": 3,
-   "boost": true,
    "use": "nyancat — выход Ctrl+C",
    "alt": "telnet nyancat.dakko.us",
-   "note": "корневой Makefile только делегирует в src/; install-цели нет — ставим бинарь вручную"
-  },
-  {
-   "name": "cpufetch",
-   "eco": "c-make",
-   "host": "github",
-   "slug": "Dr-Noob/cpufetch",
-   "tagp": "v",
-   "summary": "ASCII-арт с информацией о процессоре",
-   "license": "GPL-2.0-only",
-   "bins": [
-    "cpufetch"
-   ],
-   "install_cmd": "%make_install PREFIX=%{_prefix}",
-   "topdir": "%{name}-%{version}",
-   "prio": 3,
-   "boost": true,
-   "use": "cpufetch — логотип и характеристики CPU",
-   "alt": "github.com/Dr-Noob/cpufetch#installation"
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: nyancat 1.5.2) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием.",
+   "enabled": false
   },
   {
    "name": "fzf",
@@ -3120,9 +3040,10 @@
    "gpkg": ".",
    "topdir": "%{name}-%{version}",
    "prio": 1,
-   "boost": true,
    "use": "history | fzf — выбрать строку интерактивно",
-   "alt": "go install github.com/junegunn/fzf@latest"
+   "alt": "go install github.com/junegunn/fzf@latest",
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: fzf 0.67.0; fedora44-upd: fzf 0.75.0) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "croc",
@@ -3156,9 +3077,10 @@
    "gpkg": ".",
    "topdir": "%{name}-%{version}",
    "prio": 2,
-   "boost": true,
    "use": "k9s — навигация по подам и логам",
-   "alt": "go install github.com/derailed/k9s@latest"
+   "alt": "go install github.com/derailed/k9s@latest",
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: k9s 0.50.18; fedora44-upd: k9s 0.51.0) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "chezmoi",
@@ -3174,27 +3096,10 @@
    "gpkg": ".",
    "topdir": "%{name}-%{version}",
    "prio": 3,
-   "boost": true,
    "use": "chezmoi init --apply <репозиторий>",
-   "alt": "go install github.com/twpayne/chezmoi/v2@latest"
-  },
-  {
-   "name": "yq",
-   "eco": "go",
-   "host": "github",
-   "slug": "mikefarah/yq",
-   "tagp": "v",
-   "summary": "Процессор YAML/JSON/XML в стиле jq",
-   "license": "MIT",
-   "bins": [
-    "yq"
-   ],
-   "gpkg": ".",
-   "topdir": "%{name}-%{version}",
-   "prio": 2,
-   "boost": true,
-   "use": "yq '.services.web.image' compose.yaml",
-   "alt": "go install github.com/mikefarah/yq/v4@latest"
+   "alt": "go install github.com/twpayne/chezmoi/v2@latest",
+   "enabled": false,
+   "note": "В официальном репозитории Fedora уже есть актуальная версия (fedora44: chezmoi 2.70.0; fedora44-upd: chezmoi 2.73.0) — собственная сборка не нужна. Запись оставлена для паритета имён с parity-репозиторием."
   },
   {
    "name": "gh-dash",
@@ -3319,29 +3224,6 @@
    "boost": true,
    "use": "process-compose up — поднять стек из process-compose.yaml",
    "alt": "go install github.com/f1bonacc1/process-compose@latest"
-  },
-  {
-   "name": "btop",
-   "eco": "c-make",
-   "host": "github",
-   "slug": "aristocratos/btop",
-   "tagp": "v",
-   "summary": "Монитор ресурсов с мышью и графиками, замена htop",
-   "license": "Apache-2.0",
-   "bins": [
-    "btop"
-   ],
-   "br": [
-    "gcc-c++"
-   ],
-   "noman": true,
-   "install_cmd": "install -Dpm0755 bin/btop %{buildroot}%{_bindir}/btop",
-   "topdir": "%{name}-%{version}",
-   "prio": 2,
-   "boost": true,
-   "use": "btop — обзор CPU/памяти/дисков/сети",
-   "alt": "snap install btop",
-   "note": "upstream install ставит ещё темы/.desktop/иконки — %files их не покрывает, поэтому ставим только бинарь (Makefile кладёт его в bin/)"
   }
  ]
 }
