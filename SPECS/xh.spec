@@ -1,5 +1,5 @@
 Name:           xh
-Version:        0.26.2
+Version:        0.26.3
 Release:        1%{?dist}
 Summary:        Friendly and fast tool for sending HTTP requests
 
@@ -48,5 +48,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/xh
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 0.26.2-1
+* Mon Nov 23 2026 candy-bot <candy@localhost> - 0.26.3-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

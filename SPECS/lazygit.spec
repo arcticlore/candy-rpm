@@ -1,5 +1,5 @@
 Name:           lazygit
-Version:        0.66.1
+Version:        0.66.3
 Release:        1%{?dist}
 Summary:        Simple terminal UI for git commands
 
@@ -28,6 +28,7 @@ Don't throw tomatoes - file issues instead.
 %autosetup -N -a1 -n %{name}-%{version}
 
 %build
+export GOTOOLCHAIN=auto
 export GOFLAGS='-mod=vendor'
 export CGO_ENABLED=0
 export GOPATH=$(mktemp -d)
@@ -45,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/lazygit
 
 %changelog
-* Sat Oct 24 2026 candy-bot <candy@localhost> - 0.66.1-1
+* Mon Nov 23 2026 candy-bot <candy@localhost> - 0.66.3-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
