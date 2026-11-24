@@ -206,6 +206,13 @@ jobs:
         if: steps.mode.outputs.mutate == 'true' && steps.plan.outputs.mode == 'state-only' && steps.stage.outputs.staged_empty != '1' && (steps.preflight_so.outputs.decision == 'PROCEED' || steps.preflight_so.outputs.decision == 'REUSE')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Скрипт очистки редундантных gated-run'ов читает именно
+          # GITHUB_TOKEN (по своему контракту: только run-scoped токен,
+          # личный PAT не читается). Шаг отдавал один лишь GH_TOKEN, и
+          # скрипт падал на «missing GITHUB_TOKEN»: лишний gated run
+          # оставался, merge box висел BLOCKED, auto-merge не наступал
+          # никогда — state.json из-за этого не обновлялся.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.state_only_allowlist_csv }}
         run: |
           set -o pipefail
@@ -377,6 +384,12 @@ jobs:
         env:
           CANDY_PACKAGE_ALLOWLIST: ${{ steps.plan.outputs.build_allowlist_csv }}
           CANDY_PLAN_ENTRIES: ${{ steps.plan.outputs.build_entries }}
+          # bin/make-srpm.sh -> bin/api_ver.sh -> gh_curl: без токена запросы
+          # к api.github.com идут анонимно, а это 60 в час на общий IP
+          # раннера. Ровно так уже падала волна в srpm-smoke: последний по
+          # алфавиту пакет получал «апстрим-версия недоступна». Здесь цена
+          # выше — это ночной продакшн-submit.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail
           mkdir -p SRPMS logs
