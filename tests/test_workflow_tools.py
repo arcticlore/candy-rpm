@@ -8,6 +8,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -435,3 +436,82 @@ class SrpmSmokeHasGithubTokenTest(unittest.TestCase):
                 "шаг сборки SRPM вызывает api_ver.sh без GITHUB_TOKEN — "
                 "анонимный лимит 60/час уронит большие волны")
             self.assertIn("secrets.GITHUB_TOKEN", str(env["GITHUB_TOKEN"]))
+
+
+class TokenReachesScriptsTest(unittest.TestCase):
+    """Скрипт, читающий GITHUB_TOKEN, обязан получать его от шага.
+
+    Этот баг случался дважды и оба раза молча. В srpm-smoke.yml шаг не
+    отдавал токен, bin/api_ver.sh уходил в анонимный API и выдыхался на
+    лимите 60/час. В update.yml шаг отдавал только GH_TOKEN, а
+    bin/clear_gated_runs.py читает GITHUB_TOKEN — он падал с
+    [GATED-FAIL] missing GITHUB_TOKEN, редундантный gated run оставался
+    висеть, merge box был BLOCKED, auto-merge не наступал и state.json
+    не обновлялся полтора месяца.
+
+    Поэтому проверка общая: находим все скрипты bin/, которые читают
+    GITHUB_TOKEN, и требуем, чтобы каждый вызывающий их шаг прокидывал
+    эту переменную (на уровне шага, job'а или workflow).
+    """
+
+    ROOT = Path(__file__).resolve().parents[1]
+    WF_DIR = ROOT / ".github" / "workflows"
+
+    # update-plan.py требует токен не всегда, а только в подкомандах plan,
+    # materialize, preflight и observe-merge; fingerprint, gate-published и
+    # revert-unpublished работают локально. Все токен-зависимые вызовы
+    # переменную уже получают, поэтому скрипт исключён целиком — иначе тест
+    # ругался бы на штатные локальные шаги.
+    EXEMPT = {"update-plan.py"}
+
+    def _token_hungry_scripts(self):
+        names = set()
+        for path in list((self.ROOT / "bin").glob("*.py")) + \
+                list((self.ROOT / "bin").glob("*.sh")):
+            if path.name in self.EXEMPT:
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if 'environ.get("GITHUB_TOKEN"' in text \
+                    or 'environ["GITHUB_TOKEN"]' in text \
+                    or "${GITHUB_TOKEN" in text:
+                names.add(path.name)
+        return names
+
+    @staticmethod
+    def _invokes(run, script):
+        """Шаг действительно запускает скрипт, а не просто упоминает имя.
+
+        containment guard в validate.yml грепает текст update.yml и
+        содержит имена скриптов внутри строковых литералов — это не вызов.
+        """
+        return bool(re.search(
+            r"(?:^|[|&;(\s])(?:python3?|bash|sh|\./)?\s*\S*bin/"
+            + re.escape(script) + r"(?:\s|$)", run, re.M))
+
+    def test_every_caller_passes_github_token(self):
+        scripts = self._token_hungry_scripts()
+        self.assertTrue(scripts, "не нашёл ни одного скрипта с GITHUB_TOKEN")
+        problems = []
+        for wf in sorted(self.WF_DIR.glob("*.yml")):
+            doc = yaml.safe_load(wf.read_text(encoding="utf-8")) or {}
+            top_env = doc.get("env") or {}
+            for job_name, job in (doc.get("jobs") or {}).items():
+                if not isinstance(job, dict):
+                    continue
+                job_env = job.get("env") or {}
+                for step in job.get("steps") or []:
+                    if not isinstance(step, dict):
+                        continue
+                    run = str(step.get("run") or "")
+                    if not run:
+                        continue
+                    called = sorted(s for s in scripts if self._invokes(run, s))
+                    if not called:
+                        continue
+                    env = {**top_env, **job_env, **(step.get("env") or {})}
+                    if "GITHUB_TOKEN" not in env:
+                        problems.append(
+                            f"{wf.name}:{job_name}: шаг "
+                            f"{step.get('name', '<без имени>')!r} вызывает "
+                            f"{', '.join(called)}, но не отдаёт GITHUB_TOKEN")
+        self.assertEqual([], problems, "\n".join(problems))
