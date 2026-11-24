@@ -1,5 +1,5 @@
 Name:           starship
-Version:        1.26.0
+Version:        1.27.0
 Release:        1%{?dist}
 Summary:        Minimal, blazing-fast, infinitely customizable cross-shell prompt
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/starship
 
 %changelog
-* Tue Sep 22 2026 candy-bot <candy@localhost> - 1.26.0-1
+* Tue Nov 24 2026 candy-bot <candy@localhost> - 1.27.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
