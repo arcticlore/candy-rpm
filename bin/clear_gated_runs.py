@@ -109,17 +109,30 @@ def clear_gated_runs(repo: str, head_sha: str, branch: str, token: str,
                      *,
                      timeout_s: float = 300.0,
                      poll_s: float = 10.0,
+                     grace_s: float = 90.0,
                      request: Callable[..., tuple] = http_request,
                      clock: Callable[[], float] = time.monotonic,
                      sleep: Callable[[float], None] = time.sleep,
                      ) -> list[tuple[str, int]]:
-    """Снимает gated run'ы до их исчезновения. Отказ/таймаут = GateError."""
+    """Снимает gated run'ы до их исчезновения. Отказ/таймаут = GateError.
+
+    Пустой первый опрос ещё не означает, что гасить нечего: GitHub заводит
+    gated `pull_request` run асинхронно, и на быстром раннере мы успеваем
+    спросить раньше, чем он появится. Ровно так и вышло в run 45820026991 —
+    скрипт напечатал «none», волна включила auto-merge, после чего run
+    всё-таки возник и навсегда оставил PR #69 в BLOCKED: observe-merge
+    добросовестно прождал 90 минут и покрасил прогон. Поэтому «ничего нет»
+    принимается только после grace_s ожидания; как только хоть один run
+    снят, ждать больше нечего и выходим сразу.
+    """
     deadline = clock() + timeout_s
+    grace_deadline = clock() + grace_s
     handled: list[tuple[str, int]] = []
     while True:
         pending = gated_runs(repo, head_sha, branch, token, request=request)
         if not pending:
-            return handled
+            if handled or clock() >= grace_deadline:
+                return handled
         for run in pending:
             run_id = int(run["id"])
             base = f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}"
@@ -148,6 +161,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--head-sha", required=True)
     ap.add_argument("--timeout-min", type=float, default=5.0)
     ap.add_argument("--poll-s", type=float, default=10.0)
+    # Сколько ждать ПОЯВЛЕНИЯ gated run'а, прежде чем поверить, что его нет.
+    ap.add_argument("--grace-s", type=float, default=90.0)
     args = ap.parse_args(argv)
 
     token = os.environ.get("GITHUB_TOKEN", "")
@@ -157,7 +172,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         handled = clear_gated_runs(
             args.repo, args.head_sha, args.branch, token,
-            timeout_s=args.timeout_min * 60, poll_s=args.poll_s)
+            timeout_s=args.timeout_min * 60, poll_s=args.poll_s,
+            grace_s=args.grace_s)
     except GateError as exc:
         print(f"[GATED-FAIL] {exc}", file=sys.stderr)
         return 1
@@ -165,7 +181,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         for action, run_id in handled:
             print(f"gated run {run_id}: {action}")
     else:
-        print(f"gated runs on {args.head_sha}: none")
+        print(f"gated runs on {args.head_sha}: none "
+              f"(после {args.grace_s:.0f}s ожидания)")
     return 0
 
 
