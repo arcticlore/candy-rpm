@@ -10,6 +10,7 @@ fail-closed на любом отказе и таймауте, и что шаг �
 from __future__ import annotations
 
 import importlib.util
+import itertools
 import unittest
 from pathlib import Path
 
@@ -145,10 +146,12 @@ class ClearTests(unittest.TestCase):
         self.assertIn("не снят", str(ctx.exception))
 
     def test_noop_when_nothing_is_gated(self) -> None:
+        # grace_s=0: проверяем именно «гасить нечего», без окна ожидания
+        # появления gated run'а (его смысл проверяет AppearsLateTests).
         api = FakeAPI([run_payload(conclusion="success")])
         self.assertEqual(
             cg.clear_gated_runs(REPO, SHA, BRANCH, "tok", request=api,
-                                sleep=lambda _s: None), [])
+                                grace_s=0, sleep=lambda _s: None), [])
         self.assertFalse(any(m in ("DELETE", "POST") for m, _u in api.calls))
 
     def test_timeout_is_fail_closed(self) -> None:
@@ -203,3 +206,40 @@ class WorkflowWiringTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AppearsLateTests(unittest.TestCase):
+    """Пустой первый опрос — ещё не повод считать, что гасить нечего.
+
+    GitHub заводит gated `pull_request` run асинхронно. В run 45820026991
+    скрипт успел спросить раньше, напечатал «none», волна включила
+    auto-merge — а run появился следом и навсегда оставил PR #69 в
+    BLOCKED. observe-merge честно прождал 90 минут и покрасил прогон.
+    """
+
+    def test_run_that_appears_after_the_first_poll_is_still_cleared(self):
+        api = FakeAPI([])
+        polls = {"n": 0}
+        real_call = api.__call__
+
+        def spy(method, url, token, timeout=60):
+            if method == "GET" and "/actions/runs?head_sha=" in url:
+                polls["n"] += 1
+                if polls["n"] == 3:          # GitHub «догнал» на третьем опросе
+                    api.runs = [run_payload()]
+            return real_call(method, url, token, timeout)
+
+        handled = cg.clear_gated_runs(REPO, SHA, BRANCH, "tok", request=spy,
+                                      clock=itertools.count(0.0, 5.0).__next__,
+                                      sleep=lambda _s: None)
+        self.assertEqual([a for a, _ in handled], ["approved"])
+        self.assertEqual(cg.gated_runs(REPO, SHA, BRANCH, "tok", request=api), [])
+
+    def test_grace_window_is_bounded_when_nothing_ever_appears(self):
+        api = FakeAPI([])
+        ticks = itertools.count(0.0, 50.0)     # 0, 50, 100, ... — окно 90s истечёт
+        handled = cg.clear_gated_runs(REPO, SHA, BRANCH, "tok", request=api,
+                                      clock=lambda: next(ticks),
+                                      sleep=lambda _s: None)
+        self.assertEqual(handled, [])
+        self.assertFalse(any(m in ("DELETE", "POST") for m, _u in api.calls))
