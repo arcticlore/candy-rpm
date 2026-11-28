@@ -1,5 +1,5 @@
 Name:           dasel
-Version:        0
+Version:        3.11.2
 Release:        1%{?dist}
 Summary:        Запросы и правка JSON/YAML/TOML/XML/CSV одним синтаксисом
 
@@ -46,5 +46,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/dasel
 
 %changelog
-* Mon Nov 23 2026 candy-bot <candy@localhost> - 0-1
+* Sat Nov 28 2026 candy-bot <candy@localhost> - 3.11.2-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           ripgrep
-Version:        0
+Version:        16.0.0
 Release:        1%{?dist}
 Summary:        Рекурсивный поиск по содержимому файлов, уважает .gitignore
 
@@ -49,5 +49,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/rg
 
 %changelog
-* Mon Nov 23 2026 candy-bot <candy@localhost> - 0-1
+* Sat Nov 28 2026 candy-bot <candy@localhost> - 16.0.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)

@@ -1,5 +1,5 @@
 Name:           miniserve
-Version:        0
+Version:        0.35.0
 Release:        1%{?dist}
 Summary:        Отдать файл или каталог по HTTP одной командой
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/miniserve
 
 %changelog
-* Mon Nov 23 2026 candy-bot <candy@localhost> - 0-1
+* Sat Nov 28 2026 candy-bot <candy@localhost> - 0.35.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
