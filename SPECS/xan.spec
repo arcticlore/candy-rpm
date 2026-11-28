@@ -1,5 +1,5 @@
 Name:           xan
-Version:        0
+Version:        0.61.0
 Release:        1%{?dist}
 Summary:        Нарезка, фильтрация и статистика по CSV в терминале
 
@@ -47,5 +47,5 @@ for f in LICENSE* LICEN[CS]E.MD COPYING* COPYRIGHT* NOTICE*; do [ -e "$f" ] && c
 %{_bindir}/xan
 
 %changelog
-* Mon Nov 23 2026 candy-bot <candy@localhost> - 0-1
+* Sat Nov 28 2026 candy-bot <candy@localhost> - 0.61.0-1
 - Автосборка из апстрим-релиза (terminal-eye-candy pipeline)
